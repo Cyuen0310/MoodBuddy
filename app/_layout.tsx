@@ -35,7 +35,3 @@ export default function RootLayout() {
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }
-
-
-$ git config --global user.name "John Doe"
-$ git config --global user.email johndoe@example.com
