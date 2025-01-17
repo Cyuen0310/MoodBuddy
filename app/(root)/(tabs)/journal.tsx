@@ -1,11 +1,14 @@
 import { View, Text } from "react-native";
 import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const journal = () => {
   return (
-    <View>
-      <Text>journal</Text>
-    </View>
+    <SafeAreaView>
+      <View>
+        <Text>journal</Text>
+      </View>
+    </SafeAreaView>
   );
 };
 
