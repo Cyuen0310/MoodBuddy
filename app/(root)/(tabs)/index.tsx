@@ -8,7 +8,7 @@ import icons from "@/constants/icons";
 export default function Index() {
   return (
     <SafeAreaView className="bg-white h-full">
-      <View className="px-5">
+      <View className="px-5 border-b-2 border-gray-200">
         <View className="flex flex-row item-center justify-between mt-5">
           <View className="flex flex-row">
             <Image source={icons.person} className="size-12 rounded-full" />
