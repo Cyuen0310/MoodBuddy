@@ -19,7 +19,8 @@ import send from "@/assets/icons/send.png";
 import settings from "@/assets/icons/settings.png";
 import chat from "@/assets/icons/chat.png";
 import phone from "@/assets/icons/phone.png";
-
+import add from "@/assets/icons/add.png";
+import addImage from "@/assets/icons/Image Add.png";
 import edit from "@/assets/icons/edit.png";
 
 export default {
@@ -44,6 +45,7 @@ export default {
   settings,
   chat,
   phone,
-
+  add,
+  addImage,
   edit,
 };
