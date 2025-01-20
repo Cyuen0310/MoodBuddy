@@ -5,10 +5,9 @@
     "jsx": "react",
     "jsx": "react",
     "strict": true,
+    "esModuleInterop": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
