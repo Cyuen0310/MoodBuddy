@@ -49,12 +49,12 @@ const WeekSlider = () => {
 
   return (
     <>
-      <View className="flex flex-row justify-between items-center mx-3 pt-5">
+      <View className="flex flex-row justify-between items-center my-5 mx-3 pt-5">
         <Text className="font-nunito-extra-bold text-xl">
           {format(selectedDate, "d MMMM E, yyyy")}
         </Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity className="px-2">
           <Image source={icons.add} className="size-7" />
         </TouchableOpacity>
       </View>
