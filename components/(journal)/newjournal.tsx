@@ -15,18 +15,43 @@ import * as ImagePicker from "expo-image-picker";
 interface MoodOptionsProps {
   icon: ImageSourcePropType;
   mood: string;
+  selectedMood: string;
+  setSelectedMood: (mood: string) => void;
 }
 
 interface NewJournalProps {
   selectedDate?: Date;
 }
 
-const MoodOptions = ({ icon, mood }: MoodOptionsProps) => {
+const Moods = [
+  { mood: "Angry", icon: icons.angry },
+  { mood: "Sad", icon: icons.sad },
+  { mood: "Neutral", icon: icons.neutral },
+  { mood: "Happy", icon: icons.happy },
+  { mood: "Joyful", icon: icons.joyful },
+];
+
+const MoodOptions = ({
+  icon,
+  mood,
+  selectedMood,
+  setSelectedMood,
+}: MoodOptionsProps) => {
   return (
-    <TouchableOpacity>
-      <View className="flex-wrap  justify-center items-center p-2">
+    <TouchableOpacity onPress={() => setSelectedMood(mood)}>
+      <View
+        className={`flex-wrap justify-center items-center p-2 ${
+          selectedMood === mood ? "bg-blue-300 rounded-3xl" : ""
+        }`}
+      >
         <Image source={icon} className="size-10" />
-        <Text className="font-nunito-extra-bold text-sm m-2">{mood}</Text>
+        <Text
+          className={`font-nunito-extra-bold text-sm  ${
+            selectedMood === mood ? "text-blue-700 text-xl" : "text-gray-700"
+          }`}
+        >
+          {mood}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -42,10 +67,12 @@ const factors = [
   "Sleep",
 ];
 
-const NewJournal = () => {
-  const [inputHeight, setInputHeight] = useState(100);
+const NewJournal = ({ selectedDate }: NewJournalProps) => {
+  const [_, setInputHeight] = useState(100);
   const [addImageModal, setAddImageModal] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedMood, setSelectedMood] = useState("");
+  const [selectedFactors, setSelectedFactors] = useState<string[]>([]);
 
   const pickImageFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -101,11 +128,15 @@ const NewJournal = () => {
               How are you feeling?
             </Text>
             <View className="flex-row justify-center items-center gap-3">
-              <MoodOptions icon={icons.angry} mood="Angry" />
-              <MoodOptions icon={icons.sad} mood="Sad" />
-              <MoodOptions icon={icons.neutral} mood="Neutral" />
-              <MoodOptions icon={icons.happy} mood="Happy" />
-              <MoodOptions icon={icons.joyful} mood="Joyful" />
+              {Moods.map((item) => (
+                <MoodOptions
+                  key={item.mood}
+                  icon={item.icon}
+                  mood={item.mood}
+                  selectedMood={selectedMood}
+                  setSelectedMood={setSelectedMood}
+                />
+              ))}
             </View>
           </View>
 
@@ -117,10 +148,26 @@ const NewJournal = () => {
               {factors.map((factor) => (
                 <TouchableOpacity
                   key={factor}
-                  className="w-[30%] bg-gray-100 rounded-3xl m-1 p-2"
-                  onPress={() => {}}
+                  className={`w-[30%] rounded-3xl m-1 p-2 ${
+                    selectedFactors.includes(factor)
+                      ? "bg-blue-300"
+                      : "bg-gray-100"
+                  }`}
+                  onPress={() => {
+                    setSelectedFactors((prevFactors) =>
+                      prevFactors.includes(factor)
+                        ? prevFactors.filter((f) => f !== factor)
+                        : [...prevFactors, factor]
+                    );
+                  }}
                 >
-                  <Text className="font-nunito-bold text-lg text-center">
+                  <Text
+                    className={`font-nunito-bold text-lg text-center ${
+                      selectedFactors.includes(factor)
+                        ? "text-blue-700"
+                        : "text-black"
+                    }`}
+                  >
                     {factor}
                   </Text>
                 </TouchableOpacity>
@@ -136,7 +183,6 @@ const NewJournal = () => {
               className="bg-gray-100 rounded-3xl p-4 font-nunito-extra-bold-italic"
               multiline
               placeholder="How was your day?"
-              onChangeText={() => {}}
               textAlignVertical="top"
               onContentSizeChange={(event) =>
                 setInputHeight(

@@ -135,7 +135,7 @@ const WeekSlider = () => {
 
             <View className="w-5" />
           </View>
-          <NewJournal />
+          <NewJournal/>
         </View>
       </Modal>
     </>
