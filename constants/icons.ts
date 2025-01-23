@@ -31,6 +31,9 @@ import avatar from "@/assets/icons/avatar.png";
 import close from "@/assets/icons/close.png";
 import pen from "@/assets/icons/pen.png";
 import pencil from "@/assets/icons/pencil.png";
+import camera from "@/assets/icons/camera.png";
+import gallery from "@/assets/icons/gallery.png";
+
 export default {
   pen,
   pencil,
@@ -64,5 +67,7 @@ export default {
   neutral,
   sad,
   joyful,
+  camera,
+  gallery,
   avatar,
 };

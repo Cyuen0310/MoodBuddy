@@ -18,8 +18,8 @@ import {
   addMonths,
 } from "date-fns";
 import PagerView from "react-native-pager-view";
-import WeekSlider from "@/components/weekSlider";
-import NewJournal from "@/components/newjournal";
+import WeekSlider from "@/components/(journal)/weekSlider";
+import NewJournal from "@/components/(journal)/newjournal";
 const journal = () => {
   return (
     <SafeAreaView className="flex-1">

@@ -18,7 +18,7 @@ import {
 } from "date-fns";
 import PagerView from "react-native-pager-view";
 import icons from "@/constants/icons";
-import NewJournal from "@/components/newjournal";
+import NewJournal from "@/components/(journal)/newjournal";
 
 const WeekSlider = () => {
   const currentDate = new Date();
@@ -68,7 +68,7 @@ const WeekSlider = () => {
       >
         {dates.map((week, i) => {
           return (
-            <View key={i} className="p-3">
+            <View key={i} className="p-1">
               <View className="flex-row justify-around">
                 {week.map((day, j) => {
                   const DayName = format(day, "E");

@@ -61,8 +61,8 @@ const settings = () => {
               source={icons.avatar}
               className="size-24  relative rounded-full xl:size-32"
             />
-            <TouchableOpacity className="absolute right-0 bottom-11  ">
-              <Image source={icons.edit} className="size-7  rounded-full " />
+            <TouchableOpacity className="absolute top-1 right-1 rounded-full p-1">
+              <Image source={icons.edit} className="size-5 " />
             </TouchableOpacity>
             <Text className="text-2xl font-nunito-bold mt-2">User</Text>
           </View>
