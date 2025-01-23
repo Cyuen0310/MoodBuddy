@@ -52,7 +52,6 @@ const NewJournal = () => {
       allowsMultipleSelection: true,
       selectionLimit: 3,
       mediaTypes: "images",
-      allowsEditing: true,
       quality: 1,
     });
 
