@@ -58,7 +58,7 @@ const settings = () => {
         <View className="flex flex-row items-center justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
             <Image
-              source={icons.person}
+              source={icons.avatar}
               className="size-24  relative rounded-full xl:size-32"
             />
             <TouchableOpacity className="absolute right-0 bottom-11  ">

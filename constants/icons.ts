@@ -22,9 +22,20 @@ import phone from "@/assets/icons/phone.png";
 import add from "@/assets/icons/add.png";
 import addImage from "@/assets/icons/Image Add.png";
 import edit from "@/assets/icons/edit.png";
-
+import happy from "@/assets/icons/happy.png";
+import angry from "@/assets/icons/angry.png";
+import neutral from "@/assets/icons/neutral.png";
+import sad from "@/assets/icons/sad.png";
+import joyful from "@/assets/icons/joyful.png";
+import avatar from "@/assets/icons/avatar.png";
+import close from "@/assets/icons/close.png";
+import pen from "@/assets/icons/pen.png";
+import pencil from "@/assets/icons/pencil.png";
 export default {
+  pen,
+  pencil,
   google,
+  close,
   home,
   search,
   person,
@@ -48,4 +59,10 @@ export default {
   add,
   addImage,
   edit,
+  happy,
+  angry,
+  neutral,
+  sad,
+  joyful,
+  avatar,
 };
