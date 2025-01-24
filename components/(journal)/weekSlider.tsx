@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  ScrollView,
 } from "react-native";
 import {
   endOfWeek,
@@ -19,6 +20,7 @@ import {
 import PagerView from "react-native-pager-view";
 import icons from "@/constants/icons";
 import NewJournal from "@/components/(journal)/newjournal";
+import JournalCard from "./journalCard";
 
 const WeekSlider = () => {
   const currentDate = new Date();
@@ -35,7 +37,36 @@ const WeekSlider = () => {
       week.some((day) => isSameDay(day, selectedDate))
     ) || 0
   );
+
   const [isNewJournalModalOpen, setNewJournalModalOpen] = useState(false);
+  const [journalList, setJournalList] = useState<{
+    [key: string]: Array<{
+      mood: string;
+      factors: string[];
+      text: string;
+      images: string[];
+      time?: string;
+    }>;
+  }>({});
+
+  const saveJournalToList = (info: {
+    mood: string;
+    factors: string[];
+    text: string;
+    images: string[];
+  }) => {
+    const date = format(selectedDate, "yyyy-MM-dd");
+    const entryWithTime = {
+      ...info,
+      time: format(new Date(), "HH:mm"),
+    };
+
+    setJournalList((prev) => ({
+      ...prev,
+      [date]: [...(prev[date] || []), entryWithTime],
+    }));
+    setNewJournalModalOpen(false);
+  };
 
   useEffect(() => {
     if (currentWeek >= 0 && currentWeek < dates.length) {
@@ -47,7 +78,8 @@ const WeekSlider = () => {
   }, [currentWeek]);
 
   return (
-    <>
+    <View className="flex-1">
+      {/* Header */}
       <View className="flex flex-row justify-between items-center my-5 mx-3 pt-5">
         <Text className="font-nunito-extra-bold text-xl">
           {format(selectedDate, "d MMMM E, yyyy")}
@@ -61,57 +93,79 @@ const WeekSlider = () => {
         </TouchableOpacity>
       </View>
 
-      <PagerView
-        style={styles.pagerView}
-        initialPage={currentWeek}
-        onPageSelected={(e) => setCurrentWeek(e.nativeEvent.position)}
-      >
-        {dates.map((week, i) => {
-          return (
-            <View key={i} className="p-1">
-              <View className="flex-row justify-around">
-                {week.map((day, j) => {
-                  const DayName = format(day, "E");
-                  const isSelected = isSameDay(day, selectedDate);
-                  const isToday = isSameDay(day, new Date());
+      {/* Week Slider */}
+      <View className="h-24">
+        <PagerView
+          style={styles.pagerView}
+          initialPage={currentWeek}
+          onPageSelected={(e) => setCurrentWeek(e.nativeEvent.position)}
+        >
+          {dates.map((week, i) => {
+            return (
+              <View key={i} className="p-1">
+                <View className="flex-row justify-around">
+                  {week.map((day, j) => {
+                    const DayName = format(day, "E");
+                    const isSelected = isSameDay(day, selectedDate);
+                    const isToday = isSameDay(day, new Date());
 
-                  return (
-                    <TouchableOpacity
-                      key={day.toISOString()}
-                      onPress={() => setSelectedDate(day)}
-                    >
-                      <View
-                        className={`items-center px-4 py-2 rounded-lg ${
-                          isSelected
-                            ? "bg-blue-500"
-                            : isToday
-                            ? "bg-blue-300"
-                            : "bg-gray-200"
-                        }`}
+                    return (
+                      <TouchableOpacity
+                        key={day.toISOString()}
+                        onPress={() => setSelectedDate(day)}
                       >
-                        <Text
-                          className={`font-nunito-extra-bold text-sm ${
-                            isSelected || isToday ? "text-white" : "text-black"
+                        <View
+                          className={`items-center px-4 py-2 rounded-lg ${
+                            isSelected
+                              ? "bg-blue-500"
+                              : isToday
+                              ? "bg-blue-300"
+                              : "bg-gray-200"
                           }`}
                         >
-                          {DayName}
-                        </Text>
-                        <Text
-                          className={`font-nunito-extra-bold text-xl ${
-                            isSelected || isToday ? "text-white" : "text-black"
-                          }`}
-                        >
-                          {day.getDate()}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
+                          <Text
+                            className={`font-nunito-extra-bold text-sm ${
+                              isSelected || isToday
+                                ? "text-white"
+                                : "text-black"
+                            }`}
+                          >
+                            {DayName}
+                          </Text>
+                          <Text
+                            className={`font-nunito-extra-bold text-xl ${
+                              isSelected || isToday
+                                ? "text-white"
+                                : "text-black"
+                            }`}
+                          >
+                            {day.getDate()}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
-            </View>
-          );
-        })}
-      </PagerView>
+            );
+          })}
+        </PagerView>
+      </View>
+
+      {/* Journal Cards ScrollView */}
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 50 }}
+      >
+        <View className="m-5">
+          {journalList[format(selectedDate, "yyyy-MM-dd")]?.map(
+            (info, index) => (
+              <JournalCard key={index} info={info} />
+            )
+          )}
+        </View>
+      </ScrollView>
 
       <Modal
         visible={isNewJournalModalOpen}
@@ -135,10 +189,10 @@ const WeekSlider = () => {
 
             <View className="w-5" />
           </View>
-          <NewJournal/>
+          <NewJournal selectedDate={selectedDate} onSave={saveJournalToList} />
         </View>
       </Modal>
-    </>
+    </View>
   );
 };
 

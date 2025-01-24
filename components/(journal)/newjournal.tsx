@@ -20,7 +20,13 @@ interface MoodOptionsProps {
 }
 
 interface NewJournalProps {
-  selectedDate?: Date;
+  selectedDate: Date;
+  onSave: (info: {
+    mood: string;
+    factors: string[];
+    text: string;
+    images: string[];
+  }) => void;
 }
 
 const Moods = [
@@ -67,13 +73,26 @@ const factors = [
   "Sleep",
 ];
 
-const NewJournal = ({ selectedDate }: NewJournalProps) => {
+const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
   const [_, setInputHeight] = useState(100);
   const [addImageModal, setAddImageModal] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedMood, setSelectedMood] = useState("");
   const [selectedFactors, setSelectedFactors] = useState<string[]>([]);
+  const [journalText, setJournalText] = useState("");
 
+  const handleSave = () => {
+    if (!selectedMood || selectedFactors.length === 0) {
+      return;
+    }
+
+    onSave({
+      mood: selectedMood,
+      factors: selectedFactors,
+      text: journalText,
+      images: selectedImages || [],
+    });
+  };
   const pickImageFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsMultipleSelection: true,
@@ -157,7 +176,9 @@ const NewJournal = ({ selectedDate }: NewJournalProps) => {
                     setSelectedFactors((prevFactors) =>
                       prevFactors.includes(factor)
                         ? prevFactors.filter((f) => f !== factor)
-                        : [...prevFactors, factor]
+                        : selectedFactors.length < 3
+                        ? [...prevFactors, factor]
+                        : prevFactors
                     );
                   }}
                 >
@@ -189,6 +210,9 @@ const NewJournal = ({ selectedDate }: NewJournalProps) => {
                   Math.max(100, event.nativeEvent.contentSize.height)
                 )
               }
+              onChangeText={(text) => {
+                setJournalText(text);
+              }}
             />
           </View>
 
@@ -229,17 +253,24 @@ const NewJournal = ({ selectedDate }: NewJournalProps) => {
           </View>
 
           <TouchableOpacity
-            onPress={() => {}}
-            className="bg-blue-500 rounded-full py-3 mt-4 mb-6 flex-row justify-center items-center"
+            onPress={handleSave}
+            className={`bg-blue-500 rounded-full py-3 mt-4 mb-6 flex-row justify-center items-center
+              ${
+                !selectedMood || selectedFactors.length === 0
+                  ? "bg-gray-400"
+                  : "bg-blue-500"
+              }`}
+            disabled={!selectedMood || selectedFactors.length === 0}
           >
             <Text className="text-white text-center font-nunito-extra-bold-italic text-xl">
-              Jot it down!
+              Save
             </Text>
             {/* <Image source={icons.pencil} className="size-6 mx-1" /> */}
           </TouchableOpacity>
         </ScrollView>
       </View>
 
+      {/* Add Image Modal */}
       <Modal
         visible={addImageModal}
         transparent={true}

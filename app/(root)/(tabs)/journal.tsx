@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import {
   startOfWeek,
@@ -20,6 +21,7 @@ import {
 import PagerView from "react-native-pager-view";
 import WeekSlider from "@/components/(journal)/weekSlider";
 import NewJournal from "@/components/(journal)/newjournal";
+import JournalCard from "@/components/(journal)/journalCard";
 const journal = () => {
   return (
     <SafeAreaView className="flex-1">
