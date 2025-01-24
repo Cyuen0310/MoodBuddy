@@ -1,13 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  Button,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, StyleSheet, FlatList, TextInput, Button } from "react-native";
+import axios from "axios";
 
 interface Message {
   text: string;
@@ -22,11 +15,19 @@ const Chat: React.FC = () => {
   const [userInput, setUserInput] = useState<string>("");
   const flatListRef = useRef<FlatList<Message>>(null); // Create a ref for FlatList
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (userInput.trim()) {
       const userMessage = { text: userInput, user: true };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       setUserInput(""); // Clear input after sending
+
+      try {
+        const response = await axios.post('http://<your-computer-ip>:5000/chat', { message: userInput });
+        const botMessage = { text: response.data.response, user: false };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   };
 
@@ -41,13 +42,8 @@ const Chat: React.FC = () => {
         ref={flatListRef} // Assign the ref to FlatList
         data={messages}
         renderItem={({ item }) => (
-          <View
-            style={[
-              styles.messageContainer,
-              item.user ? styles.userMessage : styles.otherMessage,
-            ]}
-          >
-            <Text style={{ color: item.user ? "blue" : "black" }}>
+          <View style={[styles.messageContainer, item.user ? styles.userMessage : styles.otherMessage]}>
+            <Text style={{ color: item.user ? 'blue' : 'black' }}>
               {item.text}
             </Text>
           </View>
@@ -69,10 +65,10 @@ const Chat: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
+  container: { 
+    flex: 1, 
+    padding: 20, 
+    backgroundColor: "#fff" 
   },
   messageList: {
     flex: 1, // Allow FlatList to take available space
@@ -84,22 +80,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   userMessage: {
-    alignSelf: "flex-end", // Align user messages to the right
-    backgroundColor: "#e1f5fe", // Light blue background for user messages
+    alignSelf: 'flex-end', // Align user messages to the right
+    backgroundColor: '#e1f5fe', // Light blue background for user messages
   },
   otherMessage: {
-    alignSelf: "flex-start", // Align other messages to the left
-    backgroundColor: "#f0f0f0", // Light gray background for others
+    alignSelf: 'flex-start', // Align other messages to the left
+    backgroundColor: '#f0f0f0', // Light gray background for others
   },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 60, // Adjust this value to position higher
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 5,
     marginRight: 10,
     padding: 10, // Added padding for better appearance
