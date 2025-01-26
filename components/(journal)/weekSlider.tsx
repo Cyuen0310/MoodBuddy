@@ -159,10 +159,16 @@ const WeekSlider = () => {
         contentContainerStyle={{ paddingBottom: 50 }}
       >
         <View className="m-5">
-          {journalList[format(selectedDate, "yyyy-MM-dd")]?.map(
-            (info, index) => (
-              <JournalCard key={index} info={info} />
+          {journalList[format(selectedDate, "yyyy-MM-dd")]?.length > 0 ? (
+            journalList[format(selectedDate, "yyyy-MM-dd")].map(
+              (info, index) => <JournalCard key={index} info={info} />
             )
+          ) : (
+            <View className="flex-1 items-center justify-center py-10">
+              <Text className="font-nunito-bold text-gray-500 text-lg">
+                No journal to show yet
+              </Text>
+            </View>
           )}
         </View>
       </ScrollView>

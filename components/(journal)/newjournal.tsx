@@ -229,7 +229,7 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
                     resizeMode="cover"
                   />
                   <TouchableOpacity
-                    className="absolute right-safe-offset-0 bg-slate-300 rounded-full p-1"
+                    className="absolute left-safe-offset-0 bg-slate-300 rounded-full "
                     onPress={() => removeImage(index)}
                   >
                     <Image source={icons.close} className="size-5" />

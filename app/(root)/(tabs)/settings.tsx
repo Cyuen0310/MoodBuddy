@@ -51,8 +51,8 @@ const settings = () => {
         showsVerticalScrollIndicator={true}
         contentContainerClassName="pb-32 px-7"
       >
-        <View className="flex flex-row items-center justify-between mt-5">
-          <Text className="text-xl font-nunito-bold">Settings</Text>
+        <View className="flex flex-row items-center justify-center mt-5">
+          <Text className="text-2xl font-nunito-bold">Settings</Text>
         </View>
 
         <View className="flex flex-row items-center justify-center mt-5">
@@ -61,10 +61,10 @@ const settings = () => {
               source={icons.avatar}
               className="size-24  relative rounded-full xl:size-32"
             />
-            <TouchableOpacity className="absolute top-1 right-1 rounded-full p-1">
-              <Image source={icons.edit} className="size-5 " />
+            <TouchableOpacity className="absolute left-safe-offset-0  bg-slate-300 rounded-full">
+              <Image source={icons.close} className="size-5 " />
             </TouchableOpacity>
-            <Text className="text-2xl font-nunito-bold mt-2">User</Text>
+            <Text className="text-xl font-nunito-bold mt-2">User</Text>
           </View>
         </View>
 

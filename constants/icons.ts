@@ -33,10 +33,12 @@ import pen from "@/assets/icons/pen.png";
 import pencil from "@/assets/icons/pencil.png";
 import camera from "@/assets/icons/camera.png";
 import gallery from "@/assets/icons/gallery.png";
+import insight from "@/assets/icons/insight.png";
 
-export default {
+const icons = {
   pen,
   pencil,
+  insight,
   google,
   close,
   home,
@@ -71,3 +73,5 @@ export default {
   gallery,
   avatar,
 };
+
+export default icons;

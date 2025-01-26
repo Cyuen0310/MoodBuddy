@@ -24,7 +24,7 @@ import NewJournal from "@/components/(journal)/newjournal";
 import JournalCard from "@/components/(journal)/journalCard";
 const journal = () => {
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-white">
       <WeekSlider />
     </SafeAreaView>
   );

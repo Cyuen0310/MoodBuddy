@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, TextInput, Button } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import axios from "axios";
 
 interface Message {
@@ -13,16 +22,18 @@ const Chat: React.FC = () => {
     { text: "Hi there!", user: false },
   ]);
   const [userInput, setUserInput] = useState<string>("");
-  const flatListRef = useRef<FlatList<Message>>(null); // Create a ref for FlatList
+  const flatListRef = useRef<FlatList<Message>>(null);
 
   const sendMessage = async () => {
     if (userInput.trim()) {
       const userMessage = { text: userInput, user: true };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setUserInput(""); // Clear input after sending
+      setUserInput("");
 
       try {
-        const response = await axios.post('http://<your-computer-ip>:5000/chat', { message: userInput });
+        const response = await axios.post("http://192.168.128.128:5000/chat", {
+          message: userInput,
+        });
         const botMessage = { text: response.data.response, user: false };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       } catch (error) {
@@ -31,75 +42,51 @@ const Chat: React.FC = () => {
     }
   };
 
-  // Effect to scroll to the bottom when messages change
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        ref={flatListRef} // Assign the ref to FlatList
-        data={messages}
-        renderItem={({ item }) => (
-          <View style={[styles.messageContainer, item.user ? styles.userMessage : styles.otherMessage]}>
-            <Text style={{ color: item.user ? 'blue' : 'black' }}>
-              {item.text}
-            </Text>
-          </View>
-        )}
-        keyExtractor={(item, index) => index.toString()}
-        style={styles.messageList}
-      />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={userInput}
-          onChangeText={setUserInput}
-          placeholder="Type your message..."
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 p-5"
+      >
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          className="flex-1 mb-2.5"
+          renderItem={({ item }) => (
+            <View
+              className={`p-2.5 my-1 rounded-lg ${
+                item.user ? "self-end bg-blue-100" : "self-start bg-gray-100"
+              }`}
+            >
+              <Text className={item.user ? "text-blue-500" : "text-black"}>
+                {item.text}
+              </Text>
+            </View>
+          )}
+          keyExtractor={(_, index) => index.toString()}
         />
-        <Button title="Send" onPress={sendMessage} />
-      </View>
-    </View>
+
+        <View className="flex-row items-center mb-[60px]">
+          <TextInput
+            className="flex-1 border border-gray-300 rounded-lg mr-2.5 p-2.5"
+            value={userInput}
+            onChangeText={setUserInput}
+            placeholder="Type your message..."
+          />
+          <TouchableOpacity
+            onPress={sendMessage}
+            className="bg-blue-500 px-4 py-2 rounded-lg"
+          >
+            <Text className="text-white">Send</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: "#fff" 
-  },
-  messageList: {
-    flex: 1, // Allow FlatList to take available space
-    marginBottom: 10, // Add space below the FlatList
-  },
-  messageContainer: {
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
-  },
-  userMessage: {
-    alignSelf: 'flex-end', // Align user messages to the right
-    backgroundColor: '#e1f5fe', // Light blue background for user messages
-  },
-  otherMessage: {
-    alignSelf: 'flex-start', // Align other messages to the left
-    backgroundColor: '#f0f0f0', // Light gray background for others
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 60, // Adjust this value to position higher
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginRight: 10,
-    padding: 10, // Added padding for better appearance
-  },
-});
 
 export default Chat;

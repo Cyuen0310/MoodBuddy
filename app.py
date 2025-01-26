@@ -1,12 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Configure your API key
-genai.configure(api_key="")
+genai.configure(api_key=os.getenv('API_KEY'))
 
 # Create the model
 generation_config = {

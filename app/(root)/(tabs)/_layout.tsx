@@ -75,6 +75,17 @@ const TabLayout = () => {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="insight"
+        options={{
+          title: "insight",
+          tabBarIcon: ({ focused }) => (
+            <Icon iscurrent={focused} icon={icons.insight} title="Insight" />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="settings"
         options={{
