@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import icons from "@/constants/icons";
 
@@ -45,6 +46,8 @@ const ProfileItem = ({
 };
 
 const settings = () => {
+  const router = useRouter();
+
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView
@@ -69,11 +72,19 @@ const settings = () => {
         </View>
 
         <View className="flex flex-col mt-10">
-          <ProfileItem icon={icons.person} itemName="Personal Information" />
+          <ProfileItem
+            icon={icons.person}
+            itemName="Personal Information"
+            onPress={() => router.push("/(settings)/userInfo")}
+          />
           <ProfileItem icon={icons.bell} itemName="Notification" />
           <ProfileItem icon={icons.send} itemName="Contact Us" />
           <ProfileItem icon={icons.people} itemName="Invite Friends" />
-          <ProfileItem icon={icons.shield} itemName="Privacy Policies" />
+          <ProfileItem
+            icon={icons.shield}
+            itemName="Privacy Policy"
+            onPress={() => router.push("/(settings)/policies")}
+          />
           <ProfileItem icon={icons.info} itemName="Terms & Conditions" />
         </View>
 
