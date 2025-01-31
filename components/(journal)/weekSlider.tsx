@@ -19,8 +19,8 @@ import {
 } from "date-fns";
 import PagerView from "react-native-pager-view";
 import icons from "@/constants/icons";
-import NewJournal from "@/components/(journal)/newjournal";
-import JournalCard from "./journalCard";
+import NewJournal from "@/components/(journal)/newJournal";
+import JournalCard from "@/components/(journal)/journalCard";
 
 const WeekSlider = () => {
   const currentDate = new Date();
