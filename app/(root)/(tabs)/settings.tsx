@@ -89,7 +89,11 @@ const settings = () => {
         </View>
 
         <View className="flex flex-col mt-5 border-t pt-5 border-primary-200">
-          <ProfileItem icon={icons.logout} itemName="Logout" />
+          <ProfileItem
+            icon={icons.logout}
+            itemName="Logout"
+            onPress={() => router.replace("/(auth)/Login")}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
