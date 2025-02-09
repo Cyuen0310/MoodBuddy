@@ -304,7 +304,7 @@ const Q_FiveminsScreen = () => {
       // Calculate the MBTI result
       const mbtiResult = calculateMBTI();
       console.log("MBTI Result:", mbtiResult);
-      router.replace(`/Main?result=${encodeURIComponent(mbtiResult)}`);
+      router.replace("/(root)/(tabs)");
     }
   };
 

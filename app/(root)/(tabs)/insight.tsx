@@ -7,7 +7,7 @@ const Tab = createMaterialTopTabNavigator();
 const screenWidth = Dimensions.get("window").width;
 
 const Weekly = () => {
-  const hasData = false; // Toggle this based on your data availability
+  const hasData = true; // Toggle this based on your data availability
 
   const data = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -125,7 +125,7 @@ const insight = () => {
               borderRadius: 25,
             },
             tabBarIndicatorStyle: {
-              backgroundColor: "#3B82F6",
+              backgroundColor: "#008888",
               height: "93%",
               borderRadius: 20,
               marginVertical: 3,

@@ -39,7 +39,7 @@ const LoginScreen = () => {
 
   const handleLogin = () => {
     // user 驗證
-    router.push("/(root)/(tabs)");
+    router.push("/Question");
   };
 
   const [hidePassword, setPassword] = useState(true);

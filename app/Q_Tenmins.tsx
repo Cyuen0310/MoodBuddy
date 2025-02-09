@@ -554,7 +554,7 @@ const Q_TenminsScreen = () => {
       // Calculate the MBTI result
       const mbtiResult = calculateMBTI();
       console.log("MBTI Result:", mbtiResult);
-      router.replace("/");
+      router.replace("/(root)/(tabs)");
     }
   };
 

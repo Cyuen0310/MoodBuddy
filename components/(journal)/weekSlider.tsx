@@ -117,9 +117,9 @@ const WeekSlider = () => {
                         <View
                           className={`items-center px-4 py-2 rounded-lg ${
                             isSelected
-                              ? "bg-blue-500"
+                              ? "bg-[#008888]"
                               : isToday
-                              ? "bg-blue-300"
+                              ? "bg-[#008888]/60"
                               : "bg-gray-200"
                           }`}
                         >

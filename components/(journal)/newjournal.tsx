@@ -47,13 +47,13 @@ const MoodOptions = ({
     <TouchableOpacity onPress={() => setSelectedMood(mood)}>
       <View
         className={`flex-wrap justify-center items-center p-2 ${
-          selectedMood === mood ? "bg-blue-300 rounded-3xl" : ""
+          selectedMood === mood ? "bg-[#008888]/60 rounded-3xl" : ""
         }`}
       >
         <Image source={icon} className="size-10" />
         <Text
           className={`font-nunito-extra-bold text-sm  ${
-            selectedMood === mood ? "text-blue-700 text-xl" : "text-gray-700"
+            selectedMood === mood ? "text-[#008888] text-xl" : "text-gray-700"
           }`}
         >
           {mood}
@@ -169,7 +169,7 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
                   key={factor}
                   className={`w-[30%] rounded-3xl m-1 p-2 ${
                     selectedFactors.includes(factor)
-                      ? "bg-blue-300"
+                      ? "bg-[#008888]/60"
                       : "bg-gray-100"
                   }`}
                   onPress={() => {
@@ -185,7 +185,7 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
                   <Text
                     className={`font-nunito-bold text-lg text-center ${
                       selectedFactors.includes(factor)
-                        ? "text-blue-700"
+                        ? "text-[#008888]"
                         : "text-black"
                     }`}
                   >
@@ -254,11 +254,11 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
 
           <TouchableOpacity
             onPress={handleSave}
-            className={`bg-blue-500 rounded-full py-3 mt-4 mb-6 flex-row justify-center items-center
+            className={`rounded-full py-3 mt-4 mb-6 flex-row justify-center items-center
               ${
                 !selectedMood || selectedFactors.length === 0
                   ? "bg-gray-400"
-                  : "bg-blue-500"
+                  : "bg-[#008888]"
               }`}
             disabled={!selectedMood || selectedFactors.length === 0}
           >

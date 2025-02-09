@@ -3,6 +3,7 @@ import React from "react";
 import { Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
 import icons from "@/constants/icons";
 
 export default function Index() {

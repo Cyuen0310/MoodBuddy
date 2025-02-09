@@ -65,7 +65,7 @@ const GenderSelector = ({
             onPress={() => onSelect(gender)}
             className={`py-2 px-4 rounded-full shadow-sm ${
               selectedGender === gender
-                ? "bg-blue-500"
+                ? "bg-[#008888]"
                 : "bg-white border border-gray-100"
             }`}
           >

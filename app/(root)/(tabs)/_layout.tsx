@@ -17,14 +17,14 @@ const Icon = ({
     <View className="flex-1 mt-3 flex flex-col ustify-center items-center">
       <Image
         source={icon}
-        tintColor={iscurrent ? "#0015FF" : "#000000"}
+        tintColor={iscurrent ? "#008888" : "#000000"}
         resizeMode="contain"
-        className="size-7"
+        className="size-6"
       />
       <Text
         className={`${
           iscurrent
-            ? "text-blue-600 font-nunito-medium"
+            ? "text-[#008888] font-nunito-medium"
             : "text-black-200 font-nunito"
         } text-xs w-full text-center mt-1`}
       >
