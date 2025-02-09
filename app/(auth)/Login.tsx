@@ -59,7 +59,7 @@ const LoginScreen = () => {
       <InnerContainer>
         <PageLogo
           resizeMode="cover"
-          source={require("@/assets/images/sign-in.png")}
+          source={require("@/assets/images/MB_logo.png")}
         />
         <SubTitle>Login</SubTitle>
         <Formik
