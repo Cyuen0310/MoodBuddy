@@ -318,4 +318,8 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
   );
 };
 
+console.log("test");
+console.log("test");
+console.log("test");
+
 export default NewJournal;
