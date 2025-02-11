@@ -86,9 +86,8 @@ const insight = () => {
             },
             tabBarIndicatorStyle: {
               backgroundColor: "#008888",
-              height: "93%",
-              borderRadius: 20,
-              marginVertical: 3,
+              height: "100%",
+              borderRadius: 25,
               width: "33%",
             },
             tabBarIndicatorContainerStyle: {
