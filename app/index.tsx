@@ -11,5 +11,5 @@ import Q_Tenmins from "./Q_Tenmins";
 import Q_Fivemins from "./Q_Fivemins";
 
 export default function Index() {
-  return <Login />;
+  return <Redirect href="/(root)/(tabs)" />;
 }
