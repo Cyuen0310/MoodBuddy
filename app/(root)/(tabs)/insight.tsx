@@ -12,10 +12,16 @@ const Weekly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <View className="flex-1 bg-white px-4 pt-4">
-      <DateNavigator mode="Week" onDateChange={setSelectedDate} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="items-center justify-center">
+    <View className="flex-1 bg-white">
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View className="p-4">
+          <DateNavigator mode="Week" onDateChange={setSelectedDate} />
+        </View>
+        <View className="px-4 items-center">
           <HexStat />
           <MoodInsights timeframe="week" />
         </View>
@@ -28,12 +34,20 @@ const Monthly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <View className="flex-1 bg-white p-4">
-      <DateNavigator mode="Month" onDateChange={setSelectedDate} />
-      <View className="flex-1 items-center justify-center">
-        <HexStat />
-        <MoodInsights timeframe="month" />
-      </View>
+    <View className="flex-1 bg-white">
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View className="p-4">
+          <DateNavigator mode="Month" onDateChange={setSelectedDate} />
+        </View>
+        <View className="px-4 items-center">
+          <HexStat />
+          <MoodInsights timeframe="month" />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -42,12 +56,20 @@ const Yearly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <View className="flex-1 bg-white p-4">
-      <DateNavigator mode="Year" onDateChange={setSelectedDate} />
-      <View className="flex-1 items-center justify-center">
-        <HexStat />
-        <MoodInsights timeframe="year" />
-      </View>
+    <View className="flex-1 bg-white">
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View className="p-4">
+          <DateNavigator mode="Year" onDateChange={setSelectedDate} />
+        </View>
+        <View className="px-4 items-center">
+          <HexStat />
+          <MoodInsights timeframe="year" />
+        </View>
+      </ScrollView>
     </View>
   );
 };
