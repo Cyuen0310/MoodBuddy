@@ -29,7 +29,6 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
   const minDate = subYears(new Date(), 5);
 
   useEffect(() => {
-    // Calculate start and end dates based on mode
     let startDate: Date, endDate: Date;
     switch (mode) {
       case "Week":
@@ -65,29 +64,27 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
 
   const navigate = (direction: "prev" | "next") => {
     let newDate = currentDate;
-
     switch (mode) {
       case "Week":
         newDate =
           direction === "prev"
-            ? subWeeks(currentDate, 1)
-            : addWeeks(currentDate, 1);
+            ? subWeeks(currentDate, 1) // Go back one week
+            : addWeeks(currentDate, 1); // Go forward one week
         break;
       case "Month":
         newDate =
           direction === "prev"
-            ? subMonths(currentDate, 1)
-            : addMonths(currentDate, 1);
+            ? subMonths(currentDate, 1) // Go back one month
+            : addMonths(currentDate, 1); // Go forward one month
         break;
       case "Year":
         newDate =
           direction === "prev"
-            ? subYears(currentDate, 1)
-            : addYears(currentDate, 1);
+            ? subYears(currentDate, 1) // Go back one year
+            : addYears(currentDate, 1); // Go forward one year
         break;
     }
-
-    // Check if new date is within allowed range
+    // Only update if within allowed range
     if (newDate >= minDate && newDate <= new Date()) {
       setCurrentDate(newDate);
     }
@@ -116,7 +113,7 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
   const canNavigateNext = !isAtCurrentPeriod();
 
   return (
-    <View className="flex-row justify-center py-2 px-3 mb-2 ">
+    <View className="flex-row justify-center py-2 px-3 mb-2">
       <View className=" px-3 py-2 rounded-3xl mb-2 w-72">
         <View className="flex-row justify-between items-center">
           <TouchableOpacity
