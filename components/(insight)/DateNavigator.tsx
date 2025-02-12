@@ -70,8 +70,27 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
     }
   };
 
+  const isAtCurrentPeriod = () => {
+    const now = new Date();
+    switch (mode) {
+      case "Week":
+        const currentWeekStart = startOfWeek(now);
+        const selectedWeekStart = startOfWeek(currentDate);
+        return selectedWeekStart >= currentWeekStart;
+      case "Month":
+        return (
+          currentDate.getMonth() === now.getMonth() &&
+          currentDate.getFullYear() === now.getFullYear()
+        );
+      case "Year":
+        return currentDate.getFullYear() === now.getFullYear();
+      default:
+        return false;
+    }
+  };
+
   const canNavigatePrev = currentDate > minDate;
-  const canNavigateNext = currentDate < new Date();
+  const canNavigateNext = !isAtCurrentPeriod();
 
   return (
     <View className="flex-row justify-center py-2 px-3 mb-2 ">

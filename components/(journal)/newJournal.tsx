@@ -24,8 +24,8 @@ interface NewJournalProps {
   onSave: (info: {
     mood: string;
     factors: string[];
-    text: string;
-    images: string[];
+    text?: string;
+    images?: string[];
   }) => void;
 }
 
@@ -90,7 +90,7 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
       mood: selectedMood,
       factors: selectedFactors,
       text: journalText,
-      images: selectedImages || [],
+      images: selectedImages,
     });
   };
   const pickImageFromGallery = async () => {

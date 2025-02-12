@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Dimensions } from "react-native";
 import Svg, { Polygon, Line, Text as SvgText } from "react-native-svg";
+import journalList from "@/components/(journal)/weekSlider";
 
 const { width } = Dimensions.get("window");
 const HEX_SIZE = width * 0.8; // Make it bigger
@@ -11,6 +12,7 @@ interface MoodStat {
 }
 
 const HexStat = () => {
+  console.log("journalList:", journalList);
   const size = HEX_SIZE;
   const center = { x: size / 2, y: size / 2 };
   const radius = size * 0.35;

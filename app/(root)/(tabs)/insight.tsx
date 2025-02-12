@@ -1,10 +1,10 @@
-import { View, Text, SafeAreaView, Dimensions } from "react-native";
+import { View, Text, SafeAreaView, Dimensions, ScrollView } from "react-native";
 import React, { useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { LineChart, BarChart, ContributionGraph } from "react-native-chart-kit";
 import HexStat from "@/components/(insight)/hexStat";
 import { DateNavigator } from "@/components/(insight)/DateNavigator";
-
+import MoodInsights from "@/components/(insight)/moodInsights";
 const Tab = createMaterialTopTabNavigator();
 const screenWidth = Dimensions.get("window").width;
 
@@ -14,50 +14,40 @@ const Weekly = () => {
   return (
     <View className="flex-1 bg-white px-4 pt-4">
       <DateNavigator mode="Week" onDateChange={setSelectedDate} />
-      <View className="flex-1 items-center justify-center">
-        <HexStat />
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="items-center justify-center">
+          <HexStat />
+          <MoodInsights timeframe="week" />
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
 const Monthly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const data = {
-    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-    datasets: [
-      {
-        data: [20, 45, 28, 35],
-      },
-    ],
-  };
 
   return (
     <View className="flex-1 bg-white p-4">
       <DateNavigator mode="Month" onDateChange={setSelectedDate} />
-      <Text className="font-nunito-bold text-lg mb-4 text-gray-800">
-        Monthly Activity Summary
-      </Text>
+      <View className="flex-1 items-center justify-center">
+        <HexStat />
+        <MoodInsights timeframe="month" />
+      </View>
     </View>
   );
 };
 
 const Yearly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const commitsData = [
-    { date: "2024-01-02", count: 4 },
-    { date: "2024-01-03", count: 2 },
-    { date: "2024-01-04", count: 5 },
-    { date: "2024-01-05", count: 3 },
-    // Add more dates as needed
-  ];
 
   return (
     <View className="flex-1 bg-white p-4">
       <DateNavigator mode="Year" onDateChange={setSelectedDate} />
-      <Text className="font-nunito-bold text-lg mb-4 text-gray-800">
-        Yearly Mood Patterns
-      </Text>
+      <View className="flex-1 items-center justify-center">
+        <HexStat />
+        <MoodInsights timeframe="year" />
+      </View>
     </View>
   );
 };

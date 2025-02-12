@@ -22,8 +22,11 @@ import icons from "@/constants/icons";
 import NewJournal from "@/components/(journal)/newJournal";
 import JournalCard from "@/components/(journal)/journalCard";
 
+const API_URL = "http://172.18.76.219:3000/api"; // Replace X with your IP
+
 const WeekSlider = () => {
   const currentDate = new Date();
+  const userId = "test";
   const dates = eachWeekOfInterval({
     start: subMonths(currentDate, 1),
     end: addMonths(currentDate, 1),
@@ -39,34 +42,104 @@ const WeekSlider = () => {
   );
 
   const [isNewJournalModalOpen, setNewJournalModalOpen] = useState(false);
-  const [journalList, setJournalList] = useState<{
-    [key: string]: Array<{
-      mood: string;
-      factors: string[];
-      text: string;
-      images: string[];
-      time?: string;
-    }>;
-  }>({});
+  const [journalList, setJournalList] = useState<
+    Array<{
+      _id: string;
+      userId: string;
+      date: string;
+      entries: Array<{
+        mood: string;
+        factors: string[];
+        text: string;
+        images: string[];
+        time: string;
+      }>;
+    }>
+  >([]);
 
-  const saveJournalToList = (info: {
+  const fetchJournals = async (date: Date) => {
+    try {
+      // Format date to start of day
+      const queryDate = new Date(date);
+      queryDate.setHours(0, 0, 0, 0);
+      const formattedDate = queryDate.toISOString();
+
+      const url = `${API_URL}/journal?date=${formattedDate}&userId=${userId}`;
+      console.log("Fetching journals:", {
+        date: queryDate,
+        formattedDate,
+        url,
+      });
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text}`);
+      }
+
+      const data = await response.json();
+      console.log("Received journals:", {
+        count: data.length,
+        data,
+      });
+      setJournalList(data);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
+  const saveJournalToList = async (info: {
     mood: string;
     factors: string[];
-    text: string;
-    images: string[];
+    text?: string;
+    images?: string[];
   }) => {
-    const date = format(selectedDate, "yyyy-MM-dd");
-    const entryWithTime = {
-      ...info,
-      time: format(new Date(), "HH:mm"),
-    };
+    try {
+      const date = new Date(selectedDate);
+      date.setHours(0, 0, 0, 0);
 
-    setJournalList((prev) => ({
-      ...prev,
-      [date]: [...(prev[date] || []), entryWithTime],
-    }));
-    setNewJournalModalOpen(false);
+      const body = {
+        userId,
+        date: date.toISOString(),
+        entries: [
+          {
+            mood: info.mood,
+            factors: info.factors,
+            text: info.text || "",
+            images: info.images || [],
+            time: format(new Date(), "HH:mm"),
+          },
+        ],
+      };
+
+      console.log("Saving journal:", body);
+
+      const response = await fetch(`${API_URL}/journal`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to save: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Saved successfully:", data);
+
+      await fetchJournals(selectedDate);
+      setNewJournalModalOpen(false);
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
   };
+
+  useEffect(() => {
+    console.log("Fetching journals for date:", selectedDate);
+    fetchJournals(selectedDate);
+  }, [selectedDate]);
 
   useEffect(() => {
     if (currentWeek >= 0 && currentWeek < dates.length) {
@@ -159,9 +232,11 @@ const WeekSlider = () => {
         contentContainerStyle={{ paddingBottom: 50 }}
       >
         <View className="m-5">
-          {journalList[format(selectedDate, "yyyy-MM-dd")]?.length > 0 ? (
-            journalList[format(selectedDate, "yyyy-MM-dd")].map(
-              (info, index) => <JournalCard key={index} info={info} />
+          {journalList && journalList.length > 0 ? (
+            journalList.map((journal) =>
+              journal.entries.map((entry, index) => (
+                <JournalCard key={`${journal._id}-${index}`} info={entry} />
+              ))
             )
           ) : (
             <View className="flex-1 items-center justify-center py-10">
