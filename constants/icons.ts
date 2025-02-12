@@ -34,6 +34,11 @@ import pencil from "@/assets/icons/pencil.png";
 import camera from "@/assets/icons/camera.png";
 import gallery from "@/assets/icons/gallery.png";
 import insight from "@/assets/icons/insight.png";
+import facebook from "@/assets/icons/facebook.png";
+import x from "@/assets/icons/x.png";
+import instagram from "@/assets/icons/instagram.png";
+import youtube from "@/assets/icons/youtube.png";
+import bg from "@/assets/icons/bg.jpg";
 
 const icons = {
   pen,
@@ -72,6 +77,11 @@ const icons = {
   camera,
   gallery,
   avatar,
+  facebook,
+  x,
+  youtube,
+  instagram,
+  bg
 };
 
 export default icons;
