@@ -74,7 +74,7 @@ const MoodInsights = ({
       try {
         setLoading(true);
         const response = await fetch(
-          `${API_URL}/journal/insights?timeframe=${timeframe}&userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
+          `${API_URL}/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
         );
 
         if (!response.ok) {
