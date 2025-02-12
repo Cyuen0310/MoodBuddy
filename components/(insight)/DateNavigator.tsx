@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import {
   format,
@@ -10,11 +10,15 @@ import {
   addYears,
   startOfWeek,
   endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
 } from "date-fns";
 
 interface DateNavigatorProps {
   mode: "Week" | "Month" | "Year";
-  onDateChange: (date: Date) => void;
+  onDateChange: (date: Date, startDate: Date, endDate: Date) => void;
 }
 
 export const DateNavigator: React.FC<DateNavigatorProps> = ({
@@ -23,6 +27,26 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const minDate = subYears(new Date(), 5);
+
+  useEffect(() => {
+    // Calculate start and end dates based on mode
+    let startDate: Date, endDate: Date;
+    switch (mode) {
+      case "Week":
+        startDate = startOfWeek(currentDate);
+        endDate = endOfWeek(currentDate);
+        break;
+      case "Month":
+        startDate = startOfMonth(currentDate);
+        endDate = endOfMonth(currentDate);
+        break;
+      case "Year":
+        startDate = startOfYear(currentDate);
+        endDate = endOfYear(currentDate);
+        break;
+    }
+    onDateChange(currentDate, startDate, endDate);
+  }, [currentDate, mode]);
 
   const formatPeriod = () => {
     switch (mode) {
@@ -66,7 +90,6 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
     // Check if new date is within allowed range
     if (newDate >= minDate && newDate <= new Date()) {
       setCurrentDate(newDate);
-      onDateChange(newDate);
     }
   };
 

@@ -2,7 +2,8 @@ import { View, Text, SafeAreaView, Dimensions, ScrollView } from "react-native";
 import React, { useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { LineChart, BarChart, ContributionGraph } from "react-native-chart-kit";
-import HexStat from "@/components/(insight)/hexStat";
+import { format } from "date-fns";
+
 import { DateNavigator } from "@/components/(insight)/DateNavigator";
 import MoodInsights from "@/components/(insight)/moodInsights";
 const Tab = createMaterialTopTabNavigator();
@@ -10,6 +11,21 @@ const screenWidth = Dimensions.get("window").width;
 
 const Weekly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dateRange, setDateRange] = useState({
+    start: new Date(),
+    end: new Date(),
+  });
+
+  const handleDateChange = (date: Date, start: Date, end: Date) => {
+    setSelectedDate(date);
+    setDateRange({ start, end });
+    console.log(
+      "Week range:",
+      format(start, "yyyy-MM-dd"),
+      "to",
+      format(end, "yyyy-MM-dd")
+    );
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -19,11 +35,14 @@ const Weekly = () => {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View className="p-4">
-          <DateNavigator mode="Week" onDateChange={setSelectedDate} />
+          <DateNavigator mode="Week" onDateChange={handleDateChange} />
         </View>
         <View className="px-4 items-center">
-          <HexStat />
-          <MoodInsights timeframe="week" />
+          <MoodInsights
+            timeframe="week"
+            selectedDate={selectedDate}
+            dateRange={dateRange}
+          />
         </View>
       </ScrollView>
     </View>
@@ -32,6 +51,21 @@ const Weekly = () => {
 
 const Monthly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dateRange, setDateRange] = useState({
+    start: new Date(),
+    end: new Date(),
+  });
+
+  const handleDateChange = (date: Date, start: Date, end: Date) => {
+    setSelectedDate(date);
+    setDateRange({ start, end });
+    console.log(
+      "Month range:",
+      format(start, "yyyy-MM-dd"),
+      "to",
+      format(end, "yyyy-MM-dd")
+    );
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -41,11 +75,14 @@ const Monthly = () => {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View className="p-4">
-          <DateNavigator mode="Month" onDateChange={setSelectedDate} />
+          <DateNavigator mode="Month" onDateChange={handleDateChange} />
         </View>
         <View className="px-4 items-center">
-          <HexStat />
-          <MoodInsights timeframe="month" />
+          <MoodInsights
+            timeframe="month"
+            selectedDate={selectedDate}
+            dateRange={dateRange}
+          />
         </View>
       </ScrollView>
     </View>
@@ -54,6 +91,21 @@ const Monthly = () => {
 
 const Yearly = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dateRange, setDateRange] = useState({
+    start: new Date(),
+    end: new Date(),
+  });
+
+  const handleDateChange = (date: Date, start: Date, end: Date) => {
+    setSelectedDate(date);
+    setDateRange({ start, end });
+    console.log(
+      "Year range:",
+      format(start, "yyyy-MM-dd"),
+      "to",
+      format(end, "yyyy-MM-dd")
+    );
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -63,11 +115,14 @@ const Yearly = () => {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View className="p-4">
-          <DateNavigator mode="Year" onDateChange={setSelectedDate} />
+          <DateNavigator mode="Year" onDateChange={handleDateChange} />
         </View>
         <View className="px-4 items-center">
-          <HexStat />
-          <MoodInsights timeframe="year" />
+          <MoodInsights
+            timeframe="year"
+            selectedDate={selectedDate}
+            dateRange={dateRange}
+          />
         </View>
       </ScrollView>
     </View>

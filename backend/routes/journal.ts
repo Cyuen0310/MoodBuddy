@@ -108,46 +108,88 @@ router.post("/journal", async (req, res) => {
 const insightsHandler: RequestHandler = async (req, res) => {
   try {
     await connectDB();
-    const { userId, timeframe } = req.query;
+    const { userId, startDate, endDate } = req.query;
 
-    if (!userId || !timeframe) {
+    if (!userId || !startDate || !endDate) {
       res.status(400).json({ error: "Missing required parameters" });
       return;
     }
 
-    // Calculate date range based on timeframe
-    const endDate = new Date();
-    const startDate = new Date();
+    const start = new Date(startDate as string);
+    const end = new Date(endDate as string);
 
-    switch (timeframe) {
-      case "week":
-        startDate.setDate(endDate.getDate() - 7);
-        break;
-      case "month":
-        startDate.setMonth(endDate.getMonth() - 1);
-        break;
-      case "year":
-        startDate.setFullYear(endDate.getFullYear() - 1);
-        break;
-    }
+    // Set time to start and end of day
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    console.log("Querying journals:", {
+      userId,
+      dateRange: {
+        start: start.toISOString(),
+        end: end.toISOString(),
+      },
+    });
 
     const journals = await Journal.find({
       userId,
       date: {
-        $gte: startDate,
-        $lte: endDate,
+        $gte: start,
+        $lte: end,
       },
     }).lean();
 
-    console.log("Found insights data:", {
-      timeframe,
-      count: journals.length,
-      dateRange: { startDate, endDate },
+    console.log(`Found ${journals.length} journals`);
+
+    // Process mood data
+    const moodStats = {
+      totalEntries: 0,
+      moodCounts: {} as Record<string, number>,
+      mostFrequentMood: "",
+      averageMoodScore: 0,
+      moodTrend: [] as Array<{ date: string; mood: string }>,
+    };
+
+    const moodScores = {
+      Angry: 1,
+      Sad: 2,
+      Neutral: 3,
+      Happy: 4,
+      Joyful: 5,
+    };
+
+    // Process journals
+    journals.forEach((journal) => {
+      journal.entries.forEach((entry: any) => {
+        // Count moods
+        moodStats.moodCounts[entry.mood] =
+          (moodStats.moodCounts[entry.mood] || 0) + 1;
+        moodStats.totalEntries++;
+
+        // Track mood trend
+        moodStats.moodTrend.push({
+          date: new Date(journal.date).toISOString(),
+          mood: entry.mood,
+        });
+      });
     });
 
-    // Ensure we're sending valid JSON
-    res.setHeader("Content-Type", "application/json");
-    res.json(journals);
+    // Calculate statistics if there are entries
+    if (moodStats.totalEntries > 0) {
+      // Find most frequent mood
+      moodStats.mostFrequentMood = Object.entries(moodStats.moodCounts).reduce(
+        (a, b) => (a[1] > b[1] ? a : b)
+      )[0];
+
+      // Calculate average mood score
+      const totalScore = Object.entries(moodStats.moodCounts).reduce(
+        (sum, [mood, count]) =>
+          sum + moodScores[mood as keyof typeof moodScores] * count,
+        0
+      );
+      moodStats.averageMoodScore = totalScore / moodStats.totalEntries;
+    }
+
+    res.json(moodStats);
   } catch (error) {
     console.error("Error fetching insights:", error);
     res.status(500).json({ error: "Failed to fetch insights" });
