@@ -53,7 +53,7 @@ const MoodOptions = ({
         <Image source={icon} className="size-10" />
         <Text
           className={`font-nunito-extra-bold text-sm  ${
-            selectedMood === mood ? "text-[#008888] text-xl" : "text-gray-700"
+            selectedMood === mood ? "text-white text-xl" : "text-black"
           }`}
         >
           {mood}
@@ -185,7 +185,7 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
                   <Text
                     className={`font-nunito-bold text-lg text-center ${
                       selectedFactors.includes(factor)
-                        ? "text-[#008888]"
+                        ? "text-white"
                         : "text-black"
                     }`}
                   >

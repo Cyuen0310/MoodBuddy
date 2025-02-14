@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
-const API_URL = "http://172.18.76.219:3000/api";
+const API_URL = "http://192.168.128.128:3000/api";
 
 interface MoodInsightsProps {
   timeframe: "week" | "month" | "year";
@@ -25,6 +32,7 @@ const MoodInsights = ({
   dateRange,
 }: MoodInsightsProps) => {
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [moodData, setMoodData] = useState<MoodData | null>(null);
 
   const processMoodData = (data: any): MoodData => {
@@ -69,33 +77,47 @@ const MoodInsights = ({
     return stats;
   };
 
-  useEffect(() => {
-    const fetchMoodData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `${API_URL}/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
-        );
+  const fetchMoodData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${API_URL}/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
+      );
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const journals = await response.json();
-        const processedData = processMoodData(journals);
-        setMoodData(processedData);
-      } catch (error) {
-        console.error("Failed to fetch mood data:", error);
-        setMoodData(null);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-    };
 
+      const journals = await response.json();
+      const processedData = processMoodData(journals);
+      setMoodData(processedData);
+    } catch (error) {
+      console.error("Failed to fetch mood data:", error);
+      setMoodData(null);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
     fetchMoodData();
   }, [timeframe, dateRange]);
 
-  if (loading) {
+  // Refresh data when timeframe or date range changes
+  useEffect(() => {
+    fetchMoodData();
+  }, [timeframe, dateRange]);
+
+  // Refresh data when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchMoodData();
+    }, [timeframe, dateRange])
+  );
+
+  if (loading && !refreshing) {
     return (
       <View className="p-4 items-center justify-center">
         <ActivityIndicator size="large" color="#008888" />
@@ -105,11 +127,17 @@ const MoodInsights = ({
 
   if (!moodData || moodData.totalEntries === 0) {
     return (
-      <View className="p-4">
-        <Text className="text-center text-gray-500">
-          No mood data available for this {timeframe}
-        </Text>
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View className="p-4">
+          <Text className="text-center text-gray-500">
+            No mood data available for this {timeframe}
+          </Text>
+        </View>
+      </ScrollView>
     );
   }
 
@@ -121,6 +149,9 @@ const MoodInsights = ({
       scrollEventThrottle={16}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <Text className="font-nunito-bold text-lg mb-4">
         Mood Insights - {timeframe}

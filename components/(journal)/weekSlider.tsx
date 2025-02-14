@@ -22,7 +22,7 @@ import icons from "@/constants/icons";
 import NewJournal from "@/components/(journal)/newJournal";
 import JournalCard from "@/components/(journal)/journalCard";
 
-const API_URL = "http://172.18.76.219:3000/api"; // Replace X with your IP
+const API_URL = "http://192.168.128.128:3000/api"; // Replace X with your IP
 
 const WeekSlider = () => {
   const currentDate = new Date();
