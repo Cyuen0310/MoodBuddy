@@ -104,6 +104,12 @@ const Q_OneminScreen = () => {
     setSelectedAnswers(newAnswers);
   };
 
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+        setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
   const Question: React.FC<QuestionProps> = ({
     questionText,
     options,
@@ -163,7 +169,18 @@ const Q_OneminScreen = () => {
                   : "Finish"}
               </ButtonText>
             </StyledButton>
+            {currentQuestionIndex > 0 && (
+              <StyledButton onPress={handleBack}>
+                  <ButtonText>Back</ButtonText>
+              </StyledButton>
+            )}
           </StyledFromArea>
+          <ExtraView>
+           <ExtraText> Want to choose a new one? </ExtraText>
+           <TextLink onPress={() => router.replace('/Question')}>
+            <TextLinkContent>Back to Question</TextLinkContent>
+           </TextLink>
+         </ExtraView>
         </WelcomeContainer>
       </InnerContainer>
     </Styledcontainer>
