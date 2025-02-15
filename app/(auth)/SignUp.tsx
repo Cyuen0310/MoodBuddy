@@ -16,6 +16,8 @@ import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import * as Yup from "yup";
+import { FirebaseError } from 'firebase/app';
+import { signup } from './auth';
 import {
   Styledcontainer,
   InnerContainer,
@@ -39,18 +41,42 @@ import {
 } from "@/components/style/style";
 const { darkLight, brand } = Colors;
 
+interface FormValues {
+    username: string;
+    fullname: string;
+    email: string;
+    dob: string;
+    gender: string;
+    password: string;
+    confirmpassword: string;
+}
 const SignUpScreen = () => {
   const router = useRouter();
-
-  const handleSubmit = () => {
-    // user 驗證
-    router.push("/Question");
-  };
+    const handleSubmit = async(values: FormValues) => {
+        setErrorMessage('');
+        try {
+            const userCredential = await signup(values);
+            console.log('Registering user:', values);
+            console.log('User added!', userCredential);
+            router.push('/Question');
+        }catch (error) {
+            const firebaseError = error as FirebaseError;
+            if (firebaseError.code === 'auth/email-already-in-use') {
+                setErrorMessage('This email is already registered.');
+            } else if (firebaseError.code === 'auth/invalid-email') {
+                setErrorMessage('The email address is not valid.');
+            } else {
+                setErrorMessage('An error occurred while registering. Please try again.');
+            }
+         }
+    };
 
   const [hidePassword, setPassword] = useState(true);
+  const [hideCPassword, setCPassword] = useState(true)
   const [gender, setGender] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dob, setDob] = useState(new Date());
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onChangeDob = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (event.type === "set") {
@@ -75,7 +101,7 @@ const SignUpScreen = () => {
       .oneOf([Yup.ref("password") || null], "Passwords must match")
       .required("Confirm Password is required"),
     gender: Yup.string().required("Gender is required"),
-    fullName: Yup.string().nullable(),
+    fullname: Yup.string().nullable(),
   });
 
   return (
@@ -96,10 +122,7 @@ const SignUpScreen = () => {
               confirmpassword: "",
             }}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-              console.log(values);
-              handleSubmit();
-            }}
+            onSubmit={handleSubmit}
           >
             {({
               handleChange,
@@ -163,6 +186,7 @@ const SignUpScreen = () => {
                     mode="date"
                     display="default"
                     onChange={onChangeDob}
+                    maximumDate={new Date()}
                   />
                 )}
 
@@ -211,14 +235,15 @@ const SignUpScreen = () => {
                   onChangeText={handleChange("confirmpassword")}
                   onBlur={handleBlur("confirmpassword")}
                   value={values.confirmpassword}
-                  secureTextEntry={hidePassword}
+                  secureTextEntry={hideCPassword}
                   isPassword={true}
-                  hidePassword={hidePassword}
-                  //setPassword = {setPassword}
+                  hidePassword={hideCPassword}
+                  setPassword = {setCPassword}
                 />
                 {errors.confirmpassword && touched.confirmpassword && (
                   <Text style={{ color: "red" }}>{errors.confirmpassword}</Text>
                 )}
+                {errorMessage ? <MsgBox style={{ color: 'red' }}>{errorMessage}</MsgBox> : null}
 
                 <StyledButton onPress={() => handleSubmit()}>
                   <ButtonText>Next</ButtonText>
