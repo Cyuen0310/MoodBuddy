@@ -27,12 +27,13 @@ export const signup = async (values) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const user = userCredential.user;
+        const emailLower = values.email.toLowerCase();
         await AsyncStorage.setItem('user', JSON.stringify({ uid: user.uid }));
         await setDoc(doc(db, 'users',user.uid), {
             uid: user.uid,
             username: values.username,
             fullname: values.fullname,
-            email: values.email,
+            email: emailLower,
             dob: values.dob,
             gender: values.gender,
         });
