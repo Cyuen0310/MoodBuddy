@@ -14,7 +14,6 @@ import {
   WelcomeContainer,
 } from "../components/style/style";
 
-// Define the types for the question options and data
 interface Option {
   label: string;
   value: string;
@@ -27,7 +26,6 @@ interface QuestionProps {
   setSelectedAnswer: (answer: string) => void;
 }
 
-// Define the initial questions data
 const questionsData: { questionText: string; options: Option[] }[] = [
   {
     questionText: "Question 1: In which situation do you feel more energized?",
@@ -672,7 +670,18 @@ const Q_TenminsScreen = () => {
                   : "Finish"}
               </ButtonText>
             </StyledButton>
+            {currentQuestionIndex > 0 && (
+              <StyledButton onPress={handleBack}>
+               <ButtonText>Back</ButtonText>
+              </StyledButton>
+            )}
           </StyledFromArea>
+          <ExtraView>
+            <ExtraText> Want to choose a new one? </ExtraText>
+             <TextLink onPress={() => router.replace('/Question')}>
+              <TextLinkContent>Back to Question</TextLinkContent>
+             </TextLink>
+           </ExtraView>
         </WelcomeContainer>
       </InnerContainer>
     </Styledcontainer>
