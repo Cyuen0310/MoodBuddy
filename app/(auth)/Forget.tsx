@@ -27,12 +27,12 @@ const ResetPasswordPage = () => {
 
     const handleResetPassword = async () => {
         try {
-            const emailExists = await checkEmailInDatabase (email);
+            const emailExists = await checkEmailInDatabase (email.toLowerCase());
             if (!emailExists) {
                 setErrorMessage('No account found with this email address.');
                 return;
             }
-                await sendPasswordResetEmail(auth, email);
+                await sendPasswordResetEmail(auth, email.toLowerCase());
             Alert.alert('Success', 'Password reset email sent successfully!');
             router.push('/Login');
         } catch (error) {
