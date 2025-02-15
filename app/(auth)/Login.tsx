@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { Formik } from "formik";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import * as Yup from "yup";
+import { login } from './auth';
 import {
   Styledcontainer,
   InnerContainer,
@@ -34,15 +35,25 @@ import {
 } from "@/components/style/style";
 const { darkLight, brand } = Colors;
 
+interface FormValues {
+email: string;
+password: string;
+}
+
 const LoginScreen = () => {
   const router = useRouter();
-
-  const handleLogin = () => {
-    // user 驗證
-    router.push("/Question");
-  };
-
   const [hidePassword, setPassword] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('')
+  const handleLogin = async (values: FormValues) => {
+    try {
+        const user = await login(values.email, values.password);
+        console.log ('User login', user);
+        router.push('/Question');
+    } catch (error) {
+        setErrorMessage('Please enter the correct email and password');
+    }
+};
+
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -65,10 +76,7 @@ const LoginScreen = () => {
         <Formik
           initialValues={{ email: "", password: "" }}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            console.log(values);
-            handleLogin(); // use login
-          }}
+          onSubmit= {handleLogin}
         >
           {({
             handleChange,
@@ -84,7 +92,10 @@ const LoginScreen = () => {
                 icon={require("@/assets/images/email.png")}
                 placeholder="ABCD@gmail.com"
                 placeholderTextColor={darkLight}
-                onChangeText={handleChange("email")}
+                onChangeText={(text) => {
+                  handleChange('email')(text);
+                  setErrorMessage(''); 
+                }}
                 onBlur={handleBlur("email")}
                 value={values.email}
                 keyboardType="email-address"
@@ -98,7 +109,10 @@ const LoginScreen = () => {
                 icon={require("@/assets/images/padlock.png")}
                 placeholder="* * * * * *"
                 placeholderTextColor={darkLight}
-                onChangeText={handleChange("password")}
+                onChangeText={(text) => {
+                  handleChange('password')(text);
+                  setErrorMessage(''); 
+                }}
                 onBlur={handleBlur("password")}
                 value={values.password}
                 secureTextEntry={hidePassword}
@@ -109,7 +123,7 @@ const LoginScreen = () => {
               {errors.password && touched.password && (
                 <Text style={{ color: "red" }}>{errors.password}</Text>
               )}
-              <MsgBox> ... </MsgBox>
+              {errorMessage ? <MsgBox style={{ color: 'red' }}>{errorMessage}</MsgBox> : null}                        
               <StyledButton onPress={() => handleSubmit()}>
                 <ButtonText>Login</ButtonText>
               </StyledButton>
@@ -122,8 +136,8 @@ const LoginScreen = () => {
               </ExtraView>
               <ExtraView>
                 <ExtraText> Forget the password? </ExtraText>
-                <TextLink>
-                  <TextLinkContent>Forget</TextLinkContent>
+                <TextLink onPress={() =>router.replace('/Forget')}>
+                    <TextLinkContent>Forget</TextLinkContent>
                 </TextLink>
               </ExtraView>
             </StyledFromArea>
