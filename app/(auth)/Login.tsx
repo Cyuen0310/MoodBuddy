@@ -129,7 +129,7 @@ const LoginScreen = () => {
               </StyledButton>
               <Line />
               <ExtraView>
-                <ExtraText> Don't have an account already? </ExtraText>
+                <ExtraText> Don't you have an account? </ExtraText>
                 <TextLink onPress={() => router.replace("/SignUp")}>
                   <TextLinkContent>SignUp</TextLinkContent>
                 </TextLink>
