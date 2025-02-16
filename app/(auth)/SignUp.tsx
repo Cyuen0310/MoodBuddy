@@ -190,25 +190,27 @@ const SignUpScreen = () => {
                   />
                 )}
 
-                <UserTextInput
-                  label="Gender*"
-                  icon={require("@/assets/images/genders.png")}
-                  isPicker={true}
-                  onValueChange={(itemValue) => {
-                    handleChange("gender")(itemValue);
-                    setGender(itemValue);
-                  }}
-                  pickerItems={[
-                    { label: "Male", value: "male" },
-                    { label: "Female", value: "female" },
-                    { label: "Other", value: "other" },
-                  ]}
-                  placeholder="Select Gender"
-                  selectedValue={values.gender}
-                />
-                {errors.gender && touched.gender && (
-                  <Text style={{ color: "red" }}>{errors.gender}</Text>
-                )}
+                <View>
+                 <StyledInputLabel>Gender*</StyledInputLabel> 
+                 <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                   <TouchableOpacity onPress={() => {setGender('male'); handleChange('gender')('male');}}>
+                    <Ionicons name="male" size={30} color={gender === 'male' ? 'blue' : 'gray'} />
+                      <Text>Male</Text>
+                   </TouchableOpacity>
+                   <TouchableOpacity onPress={() => {setGender('female'); handleChange('gender')('female');}}>
+                     <Ionicons name="female" size={30} color={gender === 'female' ? 'blue' : 'gray'} />
+                     <Text>Female</Text>
+                   </TouchableOpacity>
+                   <TouchableOpacity onPress={() => {setGender('other'); handleChange('gender')('other');}} style={{ alignItems: 'center' }}>
+                    <Image
+                      source={require('@/assets/images/genderless.png')}
+                      style={{ width: 30, height: 30, tintColor: gender === "other" ? 'blue' : 'gray' }}
+                     />
+                    <Text>Other</Text>
+                   </TouchableOpacity>
+                  </View>
+                </View>
+                {errors.gender && touched.gender && <Text style={{ color: 'red' }}>{errors.gender}</Text>}
 
                 <UserTextInput
                   label="Password*"
