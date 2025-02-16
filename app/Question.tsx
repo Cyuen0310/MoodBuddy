@@ -92,12 +92,12 @@ const QuestionScreen = () => {
               <ButtonText>Five Mins Test</ButtonText>
             </StyledButton>
           </StyledFromArea>
-          <StyledFromArea>
-            <StyledButton
-              style={{ backgroundColor: "#228B22", height: 100 }}
-              onPress={() => router.replace("/Q_Tenmins")}
-            >
+          <StyledFromArea style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <StyledButton onemin={true} style= {{backgroundColor: '#228B22'}} onPress={() => router.replace('/Q_Tenmins')}>
               <ButtonText>Ten Mins Test</ButtonText>
+            </StyledButton>
+            <StyledButton tenmin={true} style= {{backgroundColor: '#006400'}} onPress={() => router.replace('/EnterMBTI')}>
+                <ButtonText>Enter My MBTI</ButtonText>
             </StyledButton>
           </StyledFromArea>
           <StyledFromArea>
