@@ -22,7 +22,7 @@ import icons from "@/constants/icons";
 import NewJournal from "@/components/(journal)/newJournal";
 import JournalCard from "@/components/(journal)/journalCard";
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const WeekSlider = () => {
   const currentDate = new Date();

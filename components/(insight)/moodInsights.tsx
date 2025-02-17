@@ -14,7 +14,7 @@ import {
   LineChartBicolor,
   PieChart,
 } from "react-native-gifted-charts";
-const API_URL = process.env.API_URL;
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 interface MoodInsightsProps {
   timeframe: "week" | "month" | "year";
