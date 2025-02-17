@@ -35,6 +35,10 @@ const Index: React.FC = () => {
         <Image source={icons.bell as ImageSourcePropType} style={styles.bellIcon} />
       </View>
 
+      <TouchableOpacity style={styles.mbtiContainer} onPress={() => router.push("/(index)/mbtiDetails")}>
+        <Text style={styles.mbtiText}>Your MBTI: INFJ</Text>
+      </TouchableOpacity>
+
       <View style={styles.container}>
         <View style={[styles.box, styles.quoteBlockContainer]}>
           <Image
@@ -131,6 +135,19 @@ const styles = StyleSheet.create({
   bellIcon: {
     width: 24,
     height: 24,
+  },
+  mbtiContainer: {
+    padding: 10,
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
+  },
+  mbtiText: {
+    fontSize: 18,
+    fontFamily: 'Nunito-Bold',
+    color: '#333',
   },
   container: {
     flex: 1,
