@@ -15,6 +15,7 @@ import {
   PieChart,
 } from "react-native-gifted-charts";
 const API_URL = "http://192.168.128.128:3000/api";
+const API_URL2 = "http://192.168.128.128:3000/api";
 
 interface MoodInsightsProps {
   timeframe: "week" | "month" | "year";
