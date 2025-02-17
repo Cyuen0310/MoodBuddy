@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Linking, ImageSourcePropType, LayoutChangeEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import icons from "@/constants/icons";
 
 const { width } = Dimensions.get('window');
 
 const Index: React.FC = () => {
-  const [quoteBlockDimensions, setQuoteBlockDimensions] = useState({ width: 0, height: 0 });
+  const [quoteBlockDimensions, setQuoteBlockDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const router = useRouter();
 
   const openLink = (url: string) => {
     Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
@@ -22,7 +24,9 @@ const Index: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <Image source={icons.avatar as ImageSourcePropType} style={styles.avatar} />
+          <TouchableOpacity onPress={() => router.push("/(settings)/userInfo")}>
+            <Image source={icons.avatar as ImageSourcePropType} style={styles.avatar} />
+          </TouchableOpacity>
           <View style={styles.userText}>
             <Text style={styles.welcomeText}>Welcome to MoodBuddy!</Text>
             <Text style={styles.userName}>User</Text>
@@ -51,17 +55,17 @@ const Index: React.FC = () => {
 
         <View style={[styles.box, styles.buttonBlockContainer]}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollView}>
-            <TouchableOpacity style={[styles.card, styles.card1]}>
+            <TouchableOpacity style={[styles.card, styles.card1]} onPress={() => router.push("/(index)/meditation")}>
               <Text style={styles.cardText}>Meditation</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.card, styles.card2]}>
+            <TouchableOpacity style={[styles.card, styles.card2]} onPress={() => router.push("/(index)/relaxationArea")}>
               <Text style={styles.cardText}>Relaxation Area</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.card, styles.card3]}>
-              <Text style={styles.cardText}>Sleep therapy</Text>
+            <TouchableOpacity style={[styles.card, styles.card3]} onPress={() => router.push("/(index)/sleepTherapy")}>
+              <Text style={styles.cardText}>Sleep Therapy</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.card, styles.card4]}>
-              <Text style={styles.cardText}>Recent summary</Text>
+            <TouchableOpacity style={[styles.card, styles.card4]} onPress={() => router.push("/(index)/recentSummary")}>
+              <Text style={styles.cardText}>Recent Summary</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -226,6 +230,18 @@ const styles = StyleSheet.create({
   socialIcon: {
     width: 24,
     height: 24,
+  },
+  navigateButton: {
+    backgroundColor: '#008888',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  navigateButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
