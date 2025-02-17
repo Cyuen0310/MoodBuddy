@@ -37,7 +37,7 @@ const Weekly = () => {
         <View className="p-4">
           <DateNavigator mode="Week" onDateChange={handleDateChange} />
         </View>
-        <View className="px-4 items-center">
+        <View className="px-4 justify-center items-center">
           <MoodInsights
             timeframe="week"
             selectedDate={selectedDate}

@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Configure your API key
-genai.configure(api_key=os.getenv('API_KEY'))
+genai.configure(api_key=os.getenv('AI_API'))
 
 # Create the model
 generation_config = {

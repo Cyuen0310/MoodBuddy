@@ -9,6 +9,7 @@ import {
   TextInputProps,
   Image,
   ImageSourcePropType,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
@@ -16,8 +17,8 @@ import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import * as Yup from "yup";
-import { FirebaseError } from 'firebase/app';
-import { signup } from './auth';
+import { FirebaseError } from "firebase/app";
+import { signup } from "./auth";
 import {
   Styledcontainer,
   InnerContainer,
@@ -42,41 +43,43 @@ import {
 const { darkLight, brand } = Colors;
 
 interface FormValues {
-    username: string;
-    fullname: string;
-    email: string;
-    dob: string;
-    gender: string;
-    password: string;
-    confirmpassword: string;
+  username: string;
+  fullname: string;
+  email: string;
+  dob: string;
+  gender: string;
+  password: string;
+  confirmpassword: string;
 }
 const SignUpScreen = () => {
   const router = useRouter();
-    const handleSubmit = async(values: FormValues) => {
-        setErrorMessage('');
-        try {
-            const userCredential = await signup(values);
-            console.log('Registering user:', values);
-            console.log('User added!', userCredential);
-            router.push('/Question');
-        }catch (error) {
-            const firebaseError = error as FirebaseError;
-            if (firebaseError.code === 'auth/email-already-in-use') {
-                setErrorMessage('This email is already registered.');
-            } else if (firebaseError.code === 'auth/invalid-email') {
-                setErrorMessage('The email address is not valid.');
-            } else {
-                setErrorMessage('An error occurred while registering. Please try again.');
-            }
-         }
-    };
+  const handleSubmit = async (values: FormValues) => {
+    setErrorMessage("");
+    try {
+      const userCredential = await signup(values);
+      console.log("Registering user:", values);
+      console.log("User added!", userCredential);
+      router.push("/Question");
+    } catch (error) {
+      const firebaseError = error as FirebaseError;
+      if (firebaseError.code === "auth/email-already-in-use") {
+        setErrorMessage("This email is already registered.");
+      } else if (firebaseError.code === "auth/invalid-email") {
+        setErrorMessage("The email address is not valid.");
+      } else {
+        setErrorMessage(
+          "An error occurred while registering. Please try again."
+        );
+      }
+    }
+  };
 
   const [hidePassword, setPassword] = useState(true);
-  const [hideCPassword, setCPassword] = useState(true)
+  const [hideCPassword, setCPassword] = useState(true);
   const [gender, setGender] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dob, setDob] = useState(new Date());
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onChangeDob = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (event.type === "set") {
@@ -116,7 +119,7 @@ const SignUpScreen = () => {
               username: "",
               fullname: "",
               email: "",
-              DOB: dob.toLocaleDateString(),
+              dob: dob.toLocaleDateString(),
               password: "",
               gender: "",
               confirmpassword: "",
@@ -191,26 +194,61 @@ const SignUpScreen = () => {
                 )}
 
                 <View>
-                 <StyledInputLabel>Gender*</StyledInputLabel> 
-                 <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                   <TouchableOpacity onPress={() => {setGender('male'); handleChange('gender')('male');}}>
-                    <Ionicons name="male" size={30} color={gender === 'male' ? 'blue' : 'gray'} />
+                  <StyledInputLabel>Gender*</StyledInputLabel>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-around",
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGender("male");
+                        handleChange("gender")("male");
+                      }}
+                    >
+                      <Ionicons
+                        name="male"
+                        size={30}
+                        color={gender === "male" ? "blue" : "gray"}
+                      />
                       <Text>Male</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity onPress={() => {setGender('female'); handleChange('gender')('female');}}>
-                     <Ionicons name="female" size={30} color={gender === 'female' ? 'blue' : 'gray'} />
-                     <Text>Female</Text>
-                   </TouchableOpacity>
-                   <TouchableOpacity onPress={() => {setGender('other'); handleChange('gender')('other');}} style={{ alignItems: 'center' }}>
-                    <Image
-                      source={require('@/assets/images/genderless.png')}
-                      style={{ width: 30, height: 30, tintColor: gender === "other" ? 'blue' : 'gray' }}
-                     />
-                    <Text>Other</Text>
-                   </TouchableOpacity>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGender("female");
+                        handleChange("gender")("female");
+                      }}
+                    >
+                      <Ionicons
+                        name="female"
+                        size={30}
+                        color={gender === "female" ? "blue" : "gray"}
+                      />
+                      <Text>Female</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGender("other");
+                        handleChange("gender")("other");
+                      }}
+                      style={{ alignItems: "center" }}
+                    >
+                      <Image
+                        source={require("@/assets/images/genderless.png")}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          tintColor: gender === "other" ? "blue" : "gray",
+                        }}
+                      />
+                      <Text>Other</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
-                {errors.gender && touched.gender && <Text style={{ color: 'red' }}>{errors.gender}</Text>}
+                {errors.gender && touched.gender && (
+                  <Text style={{ color: "red" }}>{errors.gender}</Text>
+                )}
 
                 <UserTextInput
                   label="Password*"
@@ -240,12 +278,14 @@ const SignUpScreen = () => {
                   secureTextEntry={hideCPassword}
                   isPassword={true}
                   hidePassword={hideCPassword}
-                  setPassword = {setCPassword}
+                  setPassword={setCPassword}
                 />
                 {errors.confirmpassword && touched.confirmpassword && (
                   <Text style={{ color: "red" }}>{errors.confirmpassword}</Text>
                 )}
-                {errorMessage ? <MsgBox style={{ color: 'red' }}>{errorMessage}</MsgBox> : null}
+                {errorMessage ? (
+                  <MsgBox style={{ color: "red" }}>{errorMessage}</MsgBox>
+                ) : null}
 
                 <StyledButton onPress={() => handleSubmit()}>
                   <ButtonText>Next</ButtonText>

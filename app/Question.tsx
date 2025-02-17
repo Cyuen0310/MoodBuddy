@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   View,
@@ -11,8 +11,8 @@ import {
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
 import { Ionicons, Octicons } from "@expo/vector-icons";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchUserData } from '../(auth)/auth';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchUserData } from "@/app/(auth)/auth";
 import {
   Styledcontainer,
   InnerContainer,
@@ -40,37 +40,35 @@ import {
 
 const QuestionScreen = () => {
   const router = useRouter();
-  const [username, setUsername] = useState<string | null>(null
-  );
-      const [loading, setLoading] = useState(true
-  );
+  const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getUserData = async () => {
-        try {
-            const user = await AsyncStorage.getItem('user');
-            if (user) {
-                const userData = JSON.parse(user);
-                console.log('Fetched user ID from AsyncStorage:', userData.uid);
-                const data = await fetchUserData(userData.uid);
-                console.log('Fetched user data from Firestore:', data);
-                setUsername(data.username); 
-            }
-        } catch (error) {
-            console.error('Failed to fetch user data:', error);
-        } finally {
-            setLoading(false);
+      try {
+        const user = await AsyncStorage.getItem("user");
+        if (user) {
+          const userData = JSON.parse(user);
+          console.log("Fetched user ID from AsyncStorage:", userData.uid);
+          const data = await fetchUserData(userData.uid);
+          console.log("Fetched user data from Firestore:", data);
+          setUsername(data.username);
         }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getUserData();
-}, []);
+  }, []);
   return (
     <Styledcontainer>
       <StatusBar style="dark" />
       <InnerContainer>
         <WelcomeContainer>
           <PageTitle question={true}>MBTI Questionnaire </PageTitle>
-          <PageTitle>{username ? `Hi! ${username}` : 'Hi! Guest'}</PageTitle>
+          <PageTitle>{username ? `Hi! ${username}` : "Hi! Guest"}</PageTitle>
           <SubTitle question={true}>We want to know more about you</SubTitle>
           <Line />
           <SubTitle question2={true}>
@@ -92,12 +90,22 @@ const QuestionScreen = () => {
               <ButtonText>Five Mins Test</ButtonText>
             </StyledButton>
           </StyledFromArea>
-          <StyledFromArea style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <StyledButton onemin={true} style= {{backgroundColor: '#228B22'}} onPress={() => router.replace('/Q_Tenmins')}>
+          <StyledFromArea
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <StyledButton
+              onemin={true}
+              style={{ backgroundColor: "#228B22" }}
+              onPress={() => router.replace("/Q_Tenmins")}
+            >
               <ButtonText>Ten Mins Test</ButtonText>
             </StyledButton>
-            <StyledButton tenmin={true} style= {{backgroundColor: '#006400'}} onPress={() => router.replace('/EnterMBTI')}>
-                <ButtonText>Enter My MBTI</ButtonText>
+            <StyledButton
+              tenmin={true}
+              style={{ backgroundColor: "#006400" }}
+              onPress={() => router.replace("/EnterMBTI")}
+            >
+              <ButtonText>Enter My MBTI</ButtonText>
             </StyledButton>
           </StyledFromArea>
           <StyledFromArea>

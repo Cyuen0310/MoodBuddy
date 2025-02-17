@@ -12,6 +12,10 @@ import {
   ButtonText,
   Line,
   WelcomeContainer,
+  ExtraView,
+  ExtraText,
+  TextLink,
+  TextLinkContent,
 } from "@/components/style/style";
 
 interface Option {
@@ -305,6 +309,12 @@ const Q_FiveminsScreen = () => {
     }
   };
 
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
   const calculateMBTI = () => {
     const finalResult = [
       results.I > results.E ? "I" : "E",
@@ -421,16 +431,16 @@ const Q_FiveminsScreen = () => {
             </StyledButton>
             {currentQuestionIndex > 0 && (
               <StyledButton onPress={handleBack}>
-               <ButtonText>Back</ButtonText>
+                <ButtonText>Back</ButtonText>
               </StyledButton>
             )}
           </StyledFromArea>
           <ExtraView>
             <ExtraText> Want to choose a new one? </ExtraText>
-             <TextLink onPress={() => router.replace('/Question')}>
+            <TextLink onPress={() => router.replace("/Question")}>
               <TextLinkContent>Back to Question</TextLinkContent>
-             </TextLink>
-           </ExtraView>
+            </TextLink>
+          </ExtraView>
         </WelcomeContainer>
       </InnerContainer>
     </Styledcontainer>

@@ -12,6 +12,10 @@ import {
   ButtonText,
   Line,
   WelcomeContainer,
+  ExtraView,
+  ExtraText,
+  TextLink,
+  TextLinkContent,
 } from "../components/style/style";
 
 interface Option {
@@ -106,7 +110,7 @@ const Q_OneminScreen = () => {
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
-        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
@@ -171,16 +175,16 @@ const Q_OneminScreen = () => {
             </StyledButton>
             {currentQuestionIndex > 0 && (
               <StyledButton onPress={handleBack}>
-                  <ButtonText>Back</ButtonText>
+                <ButtonText>Back</ButtonText>
               </StyledButton>
             )}
           </StyledFromArea>
           <ExtraView>
-           <ExtraText> Want to choose a new one? </ExtraText>
-           <TextLink onPress={() => router.replace('/Question')}>
-            <TextLinkContent>Back to Question</TextLinkContent>
-           </TextLink>
-         </ExtraView>
+            <ExtraText> Want to choose a new one? </ExtraText>
+            <TextLink onPress={() => router.replace("/Question")}>
+              <TextLinkContent>Back to Question</TextLinkContent>
+            </TextLink>
+          </ExtraView>
         </WelcomeContainer>
       </InnerContainer>
     </Styledcontainer>
