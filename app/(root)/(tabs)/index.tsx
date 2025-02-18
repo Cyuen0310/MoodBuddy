@@ -60,15 +60,31 @@ const Index: React.FC = () => {
         <View style={[styles.box, styles.buttonBlockContainer]}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollView}>
             <TouchableOpacity style={[styles.card, styles.card1]} onPress={() => router.push("/(index)/meditation")}>
+              <Image
+                source={icons.meditation as ImageSourcePropType}
+                style={styles.cardBackground}
+              />
               <Text style={styles.cardText}>Meditation</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.card, styles.card2]} onPress={() => router.push("/(index)/relaxationArea")}>
+              <Image
+                source={icons.relaxation as ImageSourcePropType}
+                style={styles.cardBackground}
+              />
               <Text style={styles.cardText}>Relaxation Area</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.card, styles.card3]} onPress={() => router.push("/(index)/sleepTherapy")}>
+              <Image
+                source={icons.sleep as ImageSourcePropType}
+                style={styles.cardBackground}
+              />
               <Text style={styles.cardText}>Sleep Therapy</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.card, styles.card4]} onPress={() => router.push("/(index)/recentSummary")}>
+              <Image
+                source={icons.summary as ImageSourcePropType}
+                style={styles.cardBackground}
+              />
               <Text style={styles.cardText}>Recent Summary</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -212,27 +228,32 @@ const styles = StyleSheet.create({
     marginRight: 10, // Reduced margin
     justifyContent: 'flex-start', // Align text to the top
     padding: 10, // Padding inside the card
+    position: 'relative', // To position the background image
+  },
+  cardBackground: {
+    position: 'absolute',
+    borderRadius: 8,
+    opacity: 0.9, // Adjust opacity for better text visibility
+    width: 150,
+    height: 200,
   },
   card1: {
     backgroundColor: '#E5E7EB',
-    backgroundImage: '', 
   },
   card2: {
     backgroundColor: '#E5E7EB',
-    backgroundImage: '', 
   },
   card3: {
     backgroundColor: '#E5E7EB',
-    backgroundImage: '', 
   },
   card4: {
     backgroundColor: '#E5E7EB',
-    backgroundImage: '', 
   },
   cardText: {
     textAlign: 'left', // Align text to the left
     fontSize: 16, // Adjust font size if needed
     color: 'white', // Ensure text is visible on the background image
+    zIndex: 1, // Ensure text is above the background image
   },
   bottomButtonContainer: {
     flex: 0.2,

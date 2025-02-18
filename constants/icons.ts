@@ -39,6 +39,11 @@ import x from "@/assets/icons/x.png";
 import instagram from "@/assets/icons/instagram.png";
 import youtube from "@/assets/icons/youtube.png";
 import bg from "@/assets/icons/bg.jpg";
+import meditation from "@/assets/icons/meditation.jpg";
+import sleep from "@/assets/icons/sleep.jpg";
+import relaxation from "@/assets/icons/relaxation.jpg";
+import summary from "@/assets/icons/summary.jpg";
+
 
 const icons = {
   pen,
@@ -81,7 +86,11 @@ const icons = {
   x,
   youtube,
   instagram,
-  bg
+  bg,
+  meditation,
+  sleep,
+  relaxation,
+  summary
 };
 
 export default icons;
