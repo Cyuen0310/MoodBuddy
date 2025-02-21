@@ -12,18 +12,7 @@ import { PieChart } from "react-native-gifted-charts";
 import LineChart from "./LineChart";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-{
-  /* TODO 
-Pass the data in JSON: score in dictionary
-{}
-
-
-
-
-
-
-*/
-}
+console.log("API_URL:", API_URL);
 
 interface MoodInsightsProps {
   timeframe: "week" | "month" | "year";
@@ -205,13 +194,14 @@ const MoodInsights = ({
             Mood Insights - {timeframe}
           </Text>
 
-          {/* Summary Stats */}
+          {/* Summary Stats 
           <View className="bg-[#008888] rounded-lg p-4 mb-4 w-full">
             <Text className="font-nunito-bold text-base mb-2">Summary</Text>
             <Text>Total Entries: {moodData.totalEntries}</Text>
             <Text>Most Frequent: {moodData.mostFrequentMood}</Text>
             <Text>Average Score: {moodData.averageMoodScore.toFixed(1)}/5</Text>
           </View>
+          */}
 
           {/* Mood Distribution Pie Chart */}
           <View className="bg-white rounded-lg p-4 mb-4 w-full">
@@ -297,10 +287,10 @@ const MoodInsights = ({
 
           {/* Line Chart */}
           <View className="bg-white rounded-lg p-4 mb-4 w-full">
-            <Text className="font-nunito-bold text-base mb-4 text-[#008888]">
+            <Text className="font-nunito-bold text-xl mb-4 text-[#008888]">
               Mood Trend - {timeframe}
             </Text>
-            <View className="items-center">
+            <View className="items-center ">
               <LineChart data={rawData} />
             </View>
           </View>

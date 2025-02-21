@@ -1,6 +1,5 @@
 import { LineChartBicolor } from "react-native-gifted-charts";
 import React from "react";
-
 import { View, Text, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
@@ -14,8 +13,9 @@ export default function MoodTrends({ data }: { data: any }) {
   };
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const dailyScores = new Map<string, number>(days.map((day) => [day, 2]));
-
+  const weeklyData = new Map(days.map((day) => [day, { sum: 0, count: 0 }]));
+  const monthlyScores = new Map<string, number>();
+  const yearlyScores = new Map<string, number>();
   const moodScores = (mood: string): number => {
     switch (mood) {
       case "Joyful":
@@ -39,41 +39,33 @@ export default function MoodTrends({ data }: { data: any }) {
 
   parsedData.forEach((entry: any) => {
     entry.entries.forEach((moodEntry: any) => {
-      const currentDayScores = dailyScores.get(days[moodEntry.dayIndex]) || 2;
-      const newDayScores = currentDayScores + moodScores(moodEntry.mood);
-      dailyScores.set(days[moodEntry.dayIndex], newDayScores);
+      const dayData = weeklyData.get(days[moodEntry.dayIndex]);
+      if (dayData) {
+        dayData.sum += moodScores(moodEntry.mood);
+        dayData.count += 1;
+      }
     });
   });
 
-  console.log(dailyScores);
+  // Calculate averages
+  const weeklyAverages = new Map(
+    days.map((day) => {
+      const dayData = weeklyData.get(day);
+      const average = dayData?.count ? dayData.sum / dayData.count : 0;
+      return [day, average];
+    })
+  );
+
+  console.log(weeklyAverages);
 
   return (
     <>
-      <LineChartBicolor
-        data={Array.from(dailyScores.entries()).map(([day, score]) => ({
-          value: score,
-          labelComponent: () => customLabel(day),
-        }))}
-        color="green"
-        colorNegative="red"
-        startFillColor="green"
-        startFillColorNegative="red"
-        isAnimated={true}
-        thickness={2}
-        noOfSections={1}
-        hideYAxisText
-        spacing={45}
-        initialSpacing={10}
-      />
-
       <LineChart
         data={{
-          labels: Array.from(dailyScores.entries()).map(([day]) => day),
+          labels: Array.from(weeklyAverages.entries()).map(([day]) => day),
           datasets: [
             {
-              data: Array.from(dailyScores.entries()).map(
-                ([_, score]) => score
-              ),
+              data: Array.from(weeklyAverages.entries()).map(([_, avg]) => avg),
               color: (opacity = 1) => `rgba(0, 136, 136, ${opacity})`,
               strokeWidth: 2,
             },
@@ -81,9 +73,10 @@ export default function MoodTrends({ data }: { data: any }) {
         }}
         width={Dimensions.get("window").width - 30}
         height={220}
-        withVerticalLabels={true}
         withHorizontalLabels={false}
+        withHorizontalLines={false}
         fromZero={true}
+        segments={0}
         chartConfig={{
           backgroundGradientFrom: "#fff",
           backgroundGradientTo: "#fff",
