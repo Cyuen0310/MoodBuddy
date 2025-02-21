@@ -20,7 +20,8 @@ const MbtiDetails: React.FC = () => {
         <Image source={icons.infj} style={styles.infoImage} />
         <Text style={styles.mbtiTypeText}>INFJ - The Advocate</Text>
         <Text style={styles.descriptionText}>
-          INFJs are known for their strong sense of integrity and their drive to help others. They are creative, insightful, and principled.
+          INFJs are known for their strong sense of integrity and their drive to
+          help others. They are creative, insightful, and principled.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -30,7 +31,7 @@ const MbtiDetails: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   header: {
     padding: 16,
@@ -55,8 +56,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   infoImage: {
@@ -67,14 +68,14 @@ const styles = StyleSheet.create({
   },
   mbtiTypeText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 10,
   },
   descriptionText: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,11 @@ import {
   Dimensions,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-  BarChart,
-  LineChart,
-  LineChartBicolor,
-  PieChart,
-} from "react-native-gifted-charts";
+import { PieChart } from "react-native-gifted-charts";
+import LineChart from "./LineChart";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+console.log("API_URL:", API_URL);
 
 interface MoodInsightsProps {
   timeframe: "week" | "month" | "year";
@@ -40,17 +38,20 @@ const MoodInsights = ({
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [moodData, setMoodData] = useState<MoodData | null>(null);
-  const [selectedMood, setSelectedMood] = useState<{
-    mood: string;
-    percentage: string;
-  } | null>(null);
+  const [rawData, setRawData] = useState<any>(null);
+
+  useEffect(() => {
+    if (rawData) {
+      console.log("Updated rawData:", rawData);
+    }
+  }, [rawData]);
 
   const processMoodData = (data: any): MoodData => {
     const moodScores = {
-      Angry: 1,
-      Sad: 2,
-      Neutral: 3,
-      Happy: 4,
+      Angry: -5,
+      Sad: -2,
+      Neutral: 0,
+      Happy: 2,
       Joyful: 5,
     };
 
@@ -90,10 +91,10 @@ const MoodInsights = ({
   const fetchMoodData = async () => {
     try {
       setLoading(true);
-      console.log("Date Range:", {
-        start: dateRange.start.toLocaleString(),
-        end: dateRange.end.toLocaleString(),
-      });
+      // console.log("Date Range:", {
+      //   start: dateRange.start.toLocaleString(),
+      //   end: dateRange.end.toLocaleString(),
+      // });
       const response = await fetch(
         `${API_URL}/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
       );
@@ -103,15 +104,28 @@ const MoodInsights = ({
       }
 
       const journals = await response.json();
-      console.log("Raw fetched data:", journals);
+
+      journals.sort(
+        (a: any, b: any) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      // Log raw journal entries
+      setRawData(
+        journals.map((journal: any) => ({
+          date: journal.date,
+          entries: journal.entries.map((entry: any) => ({
+            mood: entry.mood,
+            time: entry.time,
+            text: entry.text,
+            factors: entry.factors,
+            dayIndex: new Date(journal.date).getDay(),
+          })),
+        }))
+      );
 
       const processedData = processMoodData(journals);
-      console.log("Processed mood data:", {
-        totalEntries: processedData.totalEntries,
-        moodCounts: processedData.moodCounts,
-        mostFrequentMood: processedData.mostFrequentMood,
-        averageMoodScore: processedData.averageMoodScore,
-      });
+      // console.log(processedData);
 
       setMoodData(processedData);
     } catch (error) {
@@ -162,10 +176,7 @@ const MoodInsights = ({
   return (
     <View style={{ width: Dimensions.get("window").width }}>
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingBottom: 20,
-        }}
+        className="flex-1 pb-24"
         horizontal={false}
         bounces={false}
         directionalLockEnabled={true}
@@ -183,13 +194,14 @@ const MoodInsights = ({
             Mood Insights - {timeframe}
           </Text>
 
-          {/* Summary Stats */}
+          {/* Summary Stats 
           <View className="bg-[#008888] rounded-lg p-4 mb-4 w-full">
             <Text className="font-nunito-bold text-base mb-2">Summary</Text>
             <Text>Total Entries: {moodData.totalEntries}</Text>
             <Text>Most Frequent: {moodData.mostFrequentMood}</Text>
             <Text>Average Score: {moodData.averageMoodScore.toFixed(1)}/5</Text>
           </View>
+          */}
 
           {/* Mood Distribution Pie Chart */}
           <View className="bg-white rounded-lg p-4 mb-4 w-full">
@@ -275,29 +287,11 @@ const MoodInsights = ({
 
           {/* Line Chart */}
           <View className="bg-white rounded-lg p-4 mb-4 w-full">
-            <Text className="font-nunito-bold text-base mb-4 text-[#008888]">
+            <Text className="font-nunito-bold text-xl mb-4 text-[#008888]">
               Mood Trend - {timeframe}
             </Text>
-            <View className="items-center">
-              <LineChartBicolor
-                data={[
-                  { value: 0, dataPointText: "0" },
-                  { value: 10, dataPointText: "10" },
-                  { value: 8, dataPointText: "8" },
-                  { value: 58, dataPointText: "58" },
-                  { value: -11, dataPointText: "56" },
-                  { value: 78, dataPointText: "-4" },
-                  { value: 74, dataPointText: "74" },
-                  { value: 98, dataPointText: "98" },
-                ]}
-                areaChart
-                color="green"
-                colorNegative="red"
-                startFillColor="green"
-                startFillColorNegative="red"
-                disableScroll={true}
-                isAnimated={true}
-              />
+            <View className="items-center ">
+              <LineChart data={rawData} timeframe={timeframe} />
             </View>
           </View>
         </View>
