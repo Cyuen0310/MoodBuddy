@@ -19,12 +19,12 @@ const Weekly = () => {
   const handleDateChange = (date: Date, start: Date, end: Date) => {
     setSelectedDate(date);
     setDateRange({ start, end });
-    console.log(
-      "Week range:",
-      format(start, "yyyy-MM-dd"),
-      "to",
-      format(end, "yyyy-MM-dd")
-    );
+    // console.log(
+    //   "Week range:",
+    //   format(start, "yyyy-MM-dd"),
+    //   "to",
+    //   format(end, "yyyy-MM-dd")
+    // );
   };
 
   return (
@@ -59,12 +59,12 @@ const Monthly = () => {
   const handleDateChange = (date: Date, start: Date, end: Date) => {
     setSelectedDate(date);
     setDateRange({ start, end });
-    console.log(
-      "Month range:",
-      format(start, "yyyy-MM-dd"),
-      "to",
-      format(end, "yyyy-MM-dd")
-    );
+    // console.log(
+    //   "Month range:",
+    //   format(start, "yyyy-MM-dd"),
+    //   "to",
+    //   format(end, "yyyy-MM-dd")
+    // );
   };
 
   return (
@@ -99,12 +99,12 @@ const Yearly = () => {
   const handleDateChange = (date: Date, start: Date, end: Date) => {
     setSelectedDate(date);
     setDateRange({ start, end });
-    console.log(
-      "Year range:",
-      format(start, "yyyy-MM-dd"),
-      "to",
-      format(end, "yyyy-MM-dd")
-    );
+    // console.log(
+    //   "Year range:",
+    //   format(start, "yyyy-MM-dd"),
+    //   "to",
+    //   format(end, "yyyy-MM-dd")
+    // );
   };
 
   return (
