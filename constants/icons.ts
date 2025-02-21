@@ -43,6 +43,10 @@ import meditation from "@/assets/icons/meditation.jpg";
 import sleep from "@/assets/icons/sleep.jpg";
 import relaxation from "@/assets/icons/relaxation.jpg";
 import summary from "@/assets/icons/summary.jpg";
+import breathingExercise from "@/assets/icons/breathingExercise.jpg";
+import bodyScan from "@/assets/icons/bodyScan.jpg";
+import guidedMeditation from "@/assets/icons/guidedMeditation.jpg";
+import infj from "@/assets/icons/infj.png";
 
 
 const icons = {
@@ -90,7 +94,11 @@ const icons = {
   meditation,
   sleep,
   relaxation,
-  summary
+  summary,
+  breathingExercise,
+  bodyScan,
+  guidedMeditation,
+  infj
 };
 
 export default icons;

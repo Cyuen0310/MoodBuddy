@@ -1,85 +1,143 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-} from "react-native";
 import React from "react";
+import {View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import icons from "@/constants/icons";
 
-const Meditation = () => {
+const Meditation: React.FC = () => {
   const router = useRouter();
 
+  const handleGoBack = () => {
+    router.push('/');
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      {/* Header with back button */}
-      <View className="flex-row items-center px-4 py-2">
-        <TouchableOpacity onPress={() => router.back()} className="p-2">
-          <Image source={icons.backArrow} className="size-6" />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Image source={icons.backArrow} style={styles.backIcon} />
         </TouchableOpacity>
-        <Text className="text-xl font-nunito-bold flex-1 text-center mr-8">
-          Meditation
-        </Text>
+        <Text style={styles.headerTitle}>Meditation</Text>
+        <View style={styles.backButton} />
       </View>
 
-      <ScrollView className="flex-1 px-6">
-        <Text className="text-base font-nunito-medium text-gray-600 mb-4">
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.welcomeText}>
           Welcome to your meditation journey. Find a comfortable place, relax, and let's begin.
         </Text>
 
-        {/* Section 1 */}
-        <Text className="text-lg font-nunito-bold mb-3">
-          1. Breathing Exercise
-        </Text>
-        <Text className="text-base font-nunito-regular mb-4">
-          Start by taking a deep breath in through your nose, hold it for a few seconds, and then slowly exhale through your mouth. Repeat this process for a few minutes to calm your mind.
-        </Text>
+        <View style={styles.card}>
+          <Image source={icons.breathingExercise} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>Breathing Exercise</Text>
+          <Text style={styles.cardDescription}>
+            Start by taking a deep breath in through your nose, hold it for a few seconds, and then slowly exhale through your mouth. Repeat this process for a few minutes to calm your mind.
+          </Text>
+        </View>
 
-        {/* Section 2 */}
-        <Text className="text-lg font-nunito-bold mb-3">
-          2. Body Scan
-        </Text>
-        <Text className="text-base font-nunito-regular mb-4">
-          Close your eyes and bring your attention to your body. Start from the top of your head and slowly move down to your toes, noticing any tension or discomfort. Take a deep breath and release any tension you find.
-        </Text>
+        <View style={styles.card}>
+          <Image source={icons.bodyScan} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>Body Scan</Text>
+          <Text style={styles.cardDescription}>
+            Close your eyes and bring your attention to your body. Start from the top of your head and slowly move down to your toes, noticing any tension or discomfort. Take a deep breath and release any tension you find.
+          </Text>
+        </View>
 
-        {/* Section 3 */}
-        <Text className="text-lg font-nunito-bold mb-3">
-          3. Guided Meditation
-        </Text>
-        <Text className="text-base font-nunito-regular mb-4">
-          Listen to a guided meditation audio to help you focus and relax. You can find various guided meditations online or use a meditation app.
-        </Text>
+        <View style={styles.card}>
+          <Image source={icons.guidedMeditation} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>Guided Meditation</Text>
+          <Text style={styles.cardDescription}>
+            Listen to a guided meditation audio to help you focus and relax. You can find various guided meditations online or use a meditation app.
+          </Text>
+        </View>
 
-        {/* Section 4 */}
-        <Text className="text-lg font-nunito-bold mb-3">
-          4. Mindfulness Practice
-        </Text>
-        <Text className="text-base font-nunito-regular mb-4">
-          Spend a few minutes being mindful of your surroundings. Notice the sounds, smells, and sensations around you without judgment. Just observe and be present in the moment.
-        </Text>
-
-        {/* Section 5 */}
-        <Text className="text-lg font-nunito-bold mb-3">
-          5. Reflection
-        </Text>
-        <Text className="text-base font-nunito-regular mb-4">
-          After your meditation, take a moment to reflect on how you feel. Write down any thoughts or feelings that came up during your practice.
-        </Text>
-
-        {/* Contact Us Section */}
-        <Text className="text-lg font-nunito-bold mb-3 mt-6">
-          Contact Us
-        </Text>
-        <Text className="text-base font-nunito-regular mb-8">
-          For any questions or feedback about this meditation guide, please contact us at MeditationSupport@gmail.com
-        </Text>
+        <TouchableOpacity style={styles.nextButton} onPress={handleGoBack}>
+          <Text style={styles.nextButtonText}>Well Done! Go Back to home Page</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f4f8',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#ffffff',
+    elevation: 2,
+  },
+  backButton: {
+    padding: 8,
+  },
+  backIcon: {
+    width: 24,
+    height: 24,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
+    color: '#333',
+  },
+  scrollContainer: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  welcomeText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    marginBottom: 20,
+    width: '100%',
+    padding: 16,
+  },
+  cardImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
+  },
+  nextButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 20,
+  },
+  nextButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
 
 export default Meditation;
