@@ -19,7 +19,8 @@ const MbtiDetails: React.FC = () => {
         <Text style={styles.contentText}>This is the MBTI Details page.</Text>
         <Text style={styles.mbtiTypeText}>INFJ - The Advocate</Text>
         <Text style={styles.descriptionText}>
-          INFJs are known for their strong sense of integrity and their drive to help others. They are creative, insightful, and principled.
+          INFJs are known for their strong sense of integrity and their drive to
+          help others. They are creative, insightful, and principled.
         </Text>
       </View>
     </SafeAreaView>
@@ -29,16 +30,16 @@ const MbtiDetails: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   header: {
     padding: 20,
-    backgroundColor: '#ADD8E6',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     left: 20,
   },
   backIcon: {
@@ -48,31 +49,31 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   contentText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
   },
   mbtiTypeText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 10,
   },
   descriptionText: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
 });
 

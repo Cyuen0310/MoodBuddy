@@ -291,7 +291,7 @@ const MoodInsights = ({
               Mood Trend - {timeframe}
             </Text>
             <View className="items-center ">
-              <LineChart data={rawData} />
+              <LineChart data={rawData} timeframe={timeframe} />
             </View>
           </View>
         </View>
