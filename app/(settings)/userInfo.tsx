@@ -7,11 +7,17 @@ import {
   TextInput,
   ScrollView,
   Platform,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import icons from "@/constants/icons";
+import { fetchUserData, auth } from '../(auth)/auth'; 
+import { getFirestore, setDoc, doc } from "firebase/firestore";
+import { updatePassword, signInWithEmailAndPassword } from "firebase/auth";
+import { Ionicons } from '@expo/vector-icons';
 
 const InputField = ({
   label,
@@ -45,43 +51,6 @@ const InputField = ({
     </View>
   </View>
 );
-
-const GenderSelector = ({
-  selectedGender,
-  onSelect,
-}: {
-  selectedGender: string;
-  onSelect: (gender: string) => void;
-}) => {
-  const genders = ["Male", "Female", "Prefer not to say"];
-
-  return (
-    <View className="mb-6">
-      <Text className="font-nunito-medium text-gray-600 mb-2">Gender</Text>
-      <View className="flex-row flex-wrap gap-2">
-        {genders.map((gender) => (
-          <TouchableOpacity
-            key={gender}
-            onPress={() => onSelect(gender)}
-            className={`py-2 px-4 rounded-full shadow-sm ${
-              selectedGender === gender
-                ? "bg-[#008888]"
-                : "bg-white border border-gray-100"
-            }`}
-          >
-            <Text
-              className={`font-nunito-medium ${
-                selectedGender === gender ? "text-white" : "text-gray-600"
-              }`}
-            >
-              {gender}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-};
 
 const DateSelector = ({
   label,
@@ -128,21 +97,141 @@ const DateSelector = ({
   );
 };
 
-const UserInfo = () => {
+interface UserInfoProps {
+  onUserUpdate: (updatedUser: any) => void;
+}
+
+const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
   const router = useRouter();
-  const [fullName, setFullName] = useState("User");
-  const [email, setEmail] = useState("user@example.com");
-  const [dateOfBirth, setDateOfBirth] = useState(new Date(2000, 0, 1));
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [gender, setGender] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSave = () => {
-    // Validate passwords match
+  useEffect(() => {
+    const fetchUserDataFromFirestore = async () => {
+      const user = await AsyncStorage.getItem("user");
+      if (user) {
+        const userData = JSON.parse(user);
+        const dbUserData = await fetchUserData(userData.uid);
+        setFullName(dbUserData.fullname || "");
+        setUsername(dbUserData.username || "");
+        setEmail(dbUserData.email || "");
 
-    // Save user info logic here
-    router.back();
+        const dobString = dbUserData.dob;
+        const dobParts = dobString.split("/");
+        const dob = new Date(dobParts[2], dobParts[0] - 1, dobParts[1]);
+        setDateOfBirth(isNaN(dob.getTime()) ? new Date() : dob);
+
+        const fetchedGender = dbUserData.gender || "";
+        setGender(fetchedGender === "other" ? "Prefer not to say" : fetchedGender);
+      }
+    };
+
+    fetchUserDataFromFirestore();
+  }, []);
+
+  const handleSave = async () => {
+    const updatedUser = {
+      fullname: fullName,
+      username,
+      email,
+      dob: dateOfBirth.toLocaleDateString(),
+      gender: gender === "Prefer not to say" ? "other" : gender,
+    };
+
+    const user = await AsyncStorage.getItem("user");
+    if (user) {
+      const userData = JSON.parse(user);
+      try {
+        await setDoc(doc(getFirestore(), 'users', userData.uid), updatedUser);
+        Alert.alert("Success", "User information updated successfully.");
+
+        await AsyncStorage.setItem('user', JSON.stringify({ 
+          uid: userData.uid, 
+          username: updatedUser.username, 
+          email: updatedUser.email,
+        }));
+
+        if (onUserUpdate) {
+          onUserUpdate(updatedUser);
+        }
+
+        router.back();
+      } catch (error) {
+        console.error("Error updating user data:", error);
+        Alert.alert("Error", "Failed to update user data.");
+      }
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      Alert.alert("Error", "User not authenticated.");
+      return;
+    }
+
+    const email = currentUser.email;
+    if (!email) {
+      Alert.alert("Error", "User email is not available.");
+      return;
+    }
+  
+    const currentPassword = await promptCurrentPassword();
+    if (!currentPassword) {
+      Alert.alert("Error", "Current password is required.");
+      return;
+    }
+  
+    try {
+
+      await signInWithEmailAndPassword(auth, email, currentPassword);
+  
+      if (newPassword !== confirmPassword) {
+        Alert.alert("Error", "New passwords do not match.");
+        return;
+      }
+  
+
+      await updatePassword(currentUser, newPassword);
+      Alert.alert("Success", "Password updated successfully.");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Error updating password:", error);
+      Alert.alert("Error"); 
+    }
+  };
+  const promptCurrentPassword = async (): Promise<string | null> => {
+    return new Promise((resolve) => {
+      Alert.prompt(
+        "Current Password",
+        "Please enter your current password:",
+        [
+          {
+            text: "Cancel",
+            onPress: () => resolve(null),
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: (text) => resolve(text || ""),
+          },
+        ],
+      );
+    });
+  };
+
+  const handleSubmit = async () => {
+    await handleSave();
+
+    if (newPassword || confirmPassword) {
+      await handleChangePassword();
+    }
   };
 
   return (
@@ -154,13 +243,13 @@ const UserInfo = () => {
         <Text className="text-xl font-nunito-bold flex-1 text-center">
           Personal Information
         </Text>
-        <TouchableOpacity onPress={handleSave} className="p-2">
+        <TouchableOpacity onPress={handleSubmit} className="p-2">
           <Text className="text-blue-500 font-nunito-bold">Save</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1 px-6">
-        <View className="items-center my-8">
+      <View className="items-center my-8">
           <View className="relative">
             <Image source={icons.avatar} className="size-24 rounded-full" />
             <TouchableOpacity className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full">
@@ -172,12 +261,18 @@ const UserInfo = () => {
             </TouchableOpacity>
           </View>
         </View>
-
         <InputField
           label="Full Name"
           value={fullName}
           onChangeText={setFullName}
           placeholder="Enter your full name"
+        />
+
+        <InputField
+          label="Username"
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Enter your username"
         />
 
         <InputField
@@ -195,37 +290,58 @@ const UserInfo = () => {
           onChange={setDateOfBirth}
         />
 
-        <GenderSelector selectedGender={gender} onSelect={setGender} />
+        <View>
+          <Text className="font-nunito-medium text-gray-600 mb-2">Gender*</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+            {["male", "female", "Prefer not to say"].map((option) => (
+              <TouchableOpacity
+                key={option}
+                onPress={() => {
+                  setGender(option === "Prefer not to say" ? "Prefer not to say" : option);
+                }}
+                style={{ alignItems: "center" }}
+              >
+                {option === "Prefer not to say" ? (
+                  <Image
+                    source={require("@/assets/images/genderless.png")}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      tintColor: gender === "Prefer not to say" ? "blue" : "gray",
+                    }}
+                  />
+                ) : (
+                  <Ionicons
+                    name={option === "male" ? "male" : "female"}
+                    size={30}
+                    color={gender === option ? "blue" : "gray"}
+                  />
+                )}
+                <Text>{option === "Prefer not to say" ? "Prefer not to say" : option.charAt(0).toUpperCase() + option.slice(1)}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
         <View className="mt-4 mb-6">
-          <Text className="font-nunito-bold text-lg mb-4">Change Password</Text>
-          <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <InputField
-              label="Current Password"
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
-              placeholder="Enter current password"
-              secureTextEntry={false}
-              textContentType="password"
-            />
-            <InputField
-              label="New Password"
-              value={newPassword}
-              onChangeText={setNewPassword}
-              placeholder="Enter new password"
-              secureTextEntry={false}
-              textContentType="password"
-            />
-
-            <InputField
-              label="Confirm New Password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm new password"
-              secureTextEntry={false}
-              textContentType="password"
-            />
-          </View>
+          <Text className="font-nunito-bold text-lg mb-4">Change Password (Optional)</Text>
+          <InputField
+            label="New Password"
+            value={newPassword}
+            onChangeText={setNewPassword}
+            placeholder="Enter new password"
+            secureTextEntry={true}
+          />
+          <InputField
+            label="Confirm New Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Confirm new password"
+            secureTextEntry={true}
+          />
+          {(newPassword || confirmPassword) && (
+            <Text className="text-red-500 mb-2">Please ensure passwords match.</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
