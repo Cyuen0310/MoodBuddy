@@ -96,8 +96,8 @@ const Q_OneminScreen = () => {
     if (currentQuestionIndex < questionsData.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      const answersString = JSON.stringify(selectedAnswers);
-      console.log("MBTI:", answersString);
+      const mbtiResult = selectedAnswers.join("");
+      console.log("MBTI:", mbtiResult);
       router.replace("/(root)/(tabs)");
     }
   };
