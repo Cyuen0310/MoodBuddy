@@ -48,8 +48,11 @@ const EnterScreen = () => {
       <InnerContainer>
         <WelcomeContainer>
           <PageTitle>Choose your MBTI</PageTitle>
-          <SubTitle>
-            If you do this test before, you can enter your test result.
+          <SubTitle question={true}>
+            If you do this test before
+          </SubTitle>
+          <SubTitle question={true}> 
+            you can enter your test result.
           </SubTitle>
 
           <View style={styles.optionContainer}>
