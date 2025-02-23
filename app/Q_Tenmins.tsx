@@ -12,6 +12,10 @@ import {
   ButtonText,
   Line,
   WelcomeContainer,
+  ExtraView,
+  TextLink,
+  ExtraText,
+  TextLinkContent,
 } from "../components/style/style";
 
 interface Option {
@@ -640,6 +644,11 @@ const Q_TenminsScreen = () => {
   };
 
   const progress = ((currentQuestionIndex + 1) / questionsData.length) * 100;
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
 
   return (
     <Styledcontainer>
