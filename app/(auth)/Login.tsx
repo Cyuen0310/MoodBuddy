@@ -13,6 +13,7 @@ import { Formik } from "formik";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import * as Yup from "yup";
 import { login } from './auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Styledcontainer,
   InnerContainer,
@@ -34,6 +35,7 @@ import {
   TextLinkContent,
 } from "@/components/style/style";
 const { darkLight, brand } = Colors;
+import { fetchUserData } from './auth';
 
 interface FormValues {
 email: string;
@@ -44,11 +46,12 @@ const LoginScreen = () => {
   const router = useRouter();
   const [hidePassword, setPassword] = useState(true);
   const [errorMessage, setErrorMessage] = useState('')
+
   const handleLogin = async (values: FormValues) => {
     try {
         const user = await login(values.email, values.password);
         console.log ('User login', user);
-        router.push('/Question');
+        router.push('/(root)/(tabs)');
     } catch (error) {
         setErrorMessage('Please enter the correct email and password');
     }
@@ -90,7 +93,7 @@ const LoginScreen = () => {
               <UserTextInput
                 label="Email Address"
                 icon={require("@/assets/images/email.png")}
-                placeholder="ABCD@gmail.com"
+                placeholder="user@example.com"
                 placeholderTextColor={darkLight}
                 onChangeText={(text) => {
                   handleChange('email')(text);
