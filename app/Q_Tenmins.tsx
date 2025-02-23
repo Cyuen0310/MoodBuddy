@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { auth, updateUserMBTI } from "./(auth)/auth";
 import {
   Styledcontainer,
   InnerContainer,
@@ -544,7 +545,7 @@ const Q_TenminsScreen = () => {
     P: 0,
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedAnswers[currentQuestionIndex] === "") {
       alert("Please answer the question before proceeding.");
       return;
@@ -556,6 +557,15 @@ const Q_TenminsScreen = () => {
       // Calculate the MBTI result
       const mbtiResult = calculateMBTI();
       console.log("MBTI Result:", mbtiResult);
+      const user = auth.currentUser;
+        if (user) {
+          const uid = user.uid;
+          try {
+            await updateUserMBTI(uid, mbtiResult);
+          } catch (error) {
+            console.error("Error updating MBTI:", error);
+          }
+      }
       router.replace("/(root)/(tabs)");
     }
   };
