@@ -86,3 +86,13 @@ export const fetchUserData = async (userId) => {
         throw error; 
     }
 };
+
+export const updateUserMBTI = async (userId, mbtiResult) => {
+    try {
+        await setDoc(doc(db, 'users', userId), { mbti: mbtiResult }, { merge: true });
+        console.log('User MBTI updated!');
+    } catch (error) {
+        throw error;
+    }
+};
+
