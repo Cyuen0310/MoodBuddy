@@ -1,15 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, Image, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Linking, ImageSourcePropType, LayoutChangeEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
-
+import { useFocusEffect } from '@react-navigation/native';
 import icons from "@/constants/icons";
 
 const { width } = Dimensions.get('window');
 
 const Index: React.FC = () => {
   const [quoteBlockDimensions, setQuoteBlockDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
+
+  const getUserData = async () => {
+    try {
+      const user = await AsyncStorage.getItem("user");
+      if (user) {
+        const userData = JSON.parse(user);
+        setUsername(userData.username);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUserData();
+    }, [])
+  );
 
   const openLink = (url: string) => {
     Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
@@ -29,7 +49,7 @@ const Index: React.FC = () => {
           </TouchableOpacity>
           <View style={styles.userText}>
             <Text style={styles.welcomeText}>Welcome to MoodBuddy!</Text>
-            <Text style={styles.userName}>User</Text>
+            <Text style={styles.userName}>{username ? username : "User"}</Text>
           </View>
         </View>
         <Image source={icons.bell as ImageSourcePropType} style={styles.bellIcon} />
