@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   ImageSourcePropType,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 import icons from "@/constants/icons";
 
 const ProfileItem = ({
@@ -47,6 +48,26 @@ const ProfileItem = ({
 
 const settings = () => {
   const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
+  const [userData, setUserData] = useState(null);
+
+  const getUserData = async () => {
+    try {
+      const user = await AsyncStorage.getItem("user");
+      if (user) {
+        const userData = JSON.parse(user);
+        setUsername(userData.username || "User");
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUserData();
+    }, [])
+  );
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -67,7 +88,7 @@ const settings = () => {
             <TouchableOpacity className="absolute left-safe-offset-0  bg-slate-300 rounded-full">
               <Image source={icons.close} className="size-5 " />
             </TouchableOpacity>
-            <Text className="text-xl font-nunito-bold mt-2">User</Text>
+            <Text className="text-xl font-nunito-bold mt-2">{username || "User"}</Text>
           </View>
         </View>
 
