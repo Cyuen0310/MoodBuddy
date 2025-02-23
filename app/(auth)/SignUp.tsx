@@ -374,3 +374,4 @@ const UserTextInput = ({
 };
 
 export default SignUpScreen;
+
