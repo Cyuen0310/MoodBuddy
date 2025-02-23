@@ -28,7 +28,12 @@ export const signup = async (values) => {
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         const user = userCredential.user;
         const emailLower = values.email.toLowerCase();
-        await AsyncStorage.setItem('user', JSON.stringify({ uid: user.uid }));
+        await AsyncStorage.setItem('user', JSON.stringify({ 
+            uid: user.uid, 
+            username: values.username,
+            email: emailLower,
+        }));
+
         await setDoc(doc(db, 'users',user.uid), {
             uid: user.uid,
             username: values.username,
@@ -37,6 +42,7 @@ export const signup = async (values) => {
             dob: values.dob,
             gender: values.gender,
         });
+
         await updateProfile(user, {
             displayName: values.username
         })
@@ -53,7 +59,14 @@ export const login = async (email, password) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        await AsyncStorage.setItem('user', JSON.stringify({ uid: user.uid }));
+
+        const userData = await fetchUserData(user.uid);
+        await AsyncStorage.setItem('user', JSON.stringify({ 
+            uid: user.uid, 
+            username: userData.username,
+            email: userData.email,
+        }));
+
         console.log('User logged in!', user);
         return user; 
     } catch (error) {
