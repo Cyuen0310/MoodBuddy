@@ -37,7 +37,7 @@ const EnterScreen = () => {
       alert("Please select an option for all dimensions before finishing.");
       return;
     }
-    const mbtiResult = mbti.A + mbti.B + mbti.C + mbti.D; // 组合成字符串
+    const mbtiResult = mbti.A + mbti.B + mbti.C + mbti.D;
     console.log("MBTI:", mbtiResult);
     const user = auth.currentUser;
         if (user) {
