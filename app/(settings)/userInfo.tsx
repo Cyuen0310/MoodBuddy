@@ -108,6 +108,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
   const [email, setEmail] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [gender, setGender] = useState("");
+  const [mbti, setMbti] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -120,6 +121,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
         setFullName(dbUserData.fullname || "");
         setUsername(dbUserData.username || "");
         setEmail(dbUserData.email || "");
+        setMbti(dbUserData.mbti || "");
 
         const dobString = dbUserData.dob;
         const dobParts = dobString.split("/");
@@ -141,6 +143,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
       email,
       dob: dateOfBirth.toLocaleDateString(),
       gender: gender === "Prefer not to say" ? "other" : gender,
+      mbti,
     };
 
     const user = await AsyncStorage.getItem("user");
@@ -154,6 +157,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
           uid: userData.uid, 
           username: updatedUser.username, 
           email: updatedUser.email,
+          fullname: updatedUser.fullname, 
+          mbti: updatedUser.mbti,
         }));
 
         if (onUserUpdate) {
@@ -188,7 +193,6 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
     }
   
     try {
-
       await signInWithEmailAndPassword(auth, email, currentPassword);
   
       if (newPassword !== confirmPassword) {
@@ -196,16 +200,16 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
         return;
       }
   
-
       await updatePassword(currentUser, newPassword);
       Alert.alert("Success", "Password updated successfully.");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error) {
       console.error("Error updating password:", error);
-      Alert.alert("Error"); 
+      Alert.alert("Error", "Failed to update password."); 
     }
   };
+
   const promptCurrentPassword = async (): Promise<string | null> => {
     return new Promise((resolve) => {
       Alert.prompt(
@@ -249,7 +253,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
       </View>
 
       <ScrollView className="flex-1 px-6">
-      <View className="items-center my-8">
+        <View className="items-center my-8">
           <View className="relative">
             <Image source={icons.avatar} className="size-24 rounded-full" />
             <TouchableOpacity className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full">
@@ -261,6 +265,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
             </TouchableOpacity>
           </View>
         </View>
+
         <InputField
           label="Full Name"
           value={fullName}
@@ -291,7 +296,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
         />
 
         <View>
-          <Text className="font-nunito-medium text-gray-600 mb-2">Gender*</Text>
+          <Text className="font-nunito-medium text-gray-600 mb-2">Gender</Text>
           <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
             {["male", "female", "Prefer not to say"].map((option) => (
               <TouchableOpacity
