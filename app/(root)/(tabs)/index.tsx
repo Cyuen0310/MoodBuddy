@@ -5,12 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useFocusEffect } from '@react-navigation/native';
 import icons from "@/constants/icons";
+import { auth, fetchUserData } from "@/app/(auth)/auth";
 
 const { width } = Dimensions.get('window');
 
 const Index: React.FC = () => {
   const [quoteBlockDimensions, setQuoteBlockDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
   const [username, setUsername] = useState<string | null>(null);
+  const [mbti, setMbti] = useState<string | null>(null);
   const router = useRouter();
 
   const getUserData = async () => {
@@ -19,6 +21,8 @@ const Index: React.FC = () => {
       if (user) {
         const userData = JSON.parse(user);
         setUsername(userData.username);
+        const userDetails = await fetchUserData(userData.uid);
+        setMbti(userDetails.mbti);
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
@@ -55,8 +59,14 @@ const Index: React.FC = () => {
         <Image source={icons.bell as ImageSourcePropType} style={styles.bellIcon} />
       </View>
 
-      <TouchableOpacity style={styles.mbtiContainer} onPress={() => router.push("/(index)/mbtiDetails")}>
-        <Text style={styles.mbtiText}>Your MBTI: INFJ</Text>
+      <TouchableOpacity 
+       style={styles.mbtiContainer} 
+        onPress={() => { 
+          console.log('Navigating with MBTI:', mbti); 
+          router.push(`/(index)/mbtiDetails?mbti=${mbti}`);
+        }}
+      >
+        <Text style={styles.mbtiText}>Your MBTI: {mbti || "N/A"}</Text>
       </TouchableOpacity>
 
       <View style={styles.container}>
