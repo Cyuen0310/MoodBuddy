@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView, TouchableWithoutFeedback } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -40,6 +40,8 @@ import {
   TextLinkContent,
   PageTitle,
 } from "@/components/style/style";
+import { KeyboardAvoidingView } from "react-native";
+import { Keyboard } from "react-native";
 const { darkLight, brand } = Colors;
 
 interface FormValues {
@@ -110,8 +112,15 @@ const SignUpScreen = () => {
   return (
     <Styledcontainer>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <InnerContainer>
+      <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"} 
+      style={{ flex: 1 }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView 
+            contentContainerStyle={{ flexGrow: 1 }} 
+            keyboardShouldPersistTaps="handled"
+          >        
+          <InnerContainer>
           <PageTitle>Mood Buddy</PageTitle>
           <SubTitle>Sign Up</SubTitle>
           <Formik
@@ -162,7 +171,7 @@ const SignUpScreen = () => {
                 <UserTextInput
                   label="Email Address*"
                   icon={require("@/assets/images/email.png")}
-                  placeholder="ABCD@gmail.com"
+                  placeholder="user@example.com"
                   placeholderTextColor={darkLight}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
@@ -181,8 +190,11 @@ const SignUpScreen = () => {
                   onChangeText={handleChange("DOB")}
                   onBlur={handleBlur("DOB")}
                   value={dob.toLocaleDateString()}
-                  onPress={() => setShowDatePicker(true)}
-                />
+                  onFocus={() => {
+                    Keyboard.dismiss();
+                    setShowDatePicker(true);
+                  }}
+                  />
                 {showDatePicker && (
                   <DateTimePicker
                     value={dob}
@@ -302,6 +314,8 @@ const SignUpScreen = () => {
           </Formik>
         </InnerContainer>
       </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
     </Styledcontainer>
   );
 };
