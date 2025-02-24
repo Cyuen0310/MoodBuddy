@@ -47,6 +47,21 @@ import breathingExercise from "@/assets/icons/breathingExercise.jpg";
 import bodyScan from "@/assets/icons/bodyScan.jpg";
 import guidedMeditation from "@/assets/icons/guidedMeditation.jpg";
 import infj from "@/assets/icons/infj.png";
+import intj from "@/assets/icons/intj.png";
+import infp from "@/assets/icons/infp.png";
+import intp from "@/assets/icons/intp.png";
+import enfj from "@/assets/icons/enfj.png";
+import entj from "@/assets/icons/entj.png";
+import enfp from "@/assets/icons/enfp.png";
+import entp from "@/assets/icons/entp.png";
+import isfj from "@/assets/icons/isfj.png";
+import istj from "@/assets/icons/istj.png";
+import isfp from "@/assets/icons/isfp.png";
+import istp from "@/assets/icons/istp.png";
+import esfj from "@/assets/icons/esfj.png";
+import estj from "@/assets/icons/estj.png";
+import esfp from "@/assets/icons/esfp.png";
+import estp from "@/assets/icons/estp.png";
 
 
 const icons = {
@@ -98,7 +113,23 @@ const icons = {
   breathingExercise,
   bodyScan,
   guidedMeditation,
-  infj
+  infj,
+  intj,
+  infp,
+  intp,
+  enfj,
+  entj,
+  enfp,
+  entp,
+  isfj,
+  istj,
+  isfp,
+  istp,
+  esfj,
+  estj,
+  esfp,
+  estp
 };
 
 export default icons;
+
