@@ -18,6 +18,7 @@ import { fetchUserData, auth } from '../(auth)/auth';
 import { getFirestore, setDoc, doc } from "firebase/firestore";
 import { updatePassword, signInWithEmailAndPassword } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';
+import { KeyboardAvoidingView } from "react-native";
 
 const InputField = ({
   label,
@@ -240,6 +241,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"} 
+        style={{ flex: 1 }}
+      >
       <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
         <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Image source={icons.backArrow} className="size-6" />
@@ -296,7 +301,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
         />
 
         <View>
-          <Text className="font-nunito-medium text-gray-600 mb-2">Gender</Text>
+          <Text className="font-nunito-medium text-gray-600 mb-2">Gender*</Text>
           <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
             {["male", "female", "Prefer not to say"].map((option) => (
               <TouchableOpacity
@@ -349,6 +354,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
           )}
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
