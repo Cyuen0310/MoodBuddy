@@ -146,8 +146,8 @@ export default function MoodTrends({
         }}
         width={Dimensions.get("window").width - 30}
         height={220}
-        // withHorizontalLabels={false}
-        //withHorizontalLines={false}
+        withHorizontalLabels={false}
+        withHorizontalLines={false}
         fromZero={true}
         fromNumber={5}
         segments={0}
