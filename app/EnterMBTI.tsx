@@ -16,6 +16,7 @@ import {
   TextLinkContent,
   WelcomeContainer,
 } from "@/components/style/style";
+import { auth, updateUserMBTI } from "./(auth)/auth";
 
 const EnterScreen = () => {
   const router = useRouter();
@@ -31,15 +32,24 @@ const EnterScreen = () => {
     setMbti((prev) => ({ ...prev, [dimension]: value }));
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (Object.values(mbti).some((value) => value === "")) {
       alert("Please select an option for all dimensions before finishing.");
       return;
     }
-
-    const mbtiResult = JSON.stringify(mbti);
+    const mbtiResult = mbti.A + mbti.B + mbti.C + mbti.D; // 组合成字符串
     console.log("MBTI:", mbtiResult);
-    //
+    const user = auth.currentUser;
+        if (user) {
+            const uid = user.uid;
+            try {
+                await updateUserMBTI(uid, mbtiResult);
+            } catch (error) {
+                console.error("Error updating MBTI:", error);
+            }
+        }
+      router.replace("/(root)/(tabs)");
+
   };
 
   return (
