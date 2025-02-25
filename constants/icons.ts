@@ -46,6 +46,9 @@ import summary from "@/assets/icons/summary.jpg";
 import breathingExercise from "@/assets/icons/breathingExercise.jpg";
 import bodyScan from "@/assets/icons/bodyScan.jpg";
 import guidedMeditation from "@/assets/icons/guidedMeditation.jpg";
+import bed from "@/assets/icons/bed.jpg";
+import yoga from "@/assets/icons/yoga.jpg";
+import oil from "@/assets/icons/oil.jpg";
 import infj from "@/assets/icons/infj.png";
 import intj from "@/assets/icons/intj.png";
 import infp from "@/assets/icons/infp.png";
@@ -128,7 +131,10 @@ const icons = {
   esfj,
   estj,
   esfp,
-  estp
+  estp,
+  bed,
+  yoga,
+  oil,
 };
 
 export default icons;

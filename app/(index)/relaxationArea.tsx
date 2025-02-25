@@ -57,6 +57,8 @@ const RelaxationArea: React.FC = () => {
         <View style={styles.backButton} />
       </View>
 
+      <Image source={icons.bed} style={styles.relaxationImage} />
+
       <View style={styles.gameSelector}>
         {games.map((game) => (
           <Button
@@ -117,6 +119,12 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     color: '#333',
+  },
+  relaxationImage: {
+    width: '100%',
+    height: 200, // Adjust height as needed
+    resizeMode: 'cover', // Ensures the image covers the area without distortion
+    marginBottom: 20, // Space between the image and the game selector
   },
   gameSelector: {
     flexDirection: 'row',

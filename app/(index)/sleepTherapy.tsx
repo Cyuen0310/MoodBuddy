@@ -22,36 +22,30 @@ const SleepTherapy: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.welcomeText}>
-          Welcome to your sleep therapy journey. Discover techniques to improve your sleep quality and relax your mind.
+          Welcome to your sleep therapy journey. Explore various techniques to enhance your sleep quality and promote relaxation.
         </Text>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sleep Hygiene Tips</Text>
+        <Image source={icons.bed} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>Establish a Sleep Routine</Text>
           <Text style={styles.cardDescription}>
-            - Maintain a consistent sleep schedule.{"\n"}
-            - Create a comfortable sleep environment.{"\n"}
-            - Avoid screens at least an hour before bedtime.
+            Set a regular bedtime and wake-up time, even on weekends, to regulate your body's internal clock.
           </Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Relaxation Techniques</Text>
+        <Image source={icons.oil} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>Aromatherapy for Sleep</Text>
           <Text style={styles.cardDescription}>
-            Try progressive muscle relaxation or visualization exercises to calm your mind before sleep.
+            Use calming essential oils like lavender or chamomile in a diffuser to create a soothing environment.
           </Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Guided Sleep Meditation</Text>
+        <Image source={icons.yoga} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>Gentle Yoga Stretches</Text>
           <Text style={styles.cardDescription}>
-            Listen to our guided sleep meditation to help you relax and drift off to sleep. [Link to audio]
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Breathing Exercises for Sleep</Text>
-          <Text style={styles.cardDescription}>
-            Practice the 4-7-8 breathing technique: Inhale for 4 seconds, hold for 7 seconds, and exhale for 8 seconds.
+            Practice gentle yoga stretches before bed to release tension and prepare your body for sleep.
           </Text>
         </View>
 
@@ -113,6 +107,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '100%',
     padding: 16,
+  },
+  cardImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   cardTitle: {
     fontSize: 20,
