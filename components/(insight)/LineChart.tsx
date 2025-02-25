@@ -119,26 +119,27 @@ export default function MoodTrends({
     });
   });
 
-  // Calculate averages using the reusable function
-  const averages = calculateAverages(
-    timeframe === "week"
-      ? weeklyData
-      : timeframe === "month"
-      ? monthlyData
-      : yearlyData
-  );
+  // Calculate averages using the reusable function and filter out zeros
+  const averages = Array.from(
+    calculateAverages(
+      timeframe === "week"
+        ? weeklyData
+        : timeframe === "month"
+        ? monthlyData
+        : yearlyData
+    ).entries()
+  ).filter(([_, value]) => value !== 0);
 
   console.log(averages);
 
   return (
     <>
       <LineChart
-        // data.map()
         data={{
-          labels: Array.from(averages.entries()).map(([label]) => label),
+          labels: averages.map(([label]) => label),
           datasets: [
             {
-              data: Array.from(averages.entries()).map(([_, avg]) => avg),
+              data: averages.map(([_, avg]) => avg),
               color: (opacity = 1) => `rgba(0, 136, 136, ${opacity})`,
               strokeWidth: 2,
             },
@@ -151,6 +152,39 @@ export default function MoodTrends({
         fromZero={true}
         fromNumber={5}
         segments={0}
+        renderDotContent={({ x, y, index, indexData }) => {
+          if (indexData === null) return null;
+          const score = indexData as number;
+          const dotColor =
+            score === 5
+              ? "#2E7D32"
+              : score >= 4
+              ? "#66BB6A"
+              : score >= 3
+              ? "#FDD835"
+              : score >= 2
+              ? "#FB8C00"
+              : score >= 1
+              ? "#D32F2F"
+              : "#9E9E9E";
+
+          return (
+            <View
+              key={index}
+              style={{
+                position: "absolute",
+                left: x - 4,
+                top: y - 4,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: score < 1 ? "transparent" : dotColor,
+                borderWidth: 1,
+                borderColor: dotColor,
+              }}
+            />
+          );
+        }}
         chartConfig={{
           backgroundGradientFrom: "#fff",
           backgroundGradientTo: "#fff",
@@ -174,6 +208,30 @@ export default function MoodTrends({
         }}
         bezier
       />
+
+      {/* Mood Legend */}
+      <View className="flex-row flex-wrap justify-center mt-4 gap-4">
+        {[
+          { mood: "Joyful", score: 5, color: "#2E7D32" },
+          { mood: "Happy", score: 4, color: "#66BB6A" },
+          { mood: "Neutral", score: 3, color: "#FDD835" },
+          { mood: "Sad", score: 2, color: "#FB8C00" },
+          { mood: "Angry", score: 1, color: "#D32F2F" },
+        ].map(({ mood, color }) => (
+          <View key={mood} className="flex-row items-center">
+            <View
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: color,
+                marginRight: 4,
+              }}
+            />
+            <Text className="font-nunito text-sm">{mood}</Text>
+          </View>
+        ))}
+      </View>
     </>
   );
 }
