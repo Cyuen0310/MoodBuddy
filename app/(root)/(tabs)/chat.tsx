@@ -19,7 +19,7 @@ interface Message {
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     { text: "Hello!", user: true },
-    { text: "Hi there!", user: false },
+    { text: "Hi I am MoodBuddy, how can i help you today?", user: false },
   ]);
   const [userInput, setUserInput] = useState<string>("");
   const flatListRef = useRef<FlatList<Message>>(null);
