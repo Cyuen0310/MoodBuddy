@@ -31,7 +31,7 @@ const Chat: React.FC = () => {
       setUserInput("");
 
       try {
-        const response = await axios.post("http://192.168.128.128:5000/chat", {
+        const response = await axios.post("http://172.20.10.7:5001/chat", {
           message: userInput,
         });
         const botMessage = { text: response.data.response, user: false };
