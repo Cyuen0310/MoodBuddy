@@ -40,8 +40,6 @@ import {
   TextLinkContent,
   PageTitle,
 } from "@/components/style/style";
-import { KeyboardAvoidingView } from "react-native";
-import { Keyboard } from "react-native";
 const { darkLight, brand } = Colors;
 
 interface FormValues {
@@ -111,6 +109,10 @@ const SignUpScreen = () => {
 
   return (
     <Styledcontainer>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 p-5"
+      >
       <StatusBar style="dark" />
       <KeyboardAvoidingView 
       behavior={Platform.OS === "ios" ? "padding" : "height"} 
@@ -314,8 +316,6 @@ const SignUpScreen = () => {
           </Formik>
         </InnerContainer>
       </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
     </Styledcontainer>
   );
 };
