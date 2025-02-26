@@ -65,7 +65,7 @@ import esfj from "@/assets/icons/esfj.png";
 import estj from "@/assets/icons/estj.png";
 import esfp from "@/assets/icons/esfp.png";
 import estp from "@/assets/icons/estp.png";
-
+import room from "@/assets/icons/gameroom.jpg"
 
 const icons = {
   pen,
@@ -135,6 +135,7 @@ const icons = {
   bed,
   yoga,
   oil,
+  room,
 };
 
 export default icons;

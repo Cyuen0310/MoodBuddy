@@ -129,7 +129,7 @@ const RelaxationArea: React.FC = () => {
         <View style={styles.backButton} />
       </View>
 
-      <Image source={icons.bed} style={styles.relaxationImage} />
+      <Image source={icons.room} style={styles.relaxationImage} />
 
       <View style={styles.gameSelector}>
         {games.map((game) => (
