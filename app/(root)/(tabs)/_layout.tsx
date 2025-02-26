@@ -1,6 +1,6 @@
 import { View, Text, Image } from "react-native";
 import React from "react";
-import { Tabs } from "expo-router";
+import { Tabs, Stack } from "expo-router";
 
 import icons from "@/constants/icons";
 
@@ -36,66 +36,78 @@ const Icon = ({
 
 const TabLayout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: "white",
-          minHeight: 70,
-          borderTopWidth: 1,
-          position: "absolute",
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
+    <>
+      <Stack.Screen
         options={{
-          title: "Home",
-          tabBarIcon: ({ focused }) => (
-            <Icon iscurrent={focused} icon={icons.home} title="Home" />
-          ),
+          gestureEnabled: false,
+          headerShown: false,
         }}
       />
-      <Tabs.Screen
-        name="journal"
-        options={{
-          title: "journal",
-          tabBarIcon: ({ focused }) => (
-            <Icon iscurrent={focused} icon={icons.journal} title="Journal" />
-          ),
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: "white",
+            minHeight: 70,
+            borderTopWidth: 1,
+            position: "absolute",
+          },
         }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: "chat",
-          tabBarIcon: ({ focused }) => (
-            <Icon iscurrent={focused} icon={icons.chat} title="Chat" />
-          ),
-        }}
-      />
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ focused }) => (
+              <Icon iscurrent={focused} icon={icons.home} title="Home" />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="journal"
+          options={{
+            title: "journal",
+            tabBarIcon: ({ focused }) => (
+              <Icon iscurrent={focused} icon={icons.journal} title="Journal" />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="chat"
+          options={{
+            title: "chat",
+            tabBarIcon: ({ focused }) => (
+              <Icon iscurrent={focused} icon={icons.chat} title="Chat" />
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="insight"
-        options={{
-          title: "insight",
-          tabBarIcon: ({ focused }) => (
-            <Icon iscurrent={focused} icon={icons.insight} title="Insight" />
-          ),
-        }}
-      />
+        <Tabs.Screen
+          name="insight"
+          options={{
+            title: "insight",
+            tabBarIcon: ({ focused }) => (
+              <Icon iscurrent={focused} icon={icons.insight} title="Insight" />
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "settings",
-          tabBarIcon: ({ focused }) => (
-            <Icon iscurrent={focused} icon={icons.settings} title="Settings" />
-          ),
-        }}
-      />
-    </Tabs>
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "settings",
+            tabBarIcon: ({ focused }) => (
+              <Icon
+                iscurrent={focused}
+                icon={icons.settings}
+                title="Settings"
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </>
   );
 };
 

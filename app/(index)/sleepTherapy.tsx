@@ -1,5 +1,13 @@
 import React from "react";
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import icons from "@/constants/icons";
 
@@ -7,13 +15,16 @@ const SleepTherapy: React.FC = () => {
   const router = useRouter();
 
   const handleGoBack = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
           <Image source={icons.backArrow} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Sleep Therapy</Text>
@@ -22,36 +33,36 @@ const SleepTherapy: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.welcomeText}>
-          Welcome to your sleep therapy journey. Explore various techniques to enhance your sleep quality and promote relaxation.
+          Welcome to your sleep therapy journey. Explore various techniques to
+          enhance your sleep quality and promote relaxation.
         </Text>
 
         <View style={styles.card}>
-        <Image source={icons.bed} style={styles.cardImage} />
+          <Image source={icons.bed} style={styles.cardImage} />
           <Text style={styles.cardTitle}>Establish a Sleep Routine</Text>
           <Text style={styles.cardDescription}>
-            Set a regular bedtime and wake-up time, even on weekends, to regulate your body's internal clock.
+            Set a regular bedtime and wake-up time, even on weekends, to
+            regulate your body's internal clock.
           </Text>
         </View>
 
         <View style={styles.card}>
-        <Image source={icons.oil} style={styles.cardImage} />
+          <Image source={icons.oil} style={styles.cardImage} />
           <Text style={styles.cardTitle}>Aromatherapy for Sleep</Text>
           <Text style={styles.cardDescription}>
-            Use calming essential oils like lavender or chamomile in a diffuser to create a soothing environment.
+            Use calming essential oils like lavender or chamomile in a diffuser
+            to create a soothing environment.
           </Text>
         </View>
 
         <View style={styles.card}>
-        <Image source={icons.yoga} style={styles.cardImage} />
+          <Image source={icons.yoga} style={styles.cardImage} />
           <Text style={styles.cardTitle}>Gentle Yoga Stretches</Text>
           <Text style={styles.cardDescription}>
-            Practice gentle yoga stretches before bed to release tension and prepare your body for sleep.
+            Practice gentle yoga stretches before bed to release tension and
+            prepare your body for sleep.
           </Text>
         </View>
-
-        <TouchableOpacity style={styles.nextButton} onPress={handleGoBack}>
-          <Text style={styles.nextButtonText}>Well Done! Go Back to Home Page</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -60,13 +71,13 @@ const SleepTherapy: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: "#f0f4f8",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     elevation: 2,
   },
   backButton: {
@@ -78,25 +89,25 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flex: 1,
-    textAlign: 'center',
-    color: '#333',
+    textAlign: "center",
+    color: "#333",
   },
   scrollContainer: {
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   welcomeText: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     marginBottom: 20,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -105,38 +116,38 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
     padding: 16,
   },
   cardImage: {
-    width: '100%',
+    width: "100%",
     height: 200,
     borderRadius: 12,
     marginBottom: 12,
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   cardDescription: {
     fontSize: 14,
-    color: '#555',
-    textAlign: 'center',
+    color: "#555",
+    textAlign: "center",
   },
   nextButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 24,
     marginTop: 20,
   },
   nextButtonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
