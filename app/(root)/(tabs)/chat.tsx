@@ -8,8 +8,10 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import axios from "axios";
+import icons from "@/constants/icons";
 
 interface Message {
   text: string;
@@ -79,9 +81,15 @@ const Chat: React.FC = () => {
           />
           <TouchableOpacity
             onPress={sendMessage}
-            className="bg-blue-500 px-4 py-2 rounded-lg"
+            className="px-4 py-2 rounded-lg"
           >
-            <Text className="text-white">Send</Text>
+            <Image source={icons.send} className="size-6" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={sendMessage}
+            className=" px-4 py-2 rounded-lg"
+          >
+            <Image source={icons.waveform} className="size-6" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

@@ -65,8 +65,9 @@ import esfj from "@/assets/icons/esfj.png";
 import estj from "@/assets/icons/estj.png";
 import esfp from "@/assets/icons/esfp.png";
 import estp from "@/assets/icons/estp.png";
-import room from "@/assets/icons/gameroom.jpg"
-
+import room from "@/assets/icons/gameroom.jpg";
+import microphone from "@/assets/icons/microphone.png";
+import waveform from "@/assets/icons/waveform.png";
 const icons = {
   pen,
   pencil,
@@ -134,9 +135,10 @@ const icons = {
   estp,
   bed,
   yoga,
+  microphone,
   oil,
   room,
+  waveform,
 };
 
 export default icons;
-
