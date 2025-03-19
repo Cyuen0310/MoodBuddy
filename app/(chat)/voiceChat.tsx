@@ -24,7 +24,7 @@ const voiceChat = () => {
       >
         <Image
           source={icons.microphone}
-          className="size-20 bg-gray-300 rounded-full p-4"
+          className="size-20 bg-blue-300 rounded-full p-4"
         />
       </TouchableOpacity>
     </SafeAreaView>
