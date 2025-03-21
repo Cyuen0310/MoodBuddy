@@ -14,6 +14,8 @@ import axios from "axios";
 import icons from "@/constants/icons";
 import { Redirect, router } from "expo-router";
 
+const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
+
 interface Message {
   text: string;
   user: boolean;
@@ -34,7 +36,7 @@ const Chat: React.FC = () => {
       setUserInput("");
 
       try {
-        const response = await axios.post("http://172.18.88.11:5001/chat", {
+        const response = await axios.post(`http://${ipAddress}:5001/chat`, {
           message: userInput,
         });
         const botMessage = { text: response.data.response, user: false };

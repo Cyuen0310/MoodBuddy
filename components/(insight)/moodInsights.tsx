@@ -10,9 +10,8 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { PieChart } from "react-native-gifted-charts";
 import LineChart from "./LineChart";
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-console.log("API_URL:", API_URL);
+const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
 
 interface MoodInsightsProps {
   timeframe: "week" | "month" | "year";
@@ -96,7 +95,7 @@ const MoodInsights = ({
       //   end: dateRange.end.toLocaleString(),
       // });
       const response = await fetch(
-        `${API_URL}/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
+        `http://${ipAddress}:3000/api/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
       );
 
       if (!response.ok) {
@@ -255,6 +254,7 @@ const MoodInsights = ({
                         width: 8,
                         height: 8,
                         borderRadius: 4,
+                        marginRight: 4,
                         backgroundColor:
                           mood === "Joyful"
                             ? "#2E7D32"
@@ -265,7 +265,6 @@ const MoodInsights = ({
                             : mood === "Sad"
                             ? "#FB8C00"
                             : "#D32F2F",
-                        marginRight: 4,
                       }}
                     />
                     <Text className="font-nunito">

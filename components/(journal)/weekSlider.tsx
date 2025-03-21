@@ -22,7 +22,7 @@ import icons from "@/constants/icons";
 import NewJournal from "@/components/(journal)/newJournal";
 import JournalCard from "@/components/(journal)/journalCard";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
 
 const WeekSlider = () => {
   const currentDate = new Date();
@@ -64,7 +64,7 @@ const WeekSlider = () => {
       queryDate.setHours(0, 0, 0, 0);
       const formattedDate = queryDate.toISOString();
 
-      const url = `${API_URL}/journal?date=${formattedDate}&userId=${userId}`;
+      const url = `http://${ipAddress}:3000/api/journal?date=${formattedDate}&userId=${userId}`;
       console.log("Fetching journals:", {
         date: queryDate,
         formattedDate,
@@ -114,7 +114,7 @@ const WeekSlider = () => {
 
       console.log("Saving journal:", body);
 
-      const response = await fetch(`${API_URL}/journal`, {
+      const response = await fetch(`http://${ipAddress}:3000/api/journal`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
