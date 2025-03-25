@@ -10,13 +10,18 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.MoodBuddy"
+      "bundleIdentifier": "com.anonymous.MoodBuddy",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "This app needs access to speech recognition.",
+        "NSMicrophoneUsageDescription": "This app needs access to the microphone."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
@@ -35,14 +40,31 @@
         }
       ],
       [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "Allow MoodBuddy to access your microphone",
+          "speechRecogntionPermission": "Allow MoodBuddy to securely recognize user speech"
+        }
+      ],
+      [
         "expo-font",
         {
           "fonts": [""]
         }
       ]
     ],
+
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "2a56e496-b4cc-46b5-b211-80c0946461fa"
+      }
+    },
+    "owner": "cyuen0310"
   }
 }
