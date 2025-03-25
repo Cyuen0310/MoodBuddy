@@ -10,7 +10,7 @@ import {
 import Voice from "@react-native-voice/voice";
 
 const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
-const socket = new WebSocket(`ws://${ipAddress}:5001`);
+const socket = new WebSocket(`ws://${ipAddress}:5002`);
 
 const VoiceChat = () => {
   const [finalText, setFinalText] = useState("");
