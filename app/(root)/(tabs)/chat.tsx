@@ -8,8 +8,15 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
-import axios from "axios";
+import icons from "@/constants/icons";
+import { router } from "expo-router";
+
+const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
+const wsUrl = `ws://${ipAddress}:5001`;
+
+console.log("WebSocket URL:", wsUrl);
 
 interface Message {
   text: string;
@@ -19,26 +26,46 @@ interface Message {
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     { text: "Hello!", user: true },
-    { text: "Hi there!", user: false },
+    { text: "Hi, I am MoodBuddy. How can I help you today?", user: false },
   ]);
   const [userInput, setUserInput] = useState<string>("");
   const flatListRef = useRef<FlatList<Message>>(null);
+  const ws = useRef<WebSocket | null>(null);
 
-  const sendMessage = async () => {
-    if (userInput.trim()) {
-      const userMessage = { text: userInput, user: true };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setUserInput("");
+  useEffect(() => {
+    ws.current = new WebSocket(wsUrl);
 
+    ws.current.onopen = () => console.log("Connected to WebSocket server");
+    ws.current.onmessage = (event) => {
       try {
-        const response = await axios.post("http://192.168.128.128:5000/chat", {
-          message: userInput,
-        });
-        const botMessage = { text: response.data.response, user: false };
+        // First try to parse as JSON
+        const data = JSON.parse(event.data);
+        const botMessage = {
+          text: data.response || data.text || data,
+          user: false,
+        };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       } catch (error) {
-        console.error("Error sending message:", error);
+        // If parsing fails, use the raw message
+        const botMessage = { text: event.data, user: false };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
       }
+    };
+    ws.current.onerror = (error) => console.error("WebSocket error:", error);
+    ws.current.onclose = () => console.log("WebSocket disconnected");
+
+    return () => {
+      ws.current?.close();
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (userInput.trim() && ws.current) {
+      const userMessage = { text: userInput, user: true };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      // Send the raw message text rather than a JSON object
+      ws.current.send(userInput);
+      setUserInput("");
     }
   };
 
@@ -79,9 +106,15 @@ const Chat: React.FC = () => {
           />
           <TouchableOpacity
             onPress={sendMessage}
-            className="bg-blue-500 px-4 py-2 rounded-lg"
+            className="px-4 py-2 rounded-lg"
           >
-            <Text className="text-white">Send</Text>
+            <Image source={icons.send} className="size-6" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("/voiceChat")}
+            className="px-4 py-2 rounded-lg"
+          >
+            <Image source={icons.waveform} className="size-6" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

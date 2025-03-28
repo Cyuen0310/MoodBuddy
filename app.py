@@ -1,65 +1,92 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import google.generativeai as genai
+import asyncio
+import websockets
+from google import genai
+from google.genai import types
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+API_KEY = os.getenv('AI_API')
 
-# Configure your API key
-genai.configure(api_key=os.getenv('API_KEY'))
+client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1alpha'})
+model = "gemini-2.0-flash-exp"
 
-# Create the model
-generation_config = {
-    "temperature": 0,
-    "top_p": 0.95,
-    "top_k": 64,
-    "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
-}
-safety_settings = [
-    {
-        "category": "HARM_CATEGORY_HARASSMENT",
-        "threshold": "BLOCK_NONE",
-    },
-    {
-        "category": "HARM_CATEGORY_HATE_SPEECH",
-        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
-    },
-    {
-        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
-    },
-    {
-        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
-    },
-]
+async def handle_Text_client(websocket):
+    config = {
+        "system_instruction": types.Content(
+            parts=[
+                types.Part(
+                    text="You are MoodBuddy. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention. Talk gently and soft, show your understanding,don't talk too much and don't provide too many suggestion. Focus on your understanding is fine."
+                )
+            ]
+        ),
+        "response_modalities": ["TEXT"]
+    }
+    async with client.aio.live.connect(model=model, config=config) as chat_session:
+        try:
+            async for message in websocket:
+                print(f"Received message: {message}")
 
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro",
-    safety_settings=safety_settings,
-    generation_config=generation_config,
-    system_instruction="You are MoodBuddy. MoodBuddy is a constantly available mood-tracking app that relies on AI to provide you with accompany you during emotional crisis, help you track your mood, as well as hear personalized coping strategies based on user data. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention.",
-)
+                await chat_session.send(input=message, end_of_turn=True)
 
-chat_session = model.start_chat(
-    history=[]
-)
+                full_response = ""
+                async for response in chat_session.receive():
+                    if response.text is not None:
+                        full_response += response.text
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    user_input = request.json.get('message')
-    response = chat_session.send_message(user_input)
-    model_response = response.text
+                if full_response:
+                    await websocket.send(full_response)
+                    print(f"Sent response: {full_response}")
+                        
+        except websockets.exceptions.ConnectionClosed:
+            print("Client disconnected")
+            
+async def handle_Voice_client(websocket):
+    config = {
+        "system_instruction": types.Content(
+            parts=[
+                types.Part(
+                    text="You are MoodBuddy. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention. Talk gently and soft, show your understanding,don't talk too much and don't provide too many suggestion. Focus on your understanding is fine."
+                )
+            ]
+        ),
+        "response_modalities": ["AUDIO"]
+    }
+    async with client.aio.live.connect(model=model, config=config) as chat_session:
+        try:
+            async for message in websocket:
+                print(f"Received message: {message}")
 
-    chat_session.history.append({"role": "user", "parts": [user_input]})
-    chat_session.history.append({"role": "model", "parts": [model_response]})
+                await chat_session.send(input=message, end_of_turn=True)
 
-    return jsonify({'response': model_response})
+            audio_data = b""
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')  # Make the server accessible externally
+            async for chunk in chat_session:
+                for part in chunk.parts:
+                    if hasattr(part, 'audio') and part.audio and part.audio.buffer:
+                        print(f"[Server] Got audio chunk: {len(part.audio.buffer)} bytes")
+                        audio_data += part.audio.buffer
+                    elif hasattr(part, 'text') and part.text:
+                        print(f"[Server] Got text (ignored): {part.text}")
+                    else:
+                        print(f"[Server] Received non-audio response")
+
+                if audio_data:
+                    await websocket.send(audio_data)
+                    print(f"Sent response: {len(audio_data)} bytes")
+                        
+        except websockets.exceptions.ConnectionClosed:
+            print("Client disconnected")
+        except Exception as e:
+            print(f"Error in voice handler: {str(e)}")
+
+async def main():
+    async with websockets.serve(handle_Text_client, "0.0.0.0", 5001), \
+               websockets.serve(handle_Voice_client, "0.0.0.0", 5002):
+        print("Text server running on ws://0.0.0.0:5001")
+        print("Voice server running on ws://0.0.0.0:5002")
+        await asyncio.Future()  
+
+if __name__ == "__main__":
+    asyncio.run(main())
