@@ -14,7 +14,7 @@ import icons from "@/constants/icons";
 import { router } from "expo-router";
 
 const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
-const wsUrl = `ws://${ipAddress}:5001`;
+const wsUrl = `ws://${ipAddress}:5051`;
 
 console.log("WebSocket URL:", wsUrl);
 

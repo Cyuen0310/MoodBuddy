@@ -6,24 +6,98 @@ import {
   ScrollView,
   Platform,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import Voice from "@react-native-voice/voice";
 
 const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
-const socket = new WebSocket(`ws://${ipAddress}:5002`);
+const socket = new WebSocket(`ws://localhost:5051`);
 
 const VoiceChat = () => {
   const [finalText, setFinalText] = useState("");
   const [listening, setListening] = useState(false);
   const [partialText, setPartialText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [serverResponse, setServerResponse] = useState<string | null>(null);
 
   const silenceTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    socket.onopen = () => {
+      console.log("[Socket] Connected");
+      sendInit();
+    };
+
+    socket.onclose = () => {
+      console.log("[Socket] Disconnected");
+    };
+
+    socket.onerror = (error) => {
+      console.error("[Socket] Error:", error);
+      setError("Connection error. Please check if the server is running.");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const response = JSON.parse(event.data);
+        console.log("[Socket] Received:", response);
+
+        if (response.type === "response") {
+          setServerResponse(response.data);
+        } else if (response.type === "error") {
+          setError(response.message);
+        }
+      } catch (e) {
+        console.error("[Socket] Parse error:", e);
+      }
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const sendInit = () => {
+    const setupConfig = {
+      setup: { generation_config: { response_modelities: ["audio"] } },
+    };
+    try {
+      socket.send(JSON.stringify(setupConfig));
+      console.log("[Socket] Sent setup config");
+    } catch (err) {
+      console.error("[Socket] Send error:", err);
+      setError("Failed to initialize connection");
+    }
+  };
+
+  useEffect(() => {
+    const initVoice = async () => {
+      try {
+        // Check if voice is available
+        const isAvailable = await Voice.isAvailable();
+        if (!isAvailable) {
+          console.error("Voice recognition is not available");
+          setError("Voice recognition is not available on this device");
+          return;
+        }
+
+        // Initialize voice recognition
+        await Voice.start("en-US");
+        console.log("[Voice] Initialized");
+      } catch (e) {
+        console.error("[Voice] Init error:", e);
+        setError(`Voice initialization error: ${e}`);
+        Alert.alert(
+          "Voice Error",
+          "Failed to initialize voice recognition. Please try again."
+        );
+      }
+    };
+
     Voice.onSpeechStart = () => {
       console.log("[Voice] Started");
       setListening(true);
+      setError(null);
     };
 
     Voice.onSpeechPartialResults = (voiceInput) => {
@@ -49,9 +123,15 @@ const VoiceChat = () => {
       setFinalText(final);
       setPartialText("");
 
-      // Optionally send to server
+      // Send to server
       if (final && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "text", data: { text: final } }));
+        try {
+          sendInit();
+          socket.send(JSON.stringify({ text: final }));
+        } catch (err) {
+          console.error("[Socket] Send error:", err);
+          setError(`Failed to send message: ${err}`);
+        }
       }
     };
 
@@ -60,23 +140,25 @@ const VoiceChat = () => {
       setListening(false);
 
       if (Platform.OS === "ios") {
+        // Add a delay before restarting
         setTimeout(() => {
           startListening();
-        }, 500);
+        }, 1000);
       }
     };
 
     Voice.onSpeechError = (e) => {
       console.warn("[Voice] Error:", e.error);
-      setError(JSON.stringify(e.error));
+      setError(`Speech recognition error: ${JSON.stringify(e.error)}`);
       setListening(false);
 
+      // Attempt to restart after error
       setTimeout(() => {
         startListening();
-      }, 1000);
+      }, 2000);
     };
 
-    startListening();
+    initVoice();
 
     return () => {
       if (silenceTimer.current) {
@@ -88,9 +170,15 @@ const VoiceChat = () => {
 
   const startListening = async () => {
     try {
+      setError(null);
       await Voice.start("en-US");
     } catch (e) {
       console.error("[Voice] Start error:", e);
+      setError(`Failed to start voice recognition: ${e}`);
+      Alert.alert(
+        "Voice Error",
+        "Failed to start voice recognition. Please try again."
+      );
     }
   };
 
@@ -118,6 +206,11 @@ const VoiceChat = () => {
               {finalText || "---"}
             </Text>
           </Text>
+          {serverResponse && (
+            <Text className="text-base mb-2">
+              Response: <Text className="text-blue-600">{serverResponse}</Text>
+            </Text>
+          )}
           {error && (
             <Text className="text-red-500 text-sm mt-2">Error: {error}</Text>
           )}
