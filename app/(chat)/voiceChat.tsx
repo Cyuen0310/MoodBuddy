@@ -19,7 +19,7 @@ const VoiceChat = () => {
       config: {
         response_modalities: ["AUDIO"],
         audio_config: {
-          audio_encoding: "WAV",
+          audio_encoding: "LINEAR16",
           sample_rate_hertz: 16000,
         },
       },
@@ -58,16 +58,17 @@ const VoiceChat = () => {
   const record = async () => {
     const recordingOptions: Audio.RecordingOptions = {
       android: {
-        extension: ".m4a",
+        extension: ".wav",
         outputFormat: Audio.AndroidOutputFormat.MPEG_4,
         audioEncoder: Audio.AndroidAudioEncoder.AAC,
         sampleRate: 16000,
         numberOfChannels: 1,
-        bitRate: 128000,
+        bitRate: 256000,
       },
       ios: {
         extension: ".wav",
         audioQuality: Audio.IOSAudioQuality.HIGH,
+        outputFormat: Audio.IOSOutputFormat.LINEARPCM,
         sampleRate: 16000,
         numberOfChannels: 1,
         bitRate: 128000,
