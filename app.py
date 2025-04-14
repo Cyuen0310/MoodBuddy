@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 import os
 from dotenv import load_dotenv
+import base64
 
 load_dotenv()
 
@@ -14,6 +15,21 @@ print(genai.__version__)
 client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1alpha'})
 model = "gemini-2.0-flash-live-001"
 
+def detect_format_from_base64(base64_str):
+    decoded = base64.b64decode(base64_str)
+    if decoded.startswith(b"RIFF"):
+        return "WAV"
+    elif decoded.startswith(b"\xFF\xFB") or decoded.startswith(b"ID3"):
+        return "MP3"
+    elif decoded[4:8] == b"ftyp":
+        return "M4A or MP4"
+    elif decoded.startswith(b"OggS"):
+        return "OGG"
+    elif decoded.startswith(b"\x1A\x45\xDF\xA3"):
+        return "WebM"
+    else:
+        return "Unknown"
+    
 # async def handle_Text_client(websocket):
 #     config = {
 #         "system_instruction": types.Content(
@@ -104,9 +120,11 @@ async def handle_request(client_ws):
             async def handle_client_input():
                 try:
                     async for input_msg in client_ws:
-                        print("[Server] Raw input_msg:", input_msg)
                         try:
                             message = json.loads(input_msg)
+                            base64_str = message.get("data")
+                            format = detect_format_from_base64(base64_str)
+                            print("[Server] Format:", format)
                         except json.JSONDecodeError as e:
                             print("[Server] JSON decode error:", e)
                             continue  # skip bad message

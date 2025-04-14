@@ -19,7 +19,7 @@ const VoiceChat = () => {
       config: {
         response_modalities: ["AUDIO"],
         audio_config: {
-          audio_encoding: "LINEAR16",
+          audio_encoding: "WAV",
           sample_rate_hertz: 16000,
         },
       },
@@ -61,14 +61,14 @@ const VoiceChat = () => {
         extension: ".m4a",
         outputFormat: Audio.AndroidOutputFormat.MPEG_4,
         audioEncoder: Audio.AndroidAudioEncoder.AAC,
-        sampleRate: 44100,
+        sampleRate: 16000,
         numberOfChannels: 1,
         bitRate: 128000,
       },
       ios: {
         extension: ".wav",
         audioQuality: Audio.IOSAudioQuality.HIGH,
-        sampleRate: 44100,
+        sampleRate: 16000,
         numberOfChannels: 1,
         bitRate: 128000,
         linearPCMBitDepth: 16,
