@@ -1,236 +1,148 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Platform,
-  SafeAreaView,
-  Alert,
-} from "react-native";
-import Voice from "@react-native-voice/voice";
-
-const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
-const socket = new WebSocket(`ws://localhost:5051`);
+import React, { useState, useRef, useEffect } from "react";
+import { View, Button, Text, StyleSheet } from "react-native";
+import { Audio } from "expo-av";
+import * as FileSystem from "expo-file-system";
 
 const VoiceChat = () => {
-  const [finalText, setFinalText] = useState("");
-  const [listening, setListening] = useState(false);
-  const [partialText, setPartialText] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [serverResponse, setServerResponse] = useState<string | null>(null);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [recordedUri, setRecordedUri] = useState<string | null>(null);
+  const [microphoneOn, setMicrophoneOn] = useState<boolean>(true);
+  const sound = useRef<Audio.Sound | null>(null);
+  const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
+  const ws = useRef<WebSocket | null>(null);
+  const wsUrl = `ws://${ipAddress}:5051`;
+  const setupConfig = {
+    setup: {
+      config: {
+        response_modalities: ["AUDIO"],
+        audio_config: {
+          audio_encoding: "LINEAR16",
+          sample_rate_hertz: 16000,
+        },
+      },
+    },
+  };
 
-  const silenceTimer = useRef<NodeJS.Timeout | null>(null);
-
+  // send setup config to gemini when the connection is established
   useEffect(() => {
-    socket.onopen = () => {
-      console.log("[Socket] Connected");
-      sendInit();
-    };
-
-    socket.onclose = () => {
-      console.log("[Socket] Disconnected");
-    };
-
-    socket.onerror = (error) => {
-      console.error("[Socket] Error:", error);
-      setError("Connection error. Please check if the server is running.");
-    };
-
-    socket.onmessage = (event) => {
+    ws.current = new WebSocket(wsUrl);
+    ws.current.onopen = () => {
       try {
-        const response = JSON.parse(event.data);
-        console.log("[Socket] Received:", response);
-
-        if (response.type === "response") {
-          setServerResponse(response.data);
-        } else if (response.type === "error") {
-          setError(response.message);
-        }
-      } catch (e) {
-        console.error("[Socket] Parse error:", e);
+        ws.current?.send(JSON.stringify(setupConfig));
+        console.log("Setup config sent");
+      } catch (error) {
+        console.error("Failed to send setup config:", error);
       }
-    };
-
-    return () => {
-      socket.close();
     };
   }, []);
 
-  const sendInit = () => {
-    const setupConfig = {
-      setup: { generation_config: { response_modelities: ["audio"] } },
-    };
+  const sendAudioChunks = async (chunks: string) => {
+    const base64 = await FileSystem.readAsStringAsync(chunks, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    ws.current?.send(
+      JSON.stringify({
+        type: "audio",
+        data: base64,
+      })
+    );
+  };
+
+  const startRecording = async () => {
     try {
-      socket.send(JSON.stringify(setupConfig));
-      console.log("[Socket] Sent setup config");
+      const audio_permission = await Audio.requestPermissionsAsync();
+      if (audio_permission.status !== "granted") {
+        alert("Permission to access microphone is required!");
+        return;
+      }
+
+      const recordingOptions: Audio.RecordingOptions = {
+        android: {
+          extension: ".m4a",
+          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+          audioEncoder: Audio.AndroidAudioEncoder.AAC,
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 128000,
+        },
+        ios: {
+          extension: ".wav",
+          audioQuality: Audio.IOSAudioQuality.HIGH,
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 128000,
+          linearPCMBitDepth: 16,
+          linearPCMIsBigEndian: false,
+          linearPCMIsFloat: false,
+        },
+        web: {
+          mimeType: "audio/webm",
+          bitsPerSecond: 128000,
+        },
+      };
+
+      const { recording } = await Audio.Recording.createAsync(recordingOptions);
+      setRecording(recording);
+      console.log("Recording started");
     } catch (err) {
-      console.error("[Socket] Send error:", err);
-      setError("Failed to initialize connection");
+      console.error("Failed to start recording:", err);
     }
   };
 
-  useEffect(() => {
-    const initVoice = async () => {
-      try {
-        // Check if voice is available
-        const isAvailable = await Voice.isAvailable();
-        if (!isAvailable) {
-          console.error("Voice recognition is not available");
-          setError("Voice recognition is not available on this device");
-          return;
-        }
-
-        // Initialize voice recognition
-        await Voice.start("en-US");
-        console.log("[Voice] Initialized");
-      } catch (e) {
-        console.error("[Voice] Init error:", e);
-        setError(`Voice initialization error: ${e}`);
-        Alert.alert(
-          "Voice Error",
-          "Failed to initialize voice recognition. Please try again."
-        );
-      }
-    };
-
-    Voice.onSpeechStart = () => {
-      console.log("[Voice] Started");
-      setListening(true);
-      setError(null);
-    };
-
-    Voice.onSpeechPartialResults = (voiceInput) => {
-      const partial = voiceInput.value?.[0] ?? "";
-      console.log("[Voice] Partial:", partial);
-      setPartialText(partial);
-
-      // Reset silence timer
-      if (silenceTimer.current) {
-        clearTimeout(silenceTimer.current);
-      }
-
-      // Start new silence timer (2s)
-      silenceTimer.current = setTimeout(() => {
-        console.log("🤫 Silence detected. Stopping...");
-        Voice.stop(); // Will trigger onSpeechEnd
-      }, 2000);
-    };
-
-    Voice.onSpeechResults = (e) => {
-      const final = e.value?.[0] ?? "";
-      console.log("[Voice] Final:", final);
-      setFinalText(final);
-      setPartialText("");
-
-      // Send to server
-      if (final && socket.readyState === WebSocket.OPEN) {
-        try {
-          sendInit();
-          socket.send(JSON.stringify({ text: final }));
-        } catch (err) {
-          console.error("[Socket] Send error:", err);
-          setError(`Failed to send message: ${err}`);
-        }
-      }
-    };
-
-    Voice.onSpeechEnd = () => {
-      console.log("[Voice] Ended");
-      setListening(false);
-
-      if (Platform.OS === "ios") {
-        // Add a delay before restarting
-        setTimeout(() => {
-          startListening();
-        }, 1000);
-      }
-    };
-
-    Voice.onSpeechError = (e) => {
-      console.warn("[Voice] Error:", e.error);
-      setError(`Speech recognition error: ${JSON.stringify(e.error)}`);
-      setListening(false);
-
-      // Attempt to restart after error
-      setTimeout(() => {
-        startListening();
-      }, 2000);
-    };
-
-    initVoice();
-
-    return () => {
-      if (silenceTimer.current) {
-        clearTimeout(silenceTimer.current);
-      }
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
-  }, []);
-
-  const startListening = async () => {
+  const stopRecording = async () => {
     try {
-      setError(null);
-      await Voice.start("en-US");
-    } catch (e) {
-      console.error("[Voice] Start error:", e);
-      setError(`Failed to start voice recognition: ${e}`);
-      Alert.alert(
-        "Voice Error",
-        "Failed to start voice recognition. Please try again."
+      if (!recording) return;
+
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      console.log("Recording stopped and stored at", uri);
+      setRecordedUri(uri);
+      setRecording(null);
+    } catch (err) {
+      console.error("Failed to stop recording:", err);
+    }
+  };
+
+  const playRecording = async () => {
+    try {
+      if (!recordedUri) return;
+
+      const { sound: playbackObject } = await Audio.Sound.createAsync(
+        { uri: recordedUri },
+        { shouldPlay: true }
       );
+      sound.current = playbackObject;
+    } catch (error) {
+      console.error("Playback error:", error);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="p-4">
-        <Text className="text-2xl font-bold text-center mb-4">
-          🎤 Auto Voice Recognition
-        </Text>
-
-        <View className="bg-gray-100 rounded-lg p-4 mb-4">
-          <Text className="text-lg mb-2">
-            Status:{" "}
-            <Text className={listening ? "text-green-500" : "text-gray-500"}>
-              {listening ? "✅ Listening" : "⏸️ Paused"}
-            </Text>
-          </Text>
-          <Text className="text-base mb-2">
-            Partial:{" "}
-            <Text className="text-gray-600 italic">{partialText || "..."}</Text>
-          </Text>
-          <Text className="text-base mb-2">
-            Final:{" "}
-            <Text className="text-gray-800 font-medium">
-              {finalText || "---"}
-            </Text>
-          </Text>
-          {serverResponse && (
-            <Text className="text-base mb-2">
-              Response: <Text className="text-blue-600">{serverResponse}</Text>
-            </Text>
-          )}
-          {error && (
-            <Text className="text-red-500 text-sm mt-2">Error: {error}</Text>
-          )}
-        </View>
-
-        <ScrollView className="flex-1">
-          {(partialText || finalText) && (
-            <View className="bg-blue-50 rounded-lg p-4 mb-2">
-              <Text className="text-lg">
-                📝 You said:{" "}
-                <Text className="text-blue-800 font-medium">
-                  "{partialText || finalText}"
-                </Text>
-              </Text>
-            </View>
-          )}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Button
+        title={recording ? "Stop Recording" : "Start Recording"}
+        onPress={recording ? stopRecording : startRecording}
+      />
+      {recordedUri && (
+        <>
+          <Text style={styles.uriText}>Recorded file: {recordedUri}</Text>
+          <Button title="Play Recording" onPress={playRecording} />
+        </>
+      )}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    justifyContent: "center",
+    flex: 1,
+  },
+  uriText: {
+    marginVertical: 10,
+    fontSize: 14,
+  },
+});
 
 export default VoiceChat;

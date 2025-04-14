@@ -40,10 +40,9 @@
         }
       ],
       [
-        "@react-native-voice/voice",
+        "expo-audio",
         {
-          "microphonePermission": "Allow MoodBuddy to access your microphone",
-          "speechRecogntionPermission": "Allow MoodBuddy to securely recognize user speech"
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
         }
       ],
       [

@@ -12,7 +12,7 @@ API_KEY = os.getenv('AI_API')
 print(genai.__version__)
 
 client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1alpha'})
-model = "gemini-2.0-flash-exp"
+model = "gemini-2.0-flash-live-001"
 
 # async def handle_Text_client(websocket):
 #     config = {
@@ -86,24 +86,20 @@ model = "gemini-2.0-flash-exp"
 
 async def handle_request(client_ws):
     try:
-        # Receive initial config
         setup_msg = await client_ws.recv()
         setup_data = json.loads(setup_msg)
         setup = setup_data.get("setup", {})
-
-        # Add system instruction
-        setup["system_instruction"] = (
-            "You are MoodBuddy. "
-            "Moodbuddy facilitates access to mental health care by tackling the top barriers to care, "
-            "so that every person has the support they need and it is always available when and where they need it. "
-            "MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society "
-            "through unyielding guidance and individual attention. "
-            "Talk gently and soft, show your understanding, don't talk too much and don't provide too many suggestion. "
-            "Focus on your understanding is fine."
-        )
-
-        async with client.aio.live.connect(model=model, config=setup) as chat_session:
+        setup["config"]["system_instruction"] = {
+        "parts": [
+            {
+            "text": ("You are MoodBuddy. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention. Talk gently and soft, show your understanding, don't talk too much and don't provide too many suggestion.Focus on your understanding is fine.")
+            }
+        ]
+        }
+        # print("config message:", setup["config"])
+        async with client.aio.live.connect(model=model, config=setup['config']) as chat_session:
             print("[Server] Connected to Gemini")
+           
 
             async def handle_client_input():
                 try:
@@ -155,7 +151,7 @@ async def handle_request(client_ws):
 
 
 async def main():
-    async with websockets.serve(handle_request, "localhost", 5051):
+    async with websockets.serve(handle_request, "0.0.0.0", 5051):
 
         await asyncio.Future()  
 

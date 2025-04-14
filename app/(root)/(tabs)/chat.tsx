@@ -111,7 +111,7 @@ const Chat: React.FC = () => {
             <Image source={icons.send} className="size-6" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => router.push("/voiceChat")}
+            onPress={() => router.push("/voicechat")}
             className="px-4 py-2 rounded-lg"
           >
             <Image source={icons.waveform} className="size-6" />
