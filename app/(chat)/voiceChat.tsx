@@ -4,13 +4,16 @@ import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 
 const VoiceChat = () => {
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [statusText, setStatusText] = useState("Idle");
   const [recordedUri, setRecordedUri] = useState<string | null>(null);
+  const recordingRef = useRef(false);
   const [microphoneOn, setMicrophoneOn] = useState<boolean>(true);
   const sound = useRef<Audio.Sound | null>(null);
   const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
   const ws = useRef<WebSocket | null>(null);
   const wsUrl = `ws://${ipAddress}:5051`;
+
   const setupConfig = {
     setup: {
       config: {
@@ -23,7 +26,6 @@ const VoiceChat = () => {
     },
   };
 
-  // send setup config to gemini when the connection is established
   useEffect(() => {
     ws.current = new WebSocket(wsUrl);
     ws.current.onopen = () => {
@@ -37,15 +39,75 @@ const VoiceChat = () => {
   }, []);
 
   const sendAudioChunks = async (chunks: string) => {
-    const base64 = await FileSystem.readAsStringAsync(chunks, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    ws.current?.send(
-      JSON.stringify({
-        type: "audio",
-        data: base64,
-      })
-    );
+    try {
+      const base64 = await FileSystem.readAsStringAsync(chunks, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      ws.current?.send(
+        JSON.stringify({
+          type: "audio",
+          data: base64,
+        })
+      );
+      console.log("Audio chunk sent");
+    } catch (error) {
+      console.error("Failed to send audio chunk:", error);
+    }
+  };
+
+  const record = async () => {
+    const recordingOptions: Audio.RecordingOptions = {
+      android: {
+        extension: ".m4a",
+        outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+        audioEncoder: Audio.AndroidAudioEncoder.AAC,
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 128000,
+      },
+      ios: {
+        extension: ".wav",
+        audioQuality: Audio.IOSAudioQuality.HIGH,
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 128000,
+        linearPCMBitDepth: 16,
+        linearPCMIsBigEndian: false,
+        linearPCMIsFloat: false,
+      },
+      web: {
+        mimeType: "audio/webm",
+        bitsPerSecond: 128000,
+      },
+    };
+
+    recordingRef.current = true;
+
+    while (recordingRef.current) {
+      let recording: Audio.Recording | null = null;
+
+      try {
+        recording = new Audio.Recording();
+        await recording.prepareToRecordAsync(recordingOptions);
+        await recording.startAsync();
+        console.log("Recording...");
+
+        await new Promise((res) => setTimeout(res, 3000));
+
+        await recording.stopAndUnloadAsync();
+        const uri = recording.getURI();
+        if (uri) {
+          await sendAudioChunks(uri);
+        }
+      } catch (error) {
+        console.error("Failed to record audio:", error);
+        break;
+      } finally {
+        if (recording) {
+          await recording.stopAndUnloadAsync().catch(() => {});
+        }
+      }
+    }
   };
 
   const startRecording = async () => {
@@ -56,33 +118,15 @@ const VoiceChat = () => {
         return;
       }
 
-      const recordingOptions: Audio.RecordingOptions = {
-        android: {
-          extension: ".m4a",
-          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
-          audioEncoder: Audio.AndroidAudioEncoder.AAC,
-          sampleRate: 44100,
-          numberOfChannels: 1,
-          bitRate: 128000,
-        },
-        ios: {
-          extension: ".wav",
-          audioQuality: Audio.IOSAudioQuality.HIGH,
-          sampleRate: 44100,
-          numberOfChannels: 1,
-          bitRate: 128000,
-          linearPCMBitDepth: 16,
-          linearPCMIsBigEndian: false,
-          linearPCMIsFloat: false,
-        },
-        web: {
-          mimeType: "audio/webm",
-          bitsPerSecond: 128000,
-        },
-      };
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
 
-      const { recording } = await Audio.Recording.createAsync(recordingOptions);
-      setRecording(recording);
+      setMicrophoneOn(true);
+      setIsRecording(true);
+      record();
+
       console.log("Recording started");
     } catch (err) {
       console.error("Failed to start recording:", err);
@@ -90,17 +134,10 @@ const VoiceChat = () => {
   };
 
   const stopRecording = async () => {
-    try {
-      if (!recording) return;
-
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      console.log("Recording stopped and stored at", uri);
-      setRecordedUri(uri);
-      setRecording(null);
-    } catch (err) {
-      console.error("Failed to stop recording:", err);
-    }
+    recordingRef.current = false;
+    setMicrophoneOn(false);
+    setIsRecording(false);
+    console.log("Recording stopped");
   };
 
   const playRecording = async () => {
@@ -120,15 +157,10 @@ const VoiceChat = () => {
   return (
     <View style={styles.container}>
       <Button
-        title={recording ? "Stop Recording" : "Start Recording"}
-        onPress={recording ? stopRecording : startRecording}
+        title={isRecording ? "Stop Recording" : "Start Recording"}
+        onPress={isRecording ? stopRecording : startRecording}
       />
-      {recordedUri && (
-        <>
-          <Text style={styles.uriText}>Recorded file: {recordedUri}</Text>
-          <Button title="Play Recording" onPress={playRecording} />
-        </>
-      )}
+      <Text style={styles.status}>{statusText}</Text>
     </View>
   );
 };
@@ -136,12 +168,13 @@ const VoiceChat = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    justifyContent: "center",
     flex: 1,
+    justifyContent: "center",
   },
-  uriText: {
-    marginVertical: 10,
+  status: {
+    marginTop: 10,
     fontSize: 14,
+    textAlign: "center",
   },
 });
 
