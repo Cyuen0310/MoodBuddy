@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,16 +7,25 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import icons from "@/constants/icons";
+import YoutubeIframe from "react-native-youtube-iframe";
+
+const { width } = Dimensions.get("window"); // Get screen width
 
 const SleepTherapy: React.FC = () => {
   const router = useRouter();
+  const [playing, setPlaying] = useState(true);
 
   const handleGoBack = () => {
     router.push("/");
   };
+
+  useEffect(() => {
+    setPlaying(true);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,6 +45,16 @@ const SleepTherapy: React.FC = () => {
           Welcome to your sleep therapy journey. Explore various techniques to
           enhance your sleep quality and promote relaxation.
         </Text>
+
+        {/* YouTube Video */}
+        <View style={styles.youtubeContainer}>
+          <YoutubeIframe
+            height={220} 
+            width={width - 32}
+            videoId="U6Ay9v7gK9w"
+            play={playing}
+          />
+        </View>
 
         <View style={styles.card}>
           <Image source={icons.bed} style={styles.cardImage} />
@@ -148,6 +167,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  youtubeContainer: {
+    marginBottom: 20,
   },
 });
 

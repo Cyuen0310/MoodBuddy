@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,20 +7,25 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Dimensions, // Import Dimensions
+  Dimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import icons from "@/constants/icons";
-import YoutubeIframe from "react-native-youtube-iframe"; // Import YoutubeIframe
+import YoutubeIframe from "react-native-youtube-iframe";
 
 const { width } = Dimensions.get("window"); // Get screen width
 
 const Meditation: React.FC = () => {
   const router = useRouter();
+  const [playing, setPlaying] = useState(true);
 
   const handleGoBack = () => {
     router.push("/");
   };
+
+  useEffect(() => {
+    setPlaying(true);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,9 +49,10 @@ const Meditation: React.FC = () => {
         {/* YouTube Video */}
         <View style={styles.youtubeContainer}>
           <YoutubeIframe
-            height={220} // Adjust height as needed
-            width={width - 32} // Adjust width to screen width minus padding
-            videoId="QHkXvPq2pQE" // Replace with your YouTube video ID
+            height={220}
+            width={width - 32}
+            videoId="QHkXvPq2pQE"
+            play={playing}
           />
         </View>
 
@@ -75,8 +81,8 @@ const Meditation: React.FC = () => {
           <Image source={icons.guidedMeditation} style={styles.cardImage} />
           <Text style={styles.cardTitle}>Guided Meditation</Text>
           <Text style={styles.cardDescription}>
-            Listen to a guided meditation audio to help you focus and relax. You
-            can find various guided meditations online or use a meditation app.
+            Listen to our exclusive guided meditation audio to help you focus
+            and relax.
           </Text>
         </View>
       </ScrollView>
