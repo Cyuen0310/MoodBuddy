@@ -72,7 +72,7 @@ const Chat: React.FC = () => {
     if (userInput.trim() && ws.current) {
       const userMessage = { text: userInput, user: true };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-      // Send the raw message text rather than a JSON object
+
       ws.current.send(JSON.stringify({ type: "text", data: userInput }));
       setUserInput("");
     }

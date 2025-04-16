@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Button, Text, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const VoiceChat = () => {
+  const router = useRouter();
   const [isRecording, setIsRecording] = useState(false);
-  const [statusText, setStatusText] = useState("Idle");
+  const [statusText, setStatusText] = useState(
+    "Tap the microphone to start speaking"
+  );
   const recordingRef = useRef(false);
   const playingRef = useRef(false);
   const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
@@ -114,36 +119,59 @@ const VoiceChat = () => {
     });
 
     setIsRecording(true);
+    setStatusText("Listening...");
     record();
   };
 
   const stopRecording = () => {
     recordingRef.current = false;
     setIsRecording(false);
+    setStatusText("Tap the microphone to start speaking");
   };
 
   return (
-    <View style={styles.container}>
-      <Button
-        title={isRecording ? "Stop Recording" : "Start Recording"}
-        onPress={isRecording ? stopRecording : startRecording}
-      />
-      <Text style={styles.status}>{statusText}</Text>
-    </View>
+    <SafeAreaView className="flex-1 bg-white">
+      <TouchableOpacity
+        onPress={() => router.back()}
+        className="absolute top-16 left-6 z-10 w-10 h-10 rounded-full bg-gray-200 items-center justify-center"
+      >
+        <Ionicons name="close" size={24} color="#333" />
+      </TouchableOpacity>
+
+      <View className="flex-1 items-center justify-center px-6">
+        {/* Central Mic Button */}
+        <View className="items-center">
+          <View
+            className={`w-64 h-64 rounded-full items-center justify-center ${
+              isRecording ? "bg-red-50" : "bg-gray-50"
+            } border ${isRecording ? "border-red-200" : "border-gray-200"}`}
+          >
+            <View
+              className={`w-48 h-48 rounded-full items-center justify-center ${
+                isRecording ? "bg-red-100" : "bg-gray-100"
+              }`}
+            >
+              <TouchableOpacity
+                onPress={isRecording ? stopRecording : startRecording}
+                className={`w-32 h-32 rounded-full items-center justify-center ${
+                  isRecording ? "bg-red-500" : "bg-green-900"
+                } shadow-md`}
+              >
+                <Ionicons
+                  name={isRecording ? "stop" : "mic"}
+                  size={48}
+                  color="white"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Text className="text-gray-600 text-lg mt-8 text-center">
+            {statusText}
+          </Text>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 24,
-    flex: 1,
-    justifyContent: "center",
-  },
-  status: {
-    marginTop: 10,
-    fontSize: 14,
-    textAlign: "center",
-  },
-});
 
 export default VoiceChat;

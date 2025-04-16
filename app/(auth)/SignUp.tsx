@@ -1,48 +1,28 @@
 import React, { useState } from "react";
-import { Platform, ScrollView, TouchableWithoutFeedback } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { StatusBar } from "expo-status-bar";
 import {
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
   View,
   Text,
-  Button,
-  TextInputProps,
   Image,
-  ImageSourcePropType,
+  TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Keyboard,
+  SafeAreaView,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Ionicons, Octicons } from "@expo/vector-icons";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
+import { Ionicons } from "@expo/vector-icons";
 import * as Yup from "yup";
 import { FirebaseError } from "firebase/app";
 import { signup } from "./auth";
-import {
-  Styledcontainer,
-  InnerContainer,
-  PageLogo,
-  SubTitle,
-  StyledFromArea,
-  LeftIcon,
-  RightIcon,
-  StyledInputLabel,
-  StyledTextInput,
-  Colors,
-  StyledButton,
-  ButtonText,
-  MsgBox,
-  Line,
-  ExtraText,
-  ExtraView,
-  TextLink,
-  TextLinkContent,
-  PageTitle,
-} from "@/components/style/style";
-import { KeyboardAvoidingView } from "react-native";
-import { Keyboard } from "react-native";
-const { darkLight, brand } = Colors;
 
 interface FormValues {
   username: string;
@@ -53,8 +33,16 @@ interface FormValues {
   password: string;
   confirmpassword: string;
 }
+
 const SignUpScreen = () => {
   const router = useRouter();
+  const [hidePassword, setPassword] = useState(true);
+  const [hideCPassword, setCPassword] = useState(true);
+  const [gender, setGender] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dob, setDob] = useState(new Date());
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSubmit = async (values: FormValues) => {
     setErrorMessage("");
     try {
@@ -75,13 +63,6 @@ const SignUpScreen = () => {
       }
     }
   };
-
-  const [hidePassword, setPassword] = useState(true);
-  const [hideCPassword, setCPassword] = useState(true);
-  const [gender, setGender] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dob, setDob] = useState(new Date());
-  const [errorMessage, setErrorMessage] = useState("");
 
   const onChangeDob = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (event.type === "set") {
@@ -110,92 +91,146 @@ const SignUpScreen = () => {
   });
 
   return (
-    <Styledcontainer>
+    <SafeAreaView className="flex-1 bg-white">
       <StatusBar style="dark" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        className="flex-1"
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
+            className="flex-1 px-8"
+            contentContainerStyle={{ paddingBottom: 60 }}
             keyboardShouldPersistTaps="handled"
           >
-            <InnerContainer>
-              <PageTitle>Mood Buddy</PageTitle>
-              <SubTitle>Sign Up</SubTitle>
-              <Formik
-                initialValues={{
-                  username: "",
-                  fullname: "",
-                  email: "",
-                  dob: dob.toLocaleDateString(),
-                  password: "",
-                  gender: "",
-                  confirmpassword: "",
-                }}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-              >
-                {({
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  errors,
-                  values,
-                  touched,
-                }) => (
-                  <StyledFromArea>
-                    <UserTextInput
-                      label="User Name *"
-                      icon={require("@/assets/images/user.png")}
-                      placeholder="User Name"
-                      placeholderTextColor={darkLight}
-                      onChangeText={handleChange("username")}
-                      onBlur={handleBlur("username")}
-                      value={values.username}
-                    />
+            <View className="items-center my-10">
+              <Text className="text-4xl font-bold text-gray-800">
+                Mood Buddy
+              </Text>
+              <Text className="text-xl text-gray-500 mt-4">Create Account</Text>
+            </View>
+
+            <Formik
+              initialValues={{
+                username: "",
+                fullname: "",
+                email: "",
+                dob: dob.toLocaleDateString(),
+                password: "",
+                gender: "",
+                confirmpassword: "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                errors,
+                values,
+                touched,
+              }) => (
+                <View className="space-y-12">
+                  <View className="mb-10">
+                    <Text className="text-black font-medium mb-1 ml-1 text-lg">
+                      Username *
+                    </Text>
+                    <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
+                      <View className="items-center justify-center w-14">
+                        <Image
+                          source={require("@/assets/images/user.png")}
+                          className="w-6 h-6 opacity-60"
+                        />
+                      </View>
+                      <TextInput
+                        className="flex-1 text-lg h-full"
+                        placeholder="Enter username"
+                        placeholderTextColor="#999"
+                        onChangeText={handleChange("username")}
+                        onBlur={handleBlur("username")}
+                        value={values.username}
+                      />
+                    </View>
                     {errors.username && touched.username && (
-                      <Text style={{ color: "red" }}>{errors.username}</Text>
+                      <Text className="text-red-500 mt-2 ml-1 text-base">
+                        {errors.username}
+                      </Text>
                     )}
+                  </View>
 
-                    <UserTextInput
-                      label="Full Name"
-                      icon={require("@/assets/images/user.png")}
-                      placeholder="Full Name"
-                      placeholderTextColor={darkLight}
-                      onChangeText={handleChange("fullname")}
-                      onBlur={handleBlur("fullname")}
-                      value={values.fullname}
-                    />
+                  <View className="mb-10">
+                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                      Full Name
+                    </Text>
+                    <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
+                      <View className="items-center justify-center w-14">
+                        <Image
+                          source={require("@/assets/images/user.png")}
+                          className="w-6 h-6 opacity-60"
+                        />
+                      </View>
+                      <TextInput
+                        className="flex-1 text-lg h-full"
+                        placeholder="Enter your full name"
+                        placeholderTextColor="#999"
+                        onChangeText={handleChange("fullname")}
+                        onBlur={handleBlur("fullname")}
+                        value={values.fullname}
+                      />
+                    </View>
+                  </View>
 
-                    <UserTextInput
-                      label="Email Address*"
-                      icon={require("@/assets/images/email.png")}
-                      placeholder="user@example.com"
-                      placeholderTextColor={darkLight}
-                      onChangeText={handleChange("email")}
-                      onBlur={handleBlur("email")}
-                      value={values.email}
-                      keyboardType="email-address"
-                    />
+                  <View className="mb-10">
+                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                      Email Address *
+                    </Text>
+                    <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
+                      <View className="items-center justify-center w-14">
+                        <Image
+                          source={require("@/assets/images/email.png")}
+                          className="w-6 h-6 opacity-60"
+                        />
+                      </View>
+                      <TextInput
+                        className="flex-1 text-lg h-full"
+                        placeholder="example@email.com"
+                        placeholderTextColor="#999"
+                        onChangeText={handleChange("email")}
+                        onBlur={handleBlur("email")}
+                        value={values.email}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                      />
+                    </View>
                     {errors.email && touched.email && (
-                      <Text style={{ color: "red" }}>{errors.email}</Text>
+                      <Text className="text-red-500 mt-2 ml-1 text-base">
+                        {errors.email}
+                      </Text>
                     )}
+                  </View>
 
-                    <UserTextInput
-                      label="Date of Birth"
-                      icon={require("@/assets/images/cake.png")}
-                      placeholder="DD - MM - YYYY"
-                      placeholderTextColor={darkLight}
-                      onChangeText={handleChange("DOB")}
-                      onBlur={handleBlur("DOB")}
-                      value={dob.toLocaleDateString()}
-                      onFocus={() => {
+                  <View className="mb-10">
+                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                      Date of Birth
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
                         Keyboard.dismiss();
                         setShowDatePicker(true);
                       }}
-                    />
+                      className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100"
+                    >
+                      <View className="items-center justify-center w-14">
+                        <Image
+                          source={require("@/assets/images/cake.png")}
+                          className="w-6 h-6 opacity-60"
+                        />
+                      </View>
+                      <Text className="flex-1 text-lg text-gray-700">
+                        {dob.toLocaleDateString()}
+                      </Text>
+                    </TouchableOpacity>
                     {showDatePicker && (
                       <DateTimePicker
                         value={dob}
@@ -205,188 +240,210 @@ const SignUpScreen = () => {
                         maximumDate={new Date()}
                       />
                     )}
+                  </View>
 
-                    <View>
-                      <StyledInputLabel>Gender*</StyledInputLabel>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-around",
+                  <View className="mb-10">
+                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                      Gender *
+                    </Text>
+                    <View className="flex-row justify-between bg-gray-50 rounded-2xl p-5 shadow-sm border border-gray-100">
+                      <TouchableOpacity
+                        onPress={() => {
+                          setGender("male");
+                          handleChange("gender")("male");
                         }}
+                        className={`items-center justify-center py-4 rounded-xl flex-1 mx-1 ${
+                          gender === "male"
+                            ? "bg-blue-100 border border-blue-200"
+                            : ""
+                        }`}
                       >
-                        <TouchableOpacity
-                          onPress={() => {
-                            setGender("male");
-                            handleChange("gender")("male");
-                          }}
+                        <Ionicons
+                          name="male"
+                          size={32}
+                          color={gender === "male" ? "#3b82f6" : "#9ca3af"}
+                        />
+                        <Text
+                          className={`mt-2 font-medium text-base ${
+                            gender === "male"
+                              ? "text-blue-500"
+                              : "text-gray-500"
+                          }`}
                         >
-                          <Ionicons
-                            name="male"
-                            size={30}
-                            color={gender === "male" ? "blue" : "gray"}
-                          />
-                          <Text>Male</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setGender("female");
-                            handleChange("gender")("female");
-                          }}
+                          Male
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setGender("female");
+                          handleChange("gender")("female");
+                        }}
+                        className={`items-center justify-center py-4 rounded-xl flex-1 mx-1 ${
+                          gender === "female"
+                            ? "bg-pink-100 border border-pink-200"
+                            : ""
+                        }`}
+                      >
+                        <Ionicons
+                          name="female"
+                          size={32}
+                          color={gender === "female" ? "#ec4899" : "#9ca3af"}
+                        />
+                        <Text
+                          className={`mt-2 font-medium text-base ${
+                            gender === "female"
+                              ? "text-pink-500"
+                              : "text-gray-500"
+                          }`}
                         >
-                          <Ionicons
-                            name="female"
-                            size={30}
-                            color={gender === "female" ? "blue" : "gray"}
-                          />
-                          <Text>Female</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setGender("other");
-                            handleChange("gender")("other");
+                          Female
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setGender("other");
+                          handleChange("gender")("other");
+                        }}
+                        className={`items-center justify-center py-4 rounded-xl flex-1 mx-1 ${
+                          gender === "other"
+                            ? "bg-purple-100 border border-purple-200"
+                            : ""
+                        }`}
+                      >
+                        <Image
+                          source={require("@/assets/images/genderless.png")}
+                          className="w-8 h-8"
+                          style={{
+                            tintColor:
+                              gender === "other" ? "#8b5cf6" : "#9ca3af",
                           }}
-                          style={{ alignItems: "center" }}
+                        />
+                        <Text
+                          className={`mt-2 font-medium text-base ${
+                            gender === "other"
+                              ? "text-purple-500"
+                              : "text-gray-500"
+                          }`}
                         >
-                          <Image
-                            source={require("@/assets/images/genderless.png")}
-                            style={{
-                              width: 30,
-                              height: 30,
-                              tintColor: gender === "other" ? "blue" : "gray",
-                            }}
-                          />
-                          <Text>Other</Text>
-                        </TouchableOpacity>
-                      </View>
+                          Other
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                     {errors.gender && touched.gender && (
-                      <Text style={{ color: "red" }}>{errors.gender}</Text>
+                      <Text className="text-red-500 mt-2 ml-1 text-base">
+                        {errors.gender}
+                      </Text>
                     )}
+                  </View>
 
-                    <UserTextInput
-                      label="Password*"
-                      icon={require("@/assets/images/padlock.png")}
-                      placeholder="* * * * * *"
-                      placeholderTextColor={darkLight}
-                      onChangeText={handleChange("password")}
-                      onBlur={handleBlur("password")}
-                      value={values.password}
-                      secureTextEntry={hidePassword}
-                      isPassword={true}
-                      hidePassword={hidePassword}
-                      setPassword={setPassword}
-                    />
+                  <View className="mb-10">
+                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                      Password *
+                    </Text>
+                    <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
+                      <View className="items-center justify-center w-14">
+                        <Image
+                          source={require("@/assets/images/padlock.png")}
+                          className="w-6 h-6 opacity-60"
+                        />
+                      </View>
+                      <TextInput
+                        className="flex-1 text-lg h-full"
+                        placeholder="Create password"
+                        placeholderTextColor="#999"
+                        onChangeText={handleChange("password")}
+                        onBlur={handleBlur("password")}
+                        value={values.password}
+                        secureTextEntry={hidePassword}
+                      />
+                      <TouchableOpacity
+                        onPress={() => setPassword(!hidePassword)}
+                        className="pr-5"
+                      >
+                        <Ionicons
+                          name={hidePassword ? "eye-off" : "eye"}
+                          size={24}
+                          color="#666"
+                        />
+                      </TouchableOpacity>
+                    </View>
                     {errors.password && touched.password && (
-                      <Text style={{ color: "red" }}>{errors.password}</Text>
+                      <Text className="text-red-500 mt-2 ml-1 text-base">
+                        {errors.password}
+                      </Text>
                     )}
+                  </View>
 
-                    <UserTextInput
-                      label="Confirm Password*"
-                      icon={require("@/assets/images/padlock.png")}
-                      placeholder="* * * * * *"
-                      placeholderTextColor={darkLight}
-                      onChangeText={handleChange("confirmpassword")}
-                      onBlur={handleBlur("confirmpassword")}
-                      value={values.confirmpassword}
-                      secureTextEntry={hideCPassword}
-                      isPassword={true}
-                      hidePassword={hideCPassword}
-                      setPassword={setCPassword}
-                    />
+                  <View className="mb-10">
+                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                      Confirm Password *
+                    </Text>
+                    <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
+                      <View className="items-center justify-center w-14">
+                        <Image
+                          source={require("@/assets/images/padlock.png")}
+                          className="w-6 h-6 opacity-60"
+                        />
+                      </View>
+                      <TextInput
+                        className="flex-1 text-lg h-full"
+                        placeholder="Confirm password"
+                        placeholderTextColor="#999"
+                        onChangeText={handleChange("confirmpassword")}
+                        onBlur={handleBlur("confirmpassword")}
+                        value={values.confirmpassword}
+                        secureTextEntry={hideCPassword}
+                      />
+                      <TouchableOpacity
+                        onPress={() => setCPassword(!hideCPassword)}
+                        className="pr-5"
+                      >
+                        <Ionicons
+                          name={hideCPassword ? "eye-off" : "eye"}
+                          size={24}
+                          color="#666"
+                        />
+                      </TouchableOpacity>
+                    </View>
                     {errors.confirmpassword && touched.confirmpassword && (
-                      <Text style={{ color: "red" }}>
+                      <Text className="text-red-500 mt-2 ml-1 text-base">
                         {errors.confirmpassword}
                       </Text>
                     )}
-                    {errorMessage ? (
-                      <MsgBox style={{ color: "red" }}>{errorMessage}</MsgBox>
-                    ) : null}
+                  </View>
 
-                    <StyledButton onPress={() => handleSubmit()}>
-                      <ButtonText>Next</ButtonText>
-                    </StyledButton>
-                    <Line />
-                    <ExtraView>
-                      <ExtraText> Have an account already? </ExtraText>
-                      <TextLink onPress={() => router.replace("/Login")}>
-                        <TextLinkContent>Login</TextLinkContent>
-                      </TextLink>
-                    </ExtraView>
-                  </StyledFromArea>
-                )}
-              </Formik>
-            </InnerContainer>
+                  {errorMessage ? (
+                    <Text className="text-red-500 text-center text-base">
+                      {errorMessage}
+                    </Text>
+                  ) : null}
+
+                  <TouchableOpacity
+                    className="bg-green-900 py-5 rounded-xl mt-8 shadow-md"
+                    onPress={() => handleSubmit()}
+                  >
+                    <Text className="text-white text-center text-xl font-semibold">
+                      Create Account
+                    </Text>
+                  </TouchableOpacity>
+
+                  <View className="flex-row justify-center mt-8">
+                    <Text className="text-gray-500 text-lg">
+                      Have an account already?{" "}
+                    </Text>
+                    <TouchableOpacity onPress={() => router.replace("/Login")}>
+                      <Text className="text-blue-500 font-semibold text-lg">
+                        Sign In
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </Formik>
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </Styledcontainer>
-  );
-};
-
-const UserTextInput = ({
-  label,
-  icon,
-  isPassword = false,
-  hidePassword,
-  setPassword,
-  isPicker = false,
-  onValueChange,
-  placeholder,
-  pickerItems = [],
-  ...props
-}: {
-  label: string;
-  icon: ImageSourcePropType;
-  isPassword?: boolean;
-  hidePassword?: boolean;
-  setPassword?: React.Dispatch<React.SetStateAction<boolean>>;
-  isPicker?: boolean;
-  onValueChange?: (itemValue: string) => void;
-  pickerItems?: { label: string; value: string }[];
-  selectedValue?: string;
-  placeholder?: string;
-} & TextInputProps) => {
-  return (
-    <View>
-      <LeftIcon>
-        <Image source={icon} style={{ width: 30, height: 30 }} />
-      </LeftIcon>
-      <StyledInputLabel>{label}</StyledInputLabel>
-      {isPicker ? (
-        <View style={{ marginLeft: 60 }}>
-          <Picker
-            selectedValue={props.value}
-            onValueChange={onValueChange}
-            style={{
-              height: 60,
-              width: "100%",
-              backgroundColor: "#E5E7E8",
-            }}
-          >
-            <Picker.Item label={placeholder} value="" enabled={false} />
-            {pickerItems.map((item) => (
-              <Picker.Item
-                label={item.label}
-                value={item.value}
-                key={item.value}
-              />
-            ))}
-          </Picker>
-        </View>
-      ) : (
-        <StyledTextInput {...props} />
-      )}
-      {isPassword && (
-        <RightIcon>
-          <Ionicons
-            name={hidePassword ? "eye-off" : "eye"}
-            size={30}
-            color={darkLight}
-            onPress={() => setPassword?.(!hidePassword)}
-          />
-        </RightIcon>
-      )}
-    </View>
+    </SafeAreaView>
   );
 };
 

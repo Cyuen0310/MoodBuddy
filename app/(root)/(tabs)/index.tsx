@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import icons from "@/constants/icons";
 import { auth, fetchUserData } from "@/app/(auth)/auth";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
