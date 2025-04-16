@@ -4,12 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Alert,
+  SafeAreaView,
+  Image,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import {
   getFirestore,
@@ -19,17 +20,6 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { auth } from "./auth";
-import {
-  Styledcontainer,
-  InnerContainer,
-  PageTitle,
-  SubTitle,
-  ExtraText,
-  ExtraView,
-  TextLink,
-  TextLinkContent,
-  MsgBox,
-} from "@/components/style/style";
 
 const ResetPasswordPage = () => {
   const router = useRouter();
@@ -57,6 +47,7 @@ const ResetPasswordPage = () => {
       }
     }
   };
+
   const checkEmailInDatabase = async (email: string) => {
     const db = getFirestore();
     const usersRef = collection(db, "users");
@@ -67,63 +58,58 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <Styledcontainer>
+    <SafeAreaView className="flex-1 bg-white">
       <StatusBar style="dark" />
-      <InnerContainer style={styles.innerContainer}>
-        <PageTitle>Mood Buddy</PageTitle>
-        <SubTitle>Forget Password</SubTitle>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email Address"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errorMessage ? (
-          <MsgBox style={{ color: "red" }}>{errorMessage}</MsgBox>
-        ) : null}
-        <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-          <Text style={styles.buttonText}>Send Reset Email</Text>
-        </TouchableOpacity>
+      <View className="flex-1 items-center justify-center px-6">
+        <View className="w-full max-w-sm items-center">
+          <Text className="font-nunito-bold text-3xl text-gray-800 mb-2">
+            MoodBuddy
+          </Text>
+          <Text className="font-nunito text-xl text-gray-600 mb-8">
+            Forgot Password
+          </Text>
 
-        <ExtraView>
-          <ExtraText> Remember the password? </ExtraText>
-          <TextLink onPress={() => router.replace("/Login")}>
-            <TextLinkContent>Login</TextLinkContent>
-          </TextLink>
-        </ExtraView>
-      </InnerContainer>
-    </Styledcontainer>
+          <View className="w-full space-y-4">
+            <TextInput
+              className="w-full h-14 border border-gray-300 rounded-xl px-4 font-nunito text-base bg-gray-50"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email Address"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#9ca3af"
+            />
+
+            {errorMessage ? (
+              <Text className="font-nunito text-red-500 text-center">
+                {errorMessage}
+              </Text>
+            ) : null}
+
+            <TouchableOpacity
+              className="w-full bg-green-900 py-4 rounded-xl items-center mt-4"
+              onPress={handleResetPassword}
+            >
+              <Text className="font-nunito-medium text-white text-bg">
+                Send Reset Email
+              </Text>
+            </TouchableOpacity>
+
+            <View className="flex-row justify-center items-center mt-6">
+              <Text className="font-nunito text-lg text-gray-600">
+                Remember the password?
+              </Text>
+              <TouchableOpacity onPress={() => router.replace("/Login")}>
+                <Text className="font-nunito-bold text-blue-700 text-lg ml-1">
+                  Login
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  innerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  input: {
-    height: 60,
-    width: 245,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 12,
-    marginBottom: 25,
-    fontSize: 17,
-  },
-  button: {
-    backgroundColor: "#3b5998",
-    width: 245,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 17,
-  },
-});
 
 export default ResetPasswordPage;

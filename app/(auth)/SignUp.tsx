@@ -104,10 +104,12 @@ const SignUpScreen = () => {
             keyboardShouldPersistTaps="handled"
           >
             <View className="items-center my-10">
-              <Text className="text-4xl font-bold text-gray-800">
+              <Text className="text-4xl font-nunito-extra-bold text-gray-800">
                 Mood Buddy
               </Text>
-              <Text className="text-xl text-gray-500 mt-4">Create Account</Text>
+              <Text className="text-xl font-nunito-extra-bold text-gray-500 mt-4">
+                Create Account
+              </Text>
             </View>
 
             <Formik
@@ -133,7 +135,7 @@ const SignUpScreen = () => {
               }) => (
                 <View className="space-y-12">
                   <View className="mb-10">
-                    <Text className="text-black font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-black font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Username *
                     </Text>
                     <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
@@ -144,7 +146,7 @@ const SignUpScreen = () => {
                         />
                       </View>
                       <TextInput
-                        className="flex-1 text-lg h-full"
+                        className="flex-1 text-lg h-full font-nunito-extra-bold"
                         placeholder="Enter username"
                         placeholderTextColor="#999"
                         onChangeText={handleChange("username")}
@@ -160,7 +162,7 @@ const SignUpScreen = () => {
                   </View>
 
                   <View className="mb-10">
-                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Full Name
                     </Text>
                     <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
@@ -171,7 +173,7 @@ const SignUpScreen = () => {
                         />
                       </View>
                       <TextInput
-                        className="flex-1 text-lg h-full"
+                        className="flex-1 text-lg h-full font-nunito-extra-bold"
                         placeholder="Enter your full name"
                         placeholderTextColor="#999"
                         onChangeText={handleChange("fullname")}
@@ -182,7 +184,7 @@ const SignUpScreen = () => {
                   </View>
 
                   <View className="mb-10">
-                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Email Address *
                     </Text>
                     <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
@@ -193,7 +195,7 @@ const SignUpScreen = () => {
                         />
                       </View>
                       <TextInput
-                        className="flex-1 text-lg h-full"
+                        className="flex-1 text-lg h-full font-nunito-extra-bold"
                         placeholder="example@email.com"
                         placeholderTextColor="#999"
                         onChangeText={handleChange("email")}
@@ -211,7 +213,7 @@ const SignUpScreen = () => {
                   </View>
 
                   <View className="mb-10">
-                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Date of Birth
                     </Text>
                     <TouchableOpacity
@@ -227,7 +229,7 @@ const SignUpScreen = () => {
                           className="w-6 h-6 opacity-60"
                         />
                       </View>
-                      <Text className="flex-1 text-lg text-gray-700">
+                      <Text className="flex-1 text-lg text-gray-700 font-nunito-extra-bold">
                         {dob.toLocaleDateString()}
                       </Text>
                     </TouchableOpacity>
@@ -243,7 +245,7 @@ const SignUpScreen = () => {
                   </View>
 
                   <View className="mb-10">
-                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Gender *
                     </Text>
                     <View className="flex-row justify-between bg-gray-50 rounded-2xl p-5 shadow-sm border border-gray-100">
@@ -337,7 +339,7 @@ const SignUpScreen = () => {
                   </View>
 
                   <View className="mb-10">
-                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Password *
                     </Text>
                     <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
@@ -375,7 +377,7 @@ const SignUpScreen = () => {
                   </View>
 
                   <View className="mb-10">
-                    <Text className="text-gray-700 font-medium mb-1 ml-1 text-lg">
+                    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
                       Confirm Password *
                     </Text>
                     <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
@@ -386,7 +388,7 @@ const SignUpScreen = () => {
                         />
                       </View>
                       <TextInput
-                        className="flex-1 text-lg h-full"
+                        className="flex-1 text-lg h-full font-nunito-extra-bold"
                         placeholder="Confirm password"
                         placeholderTextColor="#999"
                         onChangeText={handleChange("confirmpassword")}
@@ -422,7 +424,7 @@ const SignUpScreen = () => {
                     className="bg-green-900 py-5 rounded-xl mt-8 shadow-md"
                     onPress={() => handleSubmit()}
                   >
-                    <Text className="text-white text-center text-xl font-semibold">
+                    <Text className="text-white text-center text-xl font-nunito-extra-bold">
                       Create Account
                     </Text>
                   </TouchableOpacity>
@@ -432,7 +434,7 @@ const SignUpScreen = () => {
                       Have an account already?{" "}
                     </Text>
                     <TouchableOpacity onPress={() => router.replace("/Login")}>
-                      <Text className="text-blue-500 font-semibold text-lg">
+                      <Text className="text-blue-500 font-nunito-extra-bold text-lg">
                         Sign In
                       </Text>
                     </TouchableOpacity>

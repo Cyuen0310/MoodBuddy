@@ -11,14 +11,19 @@ import {
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import icons from "@/constants/icons";
-import { fetchUserData, auth } from '../(auth)/auth'; 
+import { fetchUserData, auth } from "../(auth)/auth";
 import { getFirestore, setDoc, doc } from "firebase/firestore";
-import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
+import {
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { FirebaseError } from "firebase/app";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAvoidingView } from "react-native";
+import PhotoUpload from "@/components/photoUpload";
 
 interface InputFieldProps {
   label: string;
@@ -77,15 +82,22 @@ interface DateSelectorProps {
   onChange: (date: Date) => void;
 }
 
-const DateSelector: React.FC<DateSelectorProps> = ({ label, value, onChange }) => {
+const DateSelector: React.FC<DateSelectorProps> = ({
+  label,
+  value,
+  onChange,
+}) => {
   const [show, setShow] = useState(false);
 
-  const handleChange = useCallback((event: any, selectedDate?: Date) => {
-    setShow(Platform.OS === "ios");
-    if (selectedDate) {
-      onChange(selectedDate);
-    }
-  }, [onChange]);
+  const handleChange = useCallback(
+    (event: any, selectedDate?: Date) => {
+      setShow(Platform.OS === "ios");
+      if (selectedDate) {
+        onChange(selectedDate);
+      }
+    },
+    [onChange]
+  );
 
   return (
     <View className="mb-6">
@@ -135,6 +147,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserDataFromFirestore = async () => {
@@ -146,6 +160,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
         setUsername(dbUserData.username || "");
         setEmail(dbUserData.email || "");
         setMbti(dbUserData.mbti || "");
+
+        if (dbUserData.avatar) {
+          setAvatar(dbUserData.avatar);
+        }
 
         const dobString = dbUserData.dob;
         const dobParts = dobString.split("/");
@@ -168,21 +186,26 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
       dob: dateOfBirth.toLocaleDateString(),
       gender,
       mbti,
+      avatar: avatar || "",
     };
 
     const user = await AsyncStorage.getItem("user");
     if (user) {
       const userData = JSON.parse(user);
       try {
-        await setDoc(doc(getFirestore(), 'users', userData.uid), updatedUser);
+        await setDoc(doc(getFirestore(), "users", userData.uid), updatedUser);
 
-        await AsyncStorage.setItem('user', JSON.stringify({ 
-          uid: userData.uid, 
-          username: updatedUser.username, 
-          email: updatedUser.email,
-          fullname: updatedUser.fullname, 
-          mbti: updatedUser.mbti,
-        }));
+        await AsyncStorage.setItem(
+          "user",
+          JSON.stringify({
+            uid: userData.uid,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            fullname: updatedUser.fullname,
+            mbti: updatedUser.mbti,
+            avatar: updatedUser.avatar,
+          })
+        );
 
         if (onUserUpdate) {
           onUserUpdate(updatedUser);
@@ -197,7 +220,17 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
       }
     }
     return false;
-  }, [fullName, username, email, dateOfBirth, gender, mbti, onUserUpdate, router]);
+  }, [
+    fullName,
+    username,
+    email,
+    dateOfBirth,
+    gender,
+    mbti,
+    avatar,
+    onUserUpdate,
+    router,
+  ]);
 
   const handleChangePassword = useCallback(async (): Promise<boolean> => {
     const currentUser = auth.currentUser;
@@ -253,9 +286,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
       console.error("Error updating password:", error);
       if (error instanceof FirebaseError) {
         if (error.code === "auth/invalid-credential") {
-          setCurrentPasswordError("Current password is wrong. Please enter again.");
+          setCurrentPasswordError(
+            "Current password is wrong. Please enter again."
+          );
         } else {
-          setCurrentPasswordError("Failed to update password. Please try again.");
+          setCurrentPasswordError(
+            "Failed to update password. Please try again."
+          );
         }
       } else {
         setCurrentPasswordError("An unexpected error occurred.");
@@ -273,12 +310,22 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
     }
 
     await handleSave();
-  }, [currentPassword, newPassword, confirmPassword, handleChangePassword, handleSave]);
+  }, [
+    currentPassword,
+    newPassword,
+    confirmPassword,
+    handleChangePassword,
+    handleSave,
+  ]);
+
+  const handleSelectAvatar = (imageUri: string) => {
+    setAvatar(imageUri);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
         <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
@@ -296,8 +343,15 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
         <ScrollView className="flex-1 px-6">
           <View className="items-center my-8">
             <View className="relative">
-              <Image source={icons.avatar} className="size-24 rounded-full" />
-              <TouchableOpacity className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full">
+              <Image
+                source={avatar ? { uri: avatar } : icons.avatar}
+                className="size-24 rounded-full"
+                resizeMode="cover"
+              />
+              <TouchableOpacity
+                className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full"
+                onPress={() => setShowPhotoModal(true)}
+              >
                 <Image
                   source={icons.camera}
                   className="size-5"
@@ -337,8 +391,12 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
           />
 
           <View>
-            <Text className="font-nunito-medium text-gray-600 mb-2">Gender*</Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+            <Text className="font-nunito-medium text-gray-600 mb-2">
+              Gender*
+            </Text>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-around" }}
+            >
               {["male", "female", "other"].map((option) => (
                 <TouchableOpacity
                   key={option}
@@ -364,7 +422,9 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
                     />
                   )}
                   <Text>
-                    {option === "other" ? "Other" : option.charAt(0).toUpperCase() + option.slice(1)}
+                    {option === "other"
+                      ? "Other"
+                      : option.charAt(0).toUpperCase() + option.slice(1)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -372,7 +432,9 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
           </View>
 
           <View className="mt-4 mb-6">
-            <Text className="font-nunito-bold text-lg mb-4">Change Password (Optional)</Text>
+            <Text className="font-nunito-bold text-lg mb-4">
+              Change Password (Optional)
+            </Text>
             <InputField
               label="Current Password"
               value={currentPassword}
@@ -384,7 +446,9 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
               secureTextEntry={true}
               error={currentPasswordError}
               showPassword={showCurrentPassword}
-              onTogglePasswordVisibility={() => setShowCurrentPassword(!showCurrentPassword)}
+              onTogglePasswordVisibility={() =>
+                setShowCurrentPassword(!showCurrentPassword)
+              }
             />
             <InputField
               label="New Password"
@@ -397,7 +461,9 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
               secureTextEntry={true}
               error={newPasswordError}
               showPassword={showNewPassword}
-              onTogglePasswordVisibility={() => setShowNewPassword(!showNewPassword)}
+              onTogglePasswordVisibility={() =>
+                setShowNewPassword(!showNewPassword)
+              }
             />
             <InputField
               label="Confirm New Password"
@@ -410,10 +476,18 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
               secureTextEntry={true}
               error={confirmPasswordError}
               showPassword={showConfirmPassword}
-              onTogglePasswordVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
+              onTogglePasswordVisibility={() =>
+                setShowConfirmPassword(!showConfirmPassword)
+              }
             />
           </View>
         </ScrollView>
+
+        <PhotoUpload
+          visible={showPhotoModal}
+          onClose={() => setShowPhotoModal(false)}
+          onSelectImage={handleSelectAvatar}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
