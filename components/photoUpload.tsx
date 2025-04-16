@@ -7,23 +7,28 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import icons from "@/constants/icons";
 
-const photoUpload = () => {
-  const [addImageModal, setAddImageModal] = useState(false);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+interface PhotoUploadProps {
+  visible: boolean;
+  onClose: () => void;
+  onSelectImage: (imageUri: string) => void;
+}
 
+const PhotoUpload: React.FC<PhotoUploadProps> = ({
+  visible,
+  onClose,
+  onSelectImage,
+}) => {
   const pickImageFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsMultipleSelection: true,
-      selectionLimit: 3,
-      mediaTypes: "images",
+      allowsMultipleSelection: false,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
 
-    if (!result.canceled) {
-      const newImage = result.assets.map((asset) => asset.uri);
-      setSelectedImages([...selectedImages, ...newImage]);
+    if (!result.canceled && result.assets.length > 0) {
+      onSelectImage(result.assets[0].uri);
     }
-    setAddImageModal(false);
+    onClose();
   };
 
   const takePhotoFromCamera = async () => {
@@ -34,29 +39,28 @@ const photoUpload = () => {
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      selectionLimit: 3,
-      mediaTypes: "images",
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
 
-    if (!result.canceled) {
-      const newImage = result.assets.map((asset) => asset.uri);
-      setSelectedImages([...selectedImages, ...newImage]);
+    if (!result.canceled && result.assets.length > 0) {
+      onSelectImage(result.assets[0].uri);
     }
-    setAddImageModal(false);
+    onClose();
   };
 
   return (
     <Modal
-      visible={addImageModal}
+      visible={visible}
       transparent={true}
       animationType="slide"
-      onRequestClose={() => {
-        setAddImageModal(false);
-      }}
+      onRequestClose={onClose}
     >
-      <TouchableOpacity className="flex-1 bg-black/50 justify-end">
+      <TouchableOpacity
+        className="flex-1 bg-black/50 justify-end"
+        onPress={onClose}
+      >
         <View className="bg-white rounded-t-3xl">
           <View className="p-4 gap-4">
             <TouchableOpacity
@@ -78,10 +82,7 @@ const photoUpload = () => {
             </TouchableOpacity>
 
             <View className="justify-center items-center">
-              <TouchableOpacity
-                className="p-3"
-                onPress={() => setAddImageModal(false)}
-              >
+              <TouchableOpacity className="p-3" onPress={onClose}>
                 <Text className="font-nunito-bold text-lg text-red-500">
                   Cancel
                 </Text>
@@ -94,4 +95,4 @@ const photoUpload = () => {
   );
 };
 
-export default photoUpload;
+export default PhotoUpload;

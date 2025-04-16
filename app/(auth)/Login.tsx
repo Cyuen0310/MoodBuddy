@@ -61,7 +61,9 @@ const LoginScreen = () => {
             />
           </View>
 
-          <Text className="text-3xl font-bold mb-7 text-center">Login</Text>
+          <Text className="text-3xl font-nunito-bold mb-7 text-center">
+            Login
+          </Text>
 
           <Formik
             initialValues={{ email: "", password: "" }}
@@ -84,7 +86,7 @@ const LoginScreen = () => {
                       className="w-7 h-7 mx-5"
                     />
                     <TextInput
-                      className="flex-1 text-lg h-16"
+                      className="flex-1 text-lg h-16 font-nunito-extra-bold"
                       placeholder="Email"
                       placeholderTextColor="#666"
                       onChangeText={(text) => {
@@ -109,7 +111,7 @@ const LoginScreen = () => {
                       className="w-7 h-7 mx-5"
                     />
                     <TextInput
-                      className="flex-1 text-lg h-16"
+                      className="flex-1 text-lg h-16 font-nunito-extra-bold"
                       placeholder="Password"
                       placeholderTextColor="#666"
                       onChangeText={(text) => {
@@ -137,7 +139,7 @@ const LoginScreen = () => {
                 </View>
 
                 {errorMessage ? (
-                  <Text className="text-red-500 text-center mb-4 leading-5">
+                  <Text className="text-red-500 text-center  mb-4 leading-5">
                     {errorMessage}
                   </Text>
                 ) : null}
@@ -146,18 +148,18 @@ const LoginScreen = () => {
                   className="bg-green-900 py-5 rounded-2xl mb-8"
                   onPress={() => handleSubmit()}
                 >
-                  <Text className="text-white text-center text-xl font-semibold leading-7">
+                  <Text className="text-white text-center text-xl font-nunito-extra-bold ">
                     Login
                   </Text>
                 </TouchableOpacity>
 
                 <View className="items-center space-y-6">
                   <View className="flex-row">
-                    <Text className="text-gray-500 text-lg leading-6">
+                    <Text className="text-gray-500 text-lg leading-6 font-nunito-extra-bold">
                       Don't have an account?{" "}
                     </Text>
                     <TouchableOpacity onPress={() => router.replace("/SignUp")}>
-                      <Text className="text-blue-500 font-semibold text-lg leading-6">
+                      <Text className="text-blue-500 font-nunito-extra-bold text-lg leading-6">
                         Sign Up
                       </Text>
                     </TouchableOpacity>
@@ -165,9 +167,9 @@ const LoginScreen = () => {
 
                   <TouchableOpacity
                     onPress={() => router.replace("/Forget")}
-                    className="py-1"
+                    className="py-5"
                   >
-                    <Text className="text-blue-500 text-lg leading-6">
+                    <Text className="text-blue-500 text-lg font-nunito-extra-bold leading-6">
                       Forgot Password?
                     </Text>
                   </TouchableOpacity>
