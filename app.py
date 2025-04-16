@@ -1,4 +1,3 @@
-# app.py
 import asyncio
 import json
 import websockets
@@ -49,6 +48,7 @@ async def handle_request(client_ws):
 
         async with client.aio.live.connect(model=model, config=setup["config"]) as chat_session:
             print("[Server] Connected to Gemini")
+            print(setup["config"])
 
             async def handle_client_input():
                 try:
@@ -62,9 +62,14 @@ async def handle_request(client_ws):
                             base64_str = message["data"]
                             if detect_format_from_base64(base64_str) == "WAV":
                                 audio_bytes = base64.b64decode(base64_str)
-                                raw_pcm = audio_bytes[44:]  # Strip WAV header
+                                raw_pcm = audio_bytes[44:]  
                                 await chat_session.send(input=types.Blob(data=raw_pcm, mime_type="audio/pcm;rate=16000"))
                                 print("[Server] Sent audio chunk to Gemini")
+                        elif message.get("type") == "text" and "data" in message:
+                            text_input = message["data"]
+                            if text_input.strip():
+                                await chat_session.send(input=text_input, end_of_turn=True)
+                                print("[Server] Sent text to Gemini:", text_input)
                 except Exception as e:
                     print("[Server] Input Error:", e)
 

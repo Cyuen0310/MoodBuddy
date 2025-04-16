@@ -1,4 +1,3 @@
-// voicechat.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { View, Button, Text, StyleSheet } from "react-native";
 import { Audio } from "expo-av";

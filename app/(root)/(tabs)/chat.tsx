@@ -25,7 +25,6 @@ interface Message {
 
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { text: "Hello!", user: true },
     { text: "Hi, I am MoodBuddy. How can I help you today?", user: false },
   ]);
   const [userInput, setUserInput] = useState<string>("");
@@ -35,7 +34,17 @@ const Chat: React.FC = () => {
   useEffect(() => {
     ws.current = new WebSocket(wsUrl);
 
-    ws.current.onopen = () => console.log("Connected to WebSocket server");
+    ws.current.onopen = () => {
+      ws.current?.send(
+        JSON.stringify({
+          setup: {
+            config: {
+              response_modalities: ["TEXT"],
+            },
+          },
+        })
+      );
+    };
     ws.current.onmessage = (event) => {
       try {
         // First try to parse as JSON
@@ -64,7 +73,7 @@ const Chat: React.FC = () => {
       const userMessage = { text: userInput, user: true };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       // Send the raw message text rather than a JSON object
-      ws.current.send(userInput);
+      ws.current.send(JSON.stringify({ type: "text", data: userInput }));
       setUserInput("");
     }
   };
