@@ -131,7 +131,9 @@ const Index: React.FC = () => {
                   source={icons.meditation as ImageSourcePropType}
                   style={styles.cardBackground}
                 />
-                <Text style={styles.cardText}>Meditation</Text>
+                <Text style={[styles.cardText, { color: "black" }]}>
+                  Meditation
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.card2]}
@@ -141,7 +143,9 @@ const Index: React.FC = () => {
                   source={icons.relaxation as ImageSourcePropType}
                   style={styles.cardBackground}
                 />
-                <Text style={styles.cardText}>Relaxation Area</Text>
+                <Text style={[styles.cardText, { color: "black" }]}>
+                  Relaxation Area
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.card3]}
@@ -151,7 +155,9 @@ const Index: React.FC = () => {
                   source={icons.sleep as ImageSourcePropType}
                   style={styles.cardBackground}
                 />
-                <Text style={styles.cardText}>Sleep Therapy</Text>
+                <Text style={[styles.cardText, { color: "black" }]}>
+                  Sleep Therapy
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.card4]}
@@ -161,48 +167,11 @@ const Index: React.FC = () => {
                   source={icons.summary as ImageSourcePropType}
                   style={styles.cardBackground}
                 />
-                <Text style={styles.cardText}>Recent Summary</Text>
+                <Text style={[styles.cardText, { color: "black" }]}>
+                  Recent Summary
+                </Text>
               </TouchableOpacity>
             </ScrollView>
-          </View>
-
-          <View style={[styles.box, styles.bottomButtonContainer]}>
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => openLink("https://www.instagram.com")}
-            >
-              <Image
-                source={icons.instagram as ImageSourcePropType}
-                style={styles.socialIcon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => openLink("https://www.facebook.com")}
-            >
-              <Image
-                source={icons.facebook as ImageSourcePropType}
-                style={styles.socialIcon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => openLink("https://x.com")}
-            >
-              <Image
-                source={icons.x as ImageSourcePropType}
-                style={styles.socialIcon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.socialButton}
-              onPress={() => openLink("https://www.youtube.com")}
-            >
-              <Image
-                source={icons.youtube as ImageSourcePropType}
-                style={styles.socialIcon}
-              />
-            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
@@ -353,7 +322,6 @@ const styles = StyleSheet.create({
   cardText: {
     textAlign: "left", // Align text to the left
     fontSize: 16, // Adjust font size if needed
-    color: "white", // Ensure text is visible on the background image
     zIndex: 1, // Ensure text is above the background image
   },
   bottomButtonContainer: {
