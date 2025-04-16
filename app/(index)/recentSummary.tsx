@@ -28,10 +28,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    padding: 20,
-    backgroundColor: '#ADD8E6',
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#ffffff",
+    elevation: 2,
   },
   backButton: {
     position: 'absolute',
