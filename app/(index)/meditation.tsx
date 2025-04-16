@@ -7,9 +7,13 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Dimensions, // Import Dimensions
 } from "react-native";
 import { useRouter } from "expo-router";
 import icons from "@/constants/icons";
+import YoutubeIframe from "react-native-youtube-iframe"; // Import YoutubeIframe
+
+const { width } = Dimensions.get("window"); // Get screen width
 
 const Meditation: React.FC = () => {
   const router = useRouter();
@@ -36,6 +40,15 @@ const Meditation: React.FC = () => {
           Welcome to your meditation journey. Find a comfortable place, relax,
           and let's begin.
         </Text>
+
+        {/* YouTube Video */}
+        <View style={styles.youtubeContainer}>
+          <YoutubeIframe
+            height={220} // Adjust height as needed
+            width={width - 32} // Adjust width to screen width minus padding
+            videoId="QHkXvPq2pQE" // Replace with your YouTube video ID
+          />
+        </View>
 
         <View style={styles.card}>
           <Image source={icons.breathingExercise} style={styles.cardImage} />
@@ -151,6 +164,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  youtubeContainer: {
+    marginBottom: 20,
   },
 });
 
