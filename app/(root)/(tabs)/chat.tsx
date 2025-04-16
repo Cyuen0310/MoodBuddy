@@ -108,7 +108,7 @@ const Chat: React.FC = () => {
 
         <View className="flex-row items-center mb-[60px]">
           <TextInput
-            className="flex-1 border border-gray-300 rounded-lg mr-2.5 p-2.5"
+            className="flex-1 border border-gray-300 rounded-lg mr-2.5 p-2.5 text-black font-nunito-extra-bold"
             value={userInput}
             onChangeText={setUserInput}
             placeholder="Type your message..."

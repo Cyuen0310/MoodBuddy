@@ -2,8 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Modal, TouchableOpacity } from "react-native";
 import { Image } from "react-native";
-
-import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import icons from "@/constants/icons";
 

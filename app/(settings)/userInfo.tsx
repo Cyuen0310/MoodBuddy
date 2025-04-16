@@ -7,6 +7,9 @@ import {
   TextInput,
   ScrollView,
   Platform,
+  KeyboardAvoidingView,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "expo-router";
@@ -22,7 +25,6 @@ import {
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { Ionicons } from "@expo/vector-icons";
-import { KeyboardAvoidingView } from "react-native";
 import PhotoUpload from "@/components/photoUpload";
 
 interface InputFieldProps {
@@ -36,6 +38,7 @@ interface InputFieldProps {
   error?: string;
   showPassword?: boolean;
   onTogglePasswordVisibility?: () => void;
+  icon?: any;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -49,30 +52,37 @@ const InputField: React.FC<InputFieldProps> = ({
   error,
   showPassword,
   onTogglePasswordVisibility,
+  icon,
 }) => (
-  <View className="mb-6">
-    <Text className="font-nunito-medium text-gray-600 mb-2">{label}</Text>
-    <View className="shadow-sm flex-row items-center bg-white p-4 rounded-xl border border-gray-100">
+  <View className="mb-10">
+    <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
+      {label}
+    </Text>
+    <View className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100">
+      <View className="items-center justify-center w-14">
+        <Image source={icon} className="w-6 h-6 opacity-60" />
+      </View>
       <TextInput
+        className="flex-1 text-lg h-full font-nunito-extra-bold"
+        placeholder={placeholder}
+        placeholderTextColor="#999"
         value={value}
         onChangeText={onChangeText}
-        placeholder={placeholder}
         secureTextEntry={!showPassword && secureTextEntry}
         textContentType={textContentType}
         keyboardType={keyboardType}
-        className="flex-1 font-nunito-regular"
       />
       {secureTextEntry && (
-        <TouchableOpacity onPress={onTogglePasswordVisibility}>
+        <TouchableOpacity onPress={onTogglePasswordVisibility} className="pr-5">
           <Ionicons
             name={showPassword ? "eye-off" : "eye"}
             size={24}
-            color="#6b7280"
+            color="#666"
           />
         </TouchableOpacity>
       )}
     </View>
-    {error && <Text className="text-red-500 mt-2">{error}</Text>}
+    {error && <Text className="text-red-500 mt-2 ml-1 text-base">{error}</Text>}
   </View>
 );
 
@@ -149,6 +159,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     const fetchUserDataFromFirestore = async () => {
@@ -326,162 +337,235 @@ const UserInfo: React.FC<UserInfoProps> = ({ onUserUpdate }) => {
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        className="flex-1"
       >
-        <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-          <TouchableOpacity onPress={() => router.back()} className="p-2">
-            <Image source={icons.backArrow} className="size-6" />
-          </TouchableOpacity>
-          <Text className="text-xl font-nunito-bold flex-1 text-center">
-            Personal Information
-          </Text>
-          <TouchableOpacity onPress={handleSubmit} className="p-2">
-            <Text className="text-blue-500 font-nunito-bold">Save</Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView className="flex-1 px-6">
-          <View className="items-center my-8">
-            <View className="relative">
-              <Image
-                source={avatar ? { uri: avatar } : icons.avatar}
-                className="size-24 rounded-full"
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full"
-                onPress={() => setShowPhotoModal(true)}
-              >
-                <Image
-                  source={icons.camera}
-                  className="size-5"
-                  tintColor="white"
-                />
-              </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            className="flex-1 px-8"
+            contentContainerStyle={{ paddingBottom: 60 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View className="items-center my-10">
+              <Text className="text-4xl font-nunito-extra-bold text-gray-800">
+                Mood Buddy
+              </Text>
+              <Text className="text-xl font-nunito-extra-bold text-gray-500 mt-4">
+                Edit Profile
+              </Text>
             </View>
-          </View>
 
-          <InputField
-            label="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
-            placeholder="Enter your full name"
-          />
-
-          <InputField
-            label="Username"
-            value={username}
-            onChangeText={setUsername}
-            placeholder="Enter your username"
-          />
-
-          <InputField
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            textContentType="none"
-          />
-
-          <DateSelector
-            label="Date of Birth"
-            value={dateOfBirth}
-            onChange={setDateOfBirth}
-          />
-
-          <View>
-            <Text className="font-nunito-medium text-gray-600 mb-2">
-              Gender*
-            </Text>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-around" }}
-            >
-              {["male", "female", "other"].map((option) => (
+            <View className="items-center mb-10">
+              <View className="relative">
+                <Image
+                  source={avatar ? { uri: avatar } : icons.avatar}
+                  className="w-32 h-32 rounded-full"
+                  resizeMode="cover"
+                />
                 <TouchableOpacity
-                  key={option}
-                  onPress={() => {
-                    setGender(option);
-                  }}
-                  style={{ alignItems: "center" }}
+                  className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full"
+                  onPress={() => setShowPhotoModal(true)}
                 >
-                  {option === "other" ? (
+                  <Image
+                    source={icons.camera}
+                    className="w-6 h-6"
+                    tintColor="white"
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View className="space-y-12">
+              <InputField
+                label="Full Name"
+                value={fullName}
+                onChangeText={setFullName}
+                placeholder="Enter your full name"
+                icon={require("@/assets/images/user.png")}
+              />
+
+              <InputField
+                label="Username"
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Enter your username"
+                icon={require("@/assets/images/user.png")}
+              />
+
+              <InputField
+                label="Email Address"
+                value={email}
+                onChangeText={setEmail}
+                placeholder="example@email.com"
+                keyboardType="email-address"
+                icon={require("@/assets/images/email.png")}
+              />
+
+              <View className="mb-10">
+                <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
+                  Date of Birth
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    setShowDatePicker(true);
+                  }}
+                  className="flex-row items-center bg-gray-50 rounded-2xl h-16 shadow-sm border border-gray-100"
+                >
+                  <View className="items-center justify-center w-14">
                     <Image
-                      source={require("@/assets/images/genderless.png")}
-                      style={{
-                        width: 30,
-                        height: 30,
-                        tintColor: gender === "other" ? "blue" : "gray",
-                      }}
+                      source={require("@/assets/images/cake.png")}
+                      className="w-6 h-6 opacity-60"
                     />
-                  ) : (
-                    <Ionicons
-                      name={option === "male" ? "male" : "female"}
-                      size={30}
-                      color={gender === option ? "blue" : "gray"}
-                    />
-                  )}
-                  <Text>
-                    {option === "other"
-                      ? "Other"
-                      : option.charAt(0).toUpperCase() + option.slice(1)}
+                  </View>
+                  <Text className="flex-1 text-lg text-gray-700 font-nunito-extra-bold">
+                    {dateOfBirth.toLocaleDateString()}
                   </Text>
                 </TouchableOpacity>
-              ))}
-            </View>
-          </View>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={dateOfBirth}
+                    mode="date"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowDatePicker(false);
+                      if (selectedDate) {
+                        setDateOfBirth(selectedDate);
+                      }
+                    }}
+                    maximumDate={new Date()}
+                  />
+                )}
+              </View>
 
-          <View className="mt-4 mb-6">
-            <Text className="font-nunito-bold text-lg mb-4">
-              Change Password (Optional)
-            </Text>
-            <InputField
-              label="Current Password"
-              value={currentPassword}
-              onChangeText={(text) => {
-                setCurrentPassword(text);
-                setCurrentPasswordError("");
-              }}
-              placeholder="Enter current password"
-              secureTextEntry={true}
-              error={currentPasswordError}
-              showPassword={showCurrentPassword}
-              onTogglePasswordVisibility={() =>
-                setShowCurrentPassword(!showCurrentPassword)
-              }
-            />
-            <InputField
-              label="New Password"
-              value={newPassword}
-              onChangeText={(text) => {
-                setNewPassword(text);
-                setNewPasswordError("");
-              }}
-              placeholder="Enter new password"
-              secureTextEntry={true}
-              error={newPasswordError}
-              showPassword={showNewPassword}
-              onTogglePasswordVisibility={() =>
-                setShowNewPassword(!showNewPassword)
-              }
-            />
-            <InputField
-              label="Confirm New Password"
-              value={confirmPassword}
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                setConfirmPasswordError("");
-              }}
-              placeholder="Confirm new password"
-              secureTextEntry={true}
-              error={confirmPasswordError}
-              showPassword={showConfirmPassword}
-              onTogglePasswordVisibility={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
-            />
-          </View>
-        </ScrollView>
+              <View className="mb-10">
+                <Text className="text-gray-700 font-nunito-extra-bold mb-1 ml-1 text-lg">
+                  Gender
+                </Text>
+                <View className="flex-row justify-between bg-gray-50 rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <TouchableOpacity
+                    onPress={() => setGender("male")}
+                    className={`items-center justify-center py-4 rounded-xl flex-1 mx-1 ${
+                      gender === "male"
+                        ? "bg-blue-100 border border-blue-200"
+                        : ""
+                    }`}
+                  >
+                    <Ionicons
+                      name="male"
+                      size={32}
+                      color={gender === "male" ? "#3b82f6" : "#9ca3af"}
+                    />
+                    <Text
+                      className={`mt-2 font-medium text-base ${
+                        gender === "male" ? "text-blue-500" : "text-gray-500"
+                      }`}
+                    >
+                      Male
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setGender("female")}
+                    className={`items-center justify-center py-4 rounded-xl flex-1 mx-1 ${
+                      gender === "female"
+                        ? "bg-pink-100 border border-pink-200"
+                        : ""
+                    }`}
+                  >
+                    <Ionicons
+                      name="female"
+                      size={32}
+                      color={gender === "female" ? "#ec4899" : "#9ca3af"}
+                    />
+                    <Text
+                      className={`mt-2 font-medium text-base ${
+                        gender === "female" ? "text-pink-500" : "text-gray-500"
+                      }`}
+                    >
+                      Female
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setGender("other")}
+                    className={`items-center justify-center py-4 rounded-xl flex-1 mx-1 ${
+                      gender === "other"
+                        ? "bg-purple-100 border border-purple-200"
+                        : ""
+                    }`}
+                  >
+                    <Image
+                      source={require("@/assets/images/genderless.png")}
+                      className="w-8 h-8"
+                      style={{
+                        tintColor: gender === "other" ? "#8b5cf6" : "#9ca3af",
+                      }}
+                    />
+                    <Text
+                      className={`mt-2 font-medium text-base ${
+                        gender === "other" ? "text-purple-500" : "text-gray-500"
+                      }`}
+                    >
+                      Other
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View className="mb-10">
+                <Text className="text-gray-700 font-nunito-extra-bold mb-5 ml-1 text-lg">
+                  Change Password
+                </Text>
+                <InputField
+                  label="Current Password"
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                  placeholder="Enter current password"
+                  secureTextEntry={true}
+                  error={currentPasswordError}
+                  showPassword={showCurrentPassword}
+                  onTogglePasswordVisibility={() =>
+                    setShowCurrentPassword(!showCurrentPassword)
+                  }
+                  icon={require("@/assets/images/padlock.png")}
+                />
+                <InputField
+                  label="New Password"
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  placeholder="Enter new password"
+                  secureTextEntry={true}
+                  error={newPasswordError}
+                  showPassword={showNewPassword}
+                  onTogglePasswordVisibility={() =>
+                    setShowNewPassword(!showNewPassword)
+                  }
+                  icon={require("@/assets/images/padlock.png")}
+                />
+                <InputField
+                  label="Confirm New Password"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  placeholder="Confirm new password"
+                  secureTextEntry={true}
+                  error={confirmPasswordError}
+                  showPassword={showConfirmPassword}
+                  onTogglePasswordVisibility={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
+                  icon={require("@/assets/images/padlock.png")}
+                />
+              </View>
+
+              <TouchableOpacity
+                className="bg-green-900 py-5 rounded-xl mt-8 shadow-md"
+                onPress={handleSubmit}
+              >
+                <Text className="text-white text-center text-xl font-nunito-extra-bold">
+                  Save Changes
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
 
         <PhotoUpload
           visible={showPhotoModal}

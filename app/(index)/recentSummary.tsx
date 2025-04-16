@@ -10,7 +10,7 @@ const RecentSummary: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-      <TouchableOpacity onPress={() => router.back()} className="p-2">
+        <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Image source={icons.backArrow} className="size-6" />
         </TouchableOpacity>
         <Text style={styles.headerText}>Recent Summary</Text>
@@ -25,17 +25,17 @@ const RecentSummary: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "f0f4f8",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f0f4f8",
     elevation: 2,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     left: 20,
   },
   backIcon: {
@@ -45,18 +45,18 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   contentText: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
   },
 });
 

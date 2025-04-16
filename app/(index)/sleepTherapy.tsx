@@ -49,7 +49,7 @@ const SleepTherapy: React.FC = () => {
         {/* YouTube Video */}
         <View style={styles.youtubeContainer}>
           <YoutubeIframe
-            height={220} 
+            height={220}
             width={width - 32}
             videoId="U6Ay9v7gK9w"
             play={playing}
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f0f4f8",
     elevation: 2,
   },
   backButton: {
