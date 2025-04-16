@@ -77,13 +77,15 @@ async def handle_request(client_ws):
                 while True:
                     try:
                         pcm_chunks = []
+                        text_chunks = []
                         async for response in chat_session.receive():
+                            print(response)
                             if response.server_content:
                                 model_turn = response.server_content.model_turn
                                 if model_turn:
                                     for part in model_turn.parts:
                                         if hasattr(part, "text") and part.text:
-                                            await client_ws.send(json.dumps({"text": part.text}))
+                                            text_chunks.append(part.text)
                                         elif hasattr(part, "inline_data") and part.inline_data:
                                             pcm_chunks.append(part.inline_data.data)
 
@@ -94,6 +96,10 @@ async def handle_request(client_ws):
                                         await client_ws.send(json.dumps({"audio_wav": base64_audio}))
                                         print("[Server] Sent full WAV file to client")
                                         pcm_chunks.clear()
+                                    if text_chunks:
+                                        await client_ws.send(json.dumps({"text": "".join(text_chunks)}))
+                                        print("[Server] Sent text to client")
+                                        text_chunks.clear()
                     except Exception as e:
                         print("[Server] Output Error:", e)
 
