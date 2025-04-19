@@ -4,6 +4,7 @@ import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VoiceChat = () => {
   const router = useRouter();
@@ -17,43 +18,71 @@ const VoiceChat = () => {
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://${ipAddress}:5051`);
-    ws.current.onopen = () => {
-      ws.current?.send(
-        JSON.stringify({
-          setup: {
-            config: {
-              response_modalities: ["AUDIO"],
-              audio_config: {
-                audio_encoding: "LINEAR16",
-                sample_rate_hertz: 16000,
+    const setupWebSocket = async () => {
+      try {
+        // Get user from AsyncStorage
+        const userJson = await AsyncStorage.getItem('user');
+        let userId = null;
+        
+        if (userJson) {
+          const user = JSON.parse(userJson);
+          userId = user.uid;
+          console.log('User ID for WebSocket:', userId);
+        }
+        
+        ws.current = new WebSocket(`ws://${ipAddress}:5051`);
+        
+        ws.current.onopen = () => {
+          // Send setup message with user ID
+          const setupMessage = {
+            setup: {
+              config: {
+                response_modalities: ["AUDIO"],
+                audio_config: {
+                  audio_encoding: "LINEAR16",
+                  sample_rate_hertz: 16000,
+                },
               },
             },
-          },
-        })
-      );
-    };
+            userId: userId  // Include the user's UID
+          };
+          console.log('Sending setup message:', setupMessage);
+          ws.current?.send(JSON.stringify(setupMessage));
+        };
+        
+        ws.current.onmessage = async (event) => {
+          const message = JSON.parse(event.data);
 
-    ws.current.onmessage = async (event) => {
-      const message = JSON.parse(event.data);
+          if (message.audio_wav && !playingRef.current) {
+            const uri = FileSystem.documentDirectory + `gemini_response.wav`;
+            await FileSystem.writeAsStringAsync(uri, message.audio_wav, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
 
-      if (message.audio_wav && !playingRef.current) {
-        const uri = FileSystem.documentDirectory + `gemini_response.wav`;
-        await FileSystem.writeAsStringAsync(uri, message.audio_wav, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+            const { sound } = await Audio.Sound.createAsync({ uri });
 
-        const { sound } = await Audio.Sound.createAsync({ uri });
+            sound.setOnPlaybackStatusUpdate((status) => {
+              if ("didJustFinish" in status && status.didJustFinish) {
+                playingRef.current = false;
+                sound.unloadAsync();
+              }
+            });
 
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if ("didJustFinish" in status && status.didJustFinish) {
-            playingRef.current = false;
-            sound.unloadAsync();
+            await sound.playAsync();
           }
-        });
-
-        await sound.playAsync();
+        };
+        
+        ws.current.onerror = (error) => console.error("WebSocket error:", error);
+        ws.current.onclose = () => console.log("WebSocket disconnected");
+      } catch (error) {
+        console.error("Error setting up WebSocket:", error);
       }
+    };
+    
+    setupWebSocket();
+    
+    return () => {
+      ws.current?.close();
     };
   }, []);
 

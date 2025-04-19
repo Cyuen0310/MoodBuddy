@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import icons from "@/constants/icons";
 import { router } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
 const wsUrl = `ws://${ipAddress}:5051`;
@@ -32,37 +33,59 @@ const Chat: React.FC = () => {
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    ws.current = new WebSocket(wsUrl);
-
-    ws.current.onopen = () => {
-      ws.current?.send(
-        JSON.stringify({
-          setup: {
-            config: {
-              response_modalities: ["TEXT"],
-            },
-          },
-        })
-      );
-    };
-    ws.current.onmessage = (event) => {
+    const setupWebSocket = async () => {
       try {
-        // First try to parse as JSON
-        const data = JSON.parse(event.data);
-        const botMessage = {
-          text: data.response || data.text || data,
-          user: false,
+        // Get user from AsyncStorage
+        const userJson = await AsyncStorage.getItem('user');
+        let userId = null;
+        
+        if (userJson) {
+          const user = JSON.parse(userJson);
+          userId = user.uid;
+          console.log('User ID for WebSocket:', userId);
+        }
+        
+        ws.current = new WebSocket(wsUrl);
+
+        ws.current.onopen = () => {
+          // Send setup message with user ID
+          const setupMessage = {
+            setup: {
+              config: {
+                response_modalities: ["TEXT"],
+              },
+            },
+            userId: userId  // Include the user's UID
+          };
+          console.log('Sending setup message:', setupMessage);
+          ws.current?.send(JSON.stringify(setupMessage));
         };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        
+        ws.current.onmessage = (event) => {
+          try {
+            // First try to parse as JSON
+            const data = JSON.parse(event.data);
+            const botMessage = {
+              text: data.response || data.text || data,
+              user: false,
+            };
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+          } catch (error) {
+            // If parsing fails, use the raw message
+            const botMessage = { text: event.data, user: false };
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+          }
+        };
+        
+        ws.current.onerror = (error) => console.error("WebSocket error:", error);
+        ws.current.onclose = () => console.log("WebSocket disconnected");
       } catch (error) {
-        // If parsing fails, use the raw message
-        const botMessage = { text: event.data, user: false };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        console.error("Error setting up WebSocket:", error);
       }
     };
-    ws.current.onerror = (error) => console.error("WebSocket error:", error);
-    ws.current.onclose = () => console.log("WebSocket disconnected");
-
+    
+    setupWebSocket();
+    
     return () => {
       ws.current?.close();
     };

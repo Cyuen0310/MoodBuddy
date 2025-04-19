@@ -8,11 +8,37 @@ from dotenv import load_dotenv
 import wave
 import io
 import base64
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 load_dotenv()
 
 API_KEY = os.getenv('AI_API')
 print(genai.__version__)
+
+# Initialize Firebase Admin
+try:
+    cred = credentials.Certificate('moodbuddy-3d25f-firebase-adminsdk-fbsvc-ad0b93efad.json')
+    firebase_admin.initialize_app(cred)
+    db_firestore = firestore.client()
+    print("Firebase initialized successfully!")
+except Exception as e:
+    print(f"Error initializing Firebase: {e}")
+
+# Function to get user data from Firebase
+def get_user_data(user_id):
+    try:
+        user_doc = db_firestore.collection('users').document(user_id).get()
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            print(f"\nUser data for {user_id}:", user_data)
+            return user_data
+        else:
+            print(f"No user found with ID: {user_id}")
+            return None
+    except Exception as e:
+        print(f"Error getting user data: {e}")
+        return None
 
 client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1alpha'})
 model = "gemini-2.0-flash-live-001"
@@ -37,12 +63,79 @@ async def handle_request(client_ws):
         setup_msg = await client_ws.recv()
         setup_data = json.loads(setup_msg)
         setup = setup_data.get("setup", {})
+        
+        # Try to get user ID from AsyncStorage in the client
+        # This is a workaround since we can't directly access AsyncStorage from the server
+        # The client should include the user ID in the setup message
+        user_id = None
+        user_mbti = None
+        
+        # Check if the setup message contains a userId field
+        if "userId" in setup_data:
+            user_id = setup_data["userId"]
+            print(f"\n[Server] User connected with ID: {user_id}")
+            # Get user data from Firebase
+            user_data = get_user_data(user_id)
+            if user_data:
+                user_mbti = user_data.get('mbti')
+                if user_mbti:
+                    print(f"[Server] User MBTI: {user_mbti}")
+        else:
+            print("[Server] No user ID provided in setup message")
+
+        # Create personalized system instruction based on MBTI
+        system_instruction = "You are MoodBuddy. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention."
+        
+        # Add MBTI-specific communication style
+        if user_mbti:
+            system_instruction += f"\n\nThe user's MBTI type is {user_mbti}. Adapt your communication style to match this personality type:"
+            
+            # E vs I (Extraversion vs Introversion)
+            if 'E' in user_mbti:
+                system_instruction += "\n- Be more outgoing and energetic in your responses"
+                system_instruction += "\n- Use more expressive language and be more direct"
+                system_instruction += "\n- Be willing to discuss multiple topics and ideas"
+            else:  # 'I' in user_mbti
+                system_instruction += "\n- Be more gentle and reserved in your responses"
+                system_instruction += "\n- Give the user time to process information"
+                system_instruction += "\n- Focus on one topic at a time and be more reflective"
+            
+            # S vs N (Sensing vs Intuition)
+            if 'S' in user_mbti:
+                system_instruction += "\n- Focus on concrete, practical advice and real-world examples"
+                system_instruction += "\n- Be specific and detailed in your explanations"
+                system_instruction += "\n- Use more literal language and avoid abstract concepts"
+            else:  # 'N' in user_mbti
+                system_instruction += "\n- Explore abstract ideas and possibilities"
+                system_instruction += "\n- Be more conceptual and theoretical in your approach"
+                system_instruction += "\n- Use metaphors and analogies to explain concepts"
+            
+            # T vs F (Thinking vs Feeling)
+            if 'T' in user_mbti:
+                system_instruction += "\n- Be logical and analytical in your responses"
+                system_instruction += "\n- Focus on facts and objective information"
+                system_instruction += "\n- Be direct and straightforward in your communication"
+            else:  # 'F' in user_mbti
+                system_instruction += "\n- Be empathetic and emotionally supportive"
+                system_instruction += "\n- Focus on how decisions affect people and relationships"
+                system_instruction += "\n- Use more emotionally resonant language"
+            
+            # J vs P (Judging vs Perceiving)
+            if 'J' in user_mbti:
+                system_instruction += "\n- Provide structure and clear conclusions"
+                system_instruction += "\n- Be organized and methodical in your approach"
+                system_instruction += "\n- Help the user make decisions and reach closure"
+            else:  # 'P' in user_mbti
+                system_instruction += "\n- Be more flexible and open-ended in your responses"
+                system_instruction += "\n- Explore multiple options and possibilities"
+                system_instruction += "\n- Allow for spontaneity and adaptability in the conversation"
+        
+        # Add general communication guidelines
+        system_instruction += "\n\nTalk gently and softly, show your understanding, don't talk too much and don't provide too many suggestions. Focus on your understanding is fine."
 
         setup["config"]["system_instruction"] = {
             "parts": [{
-                "text": (
-                   "You are MoodBuddy. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention. Talk gently and soft, show your understanding,don't talk too much and don't provide too many suggestion. Focus on your understanding is fine."
-                )
+                "text": system_instruction
             }]
         }
 
