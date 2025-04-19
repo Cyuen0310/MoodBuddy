@@ -21,12 +21,27 @@ import PagerView from "react-native-pager-view";
 import icons from "@/constants/icons";
 import NewJournal from "@/components/(journal)/newJournal";
 import JournalCard from "@/components/(journal)/journalCard";
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/app/(auth)/auth';
 
 const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
 
 const WeekSlider = () => {
   const currentDate = new Date();
-  const userId = "test";
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("UID:", user.uid);
+        setUserId(user.uid);
+      } else {
+        console.log("Not Logged In");
+        setUserId(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   const dates = eachWeekOfInterval({
     start: subMonths(currentDate, 1),
     end: addMonths(currentDate, 1),
@@ -139,7 +154,7 @@ const WeekSlider = () => {
   useEffect(() => {
     console.log("Fetching journals for date:", selectedDate);
     fetchJournals(selectedDate);
-  }, [selectedDate]);
+  }, [selectedDate, userId]);
 
   useEffect(() => {
     if (currentWeek >= 0 && currentWeek < dates.length) {
