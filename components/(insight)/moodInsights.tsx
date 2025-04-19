@@ -10,6 +10,8 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { PieChart } from "react-native-gifted-charts";
 import LineChart from "./LineChart";
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/app/(auth)/auth';
 
 const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
 
@@ -38,12 +40,20 @@ const MoodInsights = ({
   const [refreshing, setRefreshing] = useState(false);
   const [moodData, setMoodData] = useState<MoodData | null>(null);
   const [rawData, setRawData] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (rawData) {
-      console.log("Updated rawData:", rawData);
-    }
-  }, [rawData]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("UID:", user.uid);
+        setUserId(user.uid);
+      } else {
+        console.log("Not Logged In");
+        setUserId(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const processMoodData = (data: any): MoodData => {
     const moodScores = {
@@ -90,12 +100,13 @@ const MoodInsights = ({
   const fetchMoodData = async () => {
     try {
       setLoading(true);
-      // console.log("Date Range:", {
-      //   start: dateRange.start.toLocaleString(),
-      //   end: dateRange.end.toLocaleString(),
-      // });
+      /*console.log("Date Range:", {
+        timeframe,
+        start: dateRange.start.toLocaleString(),
+        end: dateRange.end.toLocaleString(),
+       });*/
       const response = await fetch(
-        `http://${ipAddress}:3000/api/journal/insights?userId=test&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
+        `http://${ipAddress}:3000/api/journal/insights?userId=${userId}&startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
       );
 
       if (!response.ok) {
@@ -145,8 +156,13 @@ const MoodInsights = ({
   useFocusEffect(
     React.useCallback(() => {
       fetchMoodData();
-    }, [timeframe, dateRange])
+    }, [timeframe, dateRange, userId])
   );
+  useEffect(() => {
+    if (userId) {
+      fetchMoodData();
+    }
+  }, [timeframe, userId]);
 
   if (loading && !refreshing) {
     return (
