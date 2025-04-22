@@ -10,6 +10,10 @@ import io
 import base64
 import firebase_admin
 from firebase_admin import credentials, firestore
+import pymongo
+from pymongo import MongoClient
+from datetime import datetime, timedelta
+from collections import Counter
 
 load_dotenv()
 
@@ -25,6 +29,12 @@ try:
 except Exception as e:
     print(f"Error initializing Firebase: {e}")
 
+# Connect to MongoDB
+client = MongoClient(os.getenv('MONGODB_URI'))
+# Specify the database name explicitly
+db = client['moodbuddy-db']  # Use the database name from your connection string
+print(f"[MongoDB] Connected to database: moodbuddy-db")
+
 # Function to get user data from Firebase
 def get_user_data(user_id):
     try:
@@ -39,6 +49,42 @@ def get_user_data(user_id):
     except Exception as e:
         print(f"Error getting user data: {e}")
         return None
+
+# Function to get recent journal entries
+async def get_recent_journal_entries(user_id, days=365):
+    try:
+        print(f"[MongoDB] Fetching journal entries for user: {user_id}")
+        client = MongoClient(os.getenv('MONGODB_URI'))
+        db = client['test']
+        print(f"[MongoDB] Connected to database: test")
+        journals = list(db.journals.find({"userId": user_id}).sort("date", -1))
+        print(f"[MongoDB] Found {len(journals)} journals for user {user_id}")
+        entries = []
+        for journal in journals:
+            print(f"[MongoDB] Processing journal from date: {journal.get('date')}")
+            if "entries" in journal:
+                for entry in journal.get("entries", []):
+                    entries.append({
+                        "date": journal["date"],
+                        "mood": entry.get("mood"),
+                        "text": entry.get("text", ""),
+                        "time": entry.get("time"),
+                        "factors": entry.get("factors", [])
+                    })
+            else:
+                print(f"[MongoDB] Journal {journal.get('_id')} has no entries field")
+        print(f"[MongoDB] Processed {len(entries)} total entries")
+        client.close()
+        if entries:
+            return entries
+        else:
+            print(f"[MongoDB] No entries found")
+            return []
+    except Exception as e:
+        print(f"[MongoDB] Error getting journal entries: {e}")
+        import traceback
+        traceback.print_exc()
+        return []
 
 client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1alpha'})
 model = "gemini-2.0-flash-live-001"
@@ -64,29 +110,56 @@ async def handle_request(client_ws):
         setup_data = json.loads(setup_msg)
         setup = setup_data.get("setup", {})
         
-        # Try to get user ID from AsyncStorage in the client
-        # This is a workaround since we can't directly access AsyncStorage from the server
-        # The client should include the user ID in the setup message
+        # Get user ID from setup message
         user_id = None
         user_mbti = None
         
-        # Check if the setup message contains a userId field
         if "userId" in setup_data:
             user_id = setup_data["userId"]
             print(f"\n[Server] User connected with ID: {user_id}")
+            
             # Get user data from Firebase
             user_data = get_user_data(user_id)
             if user_data:
                 user_mbti = user_data.get('mbti')
                 if user_mbti:
                     print(f"[Server] User MBTI: {user_mbti}")
+            
+            # Get recent journal entries
+            journal_entries = await get_recent_journal_entries(user_id)
+            print(f"[Server] Found {len(journal_entries)} recent journal entries")
+            
+            # Print journal entries for debugging
+            if journal_entries:
+                print("\n[Server] Journal entries details:")
+                for entry in journal_entries:
+                    print(f"  - Date: {entry.get('date')}, Mood: {entry.get('mood')}, Text: {entry.get('text')}")
+            else:
+                print("[Server] No journal entries found for this user")
         else:
             print("[Server] No user ID provided in setup message")
 
         # Create personalized system instruction based on MBTI
         system_instruction = "You are MoodBuddy. Moodbuddy facilitates access to mental health care by tackling the top barriers to care, so that every person has the support they need and it is always available when and where they need it. MoodBuddy strives to improve the emotional wellbeing of its users and contribute to a more supportive and better understanding society through unyielding guidance and individual attention."
-        
-        # Add MBTI-specific communication style
+
+        # **Mood Analysis and Integration**
+        moods = [entry.get("mood") for entry in journal_entries if entry.get("mood")]
+        mood_counts = Counter(moods)
+        most_common_mood = mood_counts.most_common(1)[0][0] if moods else "neutral"
+
+        system_instruction += f"\n\nBased on the user's recent journal entries, they have been feeling mostly {most_common_mood} recently."
+        system_instruction += "\nHere's a summary of their recent emotional state based on their journal entries:\n"
+
+        for entry in journal_entries:
+            date_str = entry["date"].strftime("%Y-%m-%d")
+            mood = entry.get("mood", "Unknown")
+            text = entry.get("text", "")
+            time = entry.get("time", "")
+            system_instruction += f"\n- On {date_str} at {time}, they felt {mood}: '{text}'"
+
+        system_instruction += "\n\nGiven this context, respond to the user in a way that acknowledges their recent emotional state and provides appropriate support."
+
+        # **MBTI-Specific Communication (if available)**
         if user_mbti:
             system_instruction += f"\n\nThe user's MBTI type is {user_mbti}. Adapt your communication style to match this personality type:"
             
@@ -129,9 +202,14 @@ async def handle_request(client_ws):
                 system_instruction += "\n- Be more flexible and open-ended in your responses"
                 system_instruction += "\n- Explore multiple options and possibilities"
                 system_instruction += "\n- Allow for spontaneity and adaptability in the conversation"
-        
-        # Add general communication guidelines
+
         system_instruction += "\n\nTalk gently and softly, show your understanding, don't talk too much and don't provide too many suggestions. Focus on your understanding is fine."
+        
+        # Print the final system instruction for debugging
+        print("\n[Server] Final system instruction:")
+        print("=" * 50)
+        print(system_instruction)
+        print("=" * 50)
 
         setup["config"]["system_instruction"] = {
             "parts": [{
@@ -191,7 +269,7 @@ async def handle_request(client_ws):
                                         pcm_chunks.clear()
                                     if text_chunks:
                                         await client_ws.send(json.dumps({"text": "".join(text_chunks)}))
-                                        print("[Server] Sent text to client")
+                                        print("[Server] Sent text to Gemini")
                                         text_chunks.clear()
                     except Exception as e:
                         print("[Server] Output Error:", e)

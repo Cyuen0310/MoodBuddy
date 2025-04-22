@@ -16,6 +16,7 @@ const VoiceChat = () => {
   const playingRef = useRef(false);
   const ipAddress = process.env.EXPO_PUBLIC_IP_ADDRESS;
   const ws = useRef<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const setupWebSocket = async () => {
@@ -30,9 +31,17 @@ const VoiceChat = () => {
           console.log('User ID for WebSocket:', userId);
         }
         
+        // Close existing connection if any
+        if (ws.current) {
+          ws.current.close();
+        }
+        
         ws.current = new WebSocket(`ws://${ipAddress}:5051`);
         
         ws.current.onopen = () => {
+          console.log("WebSocket connected");
+          setIsConnected(true);
+          
           // Send setup message with user ID
           const setupMessage = {
             setup: {
@@ -72,30 +81,49 @@ const VoiceChat = () => {
           }
         };
         
-        ws.current.onerror = (error) => console.error("WebSocket error:", error);
-        ws.current.onclose = () => console.log("WebSocket disconnected");
+        ws.current.onerror = (error) => {
+          console.error("WebSocket error:", error);
+          setIsConnected(false);
+        };
+        
+        ws.current.onclose = () => {
+          console.log("WebSocket disconnected");
+          setIsConnected(false);
+        };
       } catch (error) {
         console.error("Error setting up WebSocket:", error);
+        setIsConnected(false);
       }
     };
     
     setupWebSocket();
     
     return () => {
-      ws.current?.close();
+      if (ws.current) {
+        ws.current.close();
+      }
     };
   }, []);
 
   const sendAudioChunks = async (uri: string) => {
-    const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    ws.current?.send(
-      JSON.stringify({
-        type: "audio",
-        data: base64,
-      })
-    );
+    if (!ws.current || !isConnected) {
+      console.log("Cannot send audio: WebSocket not connected");
+      return;
+    }
+    
+    try {
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      ws.current.send(
+        JSON.stringify({
+          type: "audio",
+          data: base64,
+        })
+      );
+    } catch (error) {
+      console.error("Error sending audio:", error);
+    }
   };
 
   const record = async () => {
