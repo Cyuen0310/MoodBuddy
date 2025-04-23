@@ -68,6 +68,15 @@ const VoiceChat = () => {
               encoding: FileSystem.EncodingType.Base64,
             });
 
+            // Configure audio to play through speaker
+            await Audio.setAudioModeAsync({
+              allowsRecordingIOS: false,
+              playsInSilentModeIOS: true,
+              playThroughEarpieceAndroid: false,
+              staysActiveInBackground: true,
+              shouldDuckAndroid: true
+            });
+
             const { sound } = await Audio.Sound.createAsync({ uri });
 
             sound.setOnPlaybackStatusUpdate((status) => {
@@ -173,6 +182,9 @@ const VoiceChat = () => {
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
       playsInSilentModeIOS: true,
+      playThroughEarpieceAndroid: false,
+      staysActiveInBackground: true,
+      shouldDuckAndroid: true
     });
 
     setIsRecording(true);
