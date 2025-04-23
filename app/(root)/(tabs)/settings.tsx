@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import icons from "@/constants/icons";
+import { fetchUserData } from "@/app/(auth)/auth";
 
 const ProfileItem = ({
   icon,
@@ -50,6 +51,7 @@ const settings = () => {
   const router = useRouter();
   const [username, setUsername] = useState<string | null>(null);
   const [userData, setUserData] = useState(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   const getUserData = async () => {
     try {
@@ -57,6 +59,10 @@ const settings = () => {
       if (user) {
         const userData = JSON.parse(user);
         setUsername(userData.username || "User");
+        const latestUserData = await fetchUserData(userData.uid);
+        if (latestUserData?.avatar) {
+          setAvatar(latestUserData.avatar);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
@@ -82,7 +88,7 @@ const settings = () => {
         <View className="flex flex-row items-center justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
             <Image
-              source={icons.avatar}
+              source={avatar ? { uri: avatar } : icons.avatar}
               className="size-24  relative rounded-full xl:size-32"
             />
             <TouchableOpacity className="absolute left-safe-offset-0  bg-slate-300 rounded-full">
