@@ -17,106 +17,125 @@ const MbtiDetails: React.FC = () => {
         return {
           image: icons.infj,
           title: "Advocate",
-          description: "INFJs are known for their strong sense of integrity and their drive to help others. You are creative, insightful, and principled."
+          description: "INFJs are known for their strong sense of integrity and their drive to help others. You are creative, insightful, and principled.",
+          isValid: true
         };
       case 'INTJ':
         return {
           image: icons.intj,
           title: "Architect",
-          description: "INTJs are independent thinkers who value knowledge and competence. You are strategic, determined, and often have a clear vision for the future."
+          description: "INTJs are independent thinkers who value knowledge and competence. You are strategic, determined, and often have a clear vision for the future.",
+          isValid: true
         };
       case 'INFP':
         return {
           image: icons.infp,
           title: "Mediator",
-          description: "INFPs are idealistic and driven by your values, often looking for meaning in life. You are empathetic, introspective, and deeply caring."
+          description: "INFPs are idealistic and driven by your values, often looking for meaning in life. You are empathetic, introspective, and deeply caring.",
+          isValid: true
         };
       case 'INTP':
         return {
           image: icons.intp,
           title: "Logician",
-          description: "INTPs are analytical thinkers who enjoy exploring concepts and theories. You are curious, inventive, and thrive on intellectual challenges."
+          description: "INTPs are analytical thinkers who enjoy exploring concepts and theories. You are curious, inventive, and thrive on intellectual challenges.",
+          isValid: true
         };
       case 'ENFJ':
         return {
           image: icons.enfj,
           title: "Protagonist",
-          description: "ENFJs are charismatic and driven, often inspiring others. You are an empathetic leader who values harmony and connection in relationships."
+          description: "ENFJs are charismatic and driven, often inspiring others. You are an empathetic leader who values harmony and connection in relationships.",
+          isValid: true
         };
       case 'ENTJ':
         return {
           image: icons.entj,
           title: "Commander",
-          description: "ENTJs are natural leaders who are decisive and strategic in your approach. You are confident, efficient, and thrive in challenging environments."
+          description: "ENTJs are natural leaders who are decisive and strategic in your approach. You are confident, efficient, and thrive in challenging environments.",
+          isValid: true
         };
       case 'ENFP':
         return {
           image: icons.enfp,
           title: "Campaigner",
-          description: "ENFPs are enthusiastic and creative, often seeking new experiences. You are spontaneous, energetic, and deeply value personal relationships."
+          description: "ENFPs are enthusiastic and creative, often seeking new experiences. You are spontaneous, energetic, and deeply value personal relationships.",
+          isValid: true
         };
       case 'ENTP':
         return {
           image: icons.entp,
           title: "Debater",
-          description: "ENTPs are curious and flexible thinkers who cannot resist an intellectual challenge. You are quick-witted, innovative, and enjoy debating ideas."
+          description: "ENTPs are curious and flexible thinkers who cannot resist an intellectual challenge. You are quick-witted, innovative, and enjoy debating ideas.",
+          isValid: true
         };
       case 'ISFJ':
         return {
           image: icons.isfj,
           title: "Defender",
-          description: "ISFJs are nurturing and responsible, often putting others before yourself. You are detail-oriented, loyal, and value tradition."
+          description: "ISFJs are nurturing and responsible, often putting others before yourself. You are detail-oriented, loyal, and value tradition.",
+          isValid: true
         };
       case 'ISTJ':
         return {
           image: icons.istj,
           title: "Logistician",
-          description: "ISTJs are dependable and diligent, often valuing tradition and order. You are practical, organized, and excel in following through on tasks."
+          description: "ISTJs are dependable and diligent, often valuing tradition and order. You are practical, organized, and excel in following through on tasks.",
+          isValid: true
         };
       case 'ISFP':
         return {
           image: icons.isfp,
           title: "Adventurer",
-          description: "ISFPs are artistic and sensitive, often valuing personal expression. You are spontaneous, compassionate, and appreciate beauty in the world."
+          description: "ISFPs are artistic and sensitive, often valuing personal expression. You are spontaneous, compassionate, and appreciate beauty in the world.",
+          isValid: true
         };
       case 'ISTP':
         return {
           image: icons.istp,
           title: "Virtuoso",
-          description: "ISTPs are hands-on problem solvers who enjoy working with your hands. You are adventurous, adaptable, and thrive in dynamic environments."
+          description: "ISTPs are hands-on problem solvers who enjoy working with your hands. You are adventurous, adaptable, and thrive in dynamic environments.",
+          isValid: true
         };
       case 'ESFJ':
         return {
           image: icons.esfj,
           title: "Consul",
-          description: "ESFJs are outgoing, friendly, and often take on the role of caretaker. You value harmony, community, and are deeply attuned to the needs of others."
+          description: "ESFJs are outgoing, friendly, and often take on the role of caretaker. You value harmony, community, and are deeply attuned to the needs of others.",
+          isValid: true
         };
       case 'ESTJ':
         return {
           image: icons.estj,
           title: "Executive",
-          description: "ESTJs are organized, practical, and often take charge of situations. You are decisive, responsible, and thrive in structured environments."
+          description: "ESTJs are organized, practical, and often take charge of situations. You are decisive, responsible, and thrive in structured environments.",
+          isValid: true
         };
       case 'ESFP':
         return {
           image: icons.esfp,
           title: "Entertainer",
-          description: "ESFPs are lively and spontaneous, enjoying being the center of attention. You are energetic, enthusiastic, and appreciate living in the moment."
+          description: "ESFPs are lively and spontaneous, enjoying being the center of attention. You are energetic, enthusiastic, and appreciate living in the moment.",
+          isValid: true
         };
       case 'ESTP':
         return {
           image: icons.estp,
           title: "Entrepreneur",
-          description: "ESTPs are energetic and love to take risks and live in the moment. You are action-oriented, resourceful, and enjoy exploring new experiences."
+          description: "ESTPs are energetic and love to take risks and live in the moment. You are action-oriented, resourceful, and enjoy exploring new experiences.",
+          isValid: true
         };
       default:
         return {
-          description: "No specific details available for this type."
+          image: icons.bewhat,
+          title: "",
+          //description: "No specific details available for this type.",
+          isValid: false
         };
     }
   };
 
-  const { image, title, description } = getMbtiDetails(mbti);
+  const { image, title, description, isValid } = getMbtiDetails(mbti);
   const mbtiUrl = `https://www.16personalities.com/${mbti?.toLowerCase()}-personality`;
 
   return (
@@ -131,16 +150,29 @@ const MbtiDetails: React.FC = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <Image source={image} style={styles.infoImage} />
         <Text style={styles.titleText}>{title}</Text>
-        <Text style={styles.mbtiTypeText}>{mbti}</Text>
+        {isValid && <Text style={styles.mbtiTypeText}>{mbti}</Text>}
         <Text style={styles.descriptionText}>{description}</Text>
         <Text style={styles.emphasisText}>You Can Be Anything You Want To Be!</Text>
-        <TouchableOpacity onPress={() => Linking.openURL(mbtiUrl)}>
-          <Text style={styles.learnMoreText}> Want to know more?</Text>
-        </TouchableOpacity>
+        
+        {isValid ? (
+          <View style={styles.container}>
+            <TouchableOpacity onPress={() => Linking.openURL(mbtiUrl)}>
+              <Text style={styles.learnMoreText}>Want to know more?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/Question")} >
+              <Text style={styles.learnMoreText}>Retake the Test</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={() => router.push("/Question")}>
+            <Text style={styles.learnMoreText}>Take the Test Now</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: {
