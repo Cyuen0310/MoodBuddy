@@ -28,6 +28,7 @@ const Index: React.FC = () => {
   }>({ width: 0, height: 0 });
   const [username, setUsername] = useState<string | null>(null);
   const [mbti, setMbti] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const router = useRouter();
 
   const getUserData = async () => {
@@ -44,9 +45,24 @@ const Index: React.FC = () => {
     }
   };
 
+  const fetchLatestAvatar = async () => {
+    try {
+      const user = await AsyncStorage.getItem("user");
+      if (user) {
+        const { uid } = JSON.parse(user);
+        const userData = await fetchUserData(uid);
+        setAvatar(userData.avatar || null);
+        setUsername(userData.username);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       getUserData();
+      fetchLatestAvatar();
     }, [])
   );
 
@@ -70,9 +86,9 @@ const Index: React.FC = () => {
               onPress={() => router.push("/(settings)/userInfo")}
             >
               <Image
-                source={icons.avatar as ImageSourcePropType}
-                style={styles.avatar}
-              />
+              source={avatar ? { uri: avatar } : (icons.avatar as ImageSourcePropType)}
+              style={styles.avatar}
+            />
             </TouchableOpacity>
             <View style={styles.userText}>
               <Text style={styles.welcomeText}>Welcome to MoodBuddy!</Text>
