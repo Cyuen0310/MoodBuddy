@@ -68,6 +68,8 @@ import estp from "@/assets/icons/estp.png";
 import room from "@/assets/icons/gameroom.jpg";
 import microphone from "@/assets/icons/microphone.png";
 import waveform from "@/assets/icons/waveform.png";
+import bewhat from "@/assets/icons/bewhat.png";
+
 
 const icons = {
   pen,
@@ -140,6 +142,7 @@ const icons = {
   oil,
   room,
   waveform,
+  bewhat,
 };
 
 export default icons;
