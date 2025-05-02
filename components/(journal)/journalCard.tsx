@@ -12,7 +12,7 @@ interface JournalCardProps {
   };
 }
 
-// Define mood icons mapping
+
 const moodIcons: { [key: string]: any } = {
   Angry: icons.angry,
   Sad: icons.sad,
@@ -21,7 +21,7 @@ const moodIcons: { [key: string]: any } = {
   Joyful: icons.joyful,
 };
 
-// Define factor colors
+
 const factorColors: { [key: string]: string } = {
   Family: "bg-pink-200 text-pink-800",
   Friends: "bg-purple-200 text-purple-800",
@@ -35,7 +35,6 @@ const factorColors: { [key: string]: string } = {
 const JournalCard = ({ info }: JournalCardProps) => {
   return (
     <View className="bg-white rounded-lg shadow-sm mb-2 overflow-hidden">
-      {/* Images Section */}
       {info.images && info.images.length > 0 && (
         <View className="w-full h-48">
           <Image
@@ -53,9 +52,7 @@ const JournalCard = ({ info }: JournalCardProps) => {
         </View>
       )}
 
-      {/* Content Section */}
       <View className="p-4">
-        {/* Header: Mood and Time */}
         <View className="flex-row justify-between items-center mb-4">
           <View className="flex-row items-center">
             <Image source={moodIcons[info.mood]} className="size-8 mr-2" />
@@ -68,7 +65,7 @@ const JournalCard = ({ info }: JournalCardProps) => {
           )}
         </View>
 
-        {/* Factors */}
+
         {info.factors.length > 0 && (
           <View className="flex-row flex-wrap gap-2 mb-3">
             {info.factors.map((factor, index) => (
@@ -84,7 +81,7 @@ const JournalCard = ({ info }: JournalCardProps) => {
           </View>
         )}
 
-        {/* Journal Text */}
+
         {info.text && (
           <Text className="font-nunito-regular text-gray-700">{info.text}</Text>
         )}

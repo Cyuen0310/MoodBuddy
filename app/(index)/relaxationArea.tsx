@@ -58,12 +58,11 @@ const RelaxationArea: React.FC = () => {
   };
 
   const handleGoBack = () => {
-    router.push("/"); // Navigate back to the home page
+    router.push("/"); 
   };
 
   const handleGameSelection = (game: string) => {
     setSelectedGame(game);
-    // Reset choices and results when changing games
     setUserChoice(null);
     setComputerChoice(null);
     setResult("");
@@ -71,7 +70,6 @@ const RelaxationArea: React.FC = () => {
     resetNumberGuessing();
   };
 
-  // Tic Tac Toe Functions
   const resetTicTacToe = () => {
     setTicTacToeBoard(Array(9).fill(null));
     setTicTacToeXIsNext(true);

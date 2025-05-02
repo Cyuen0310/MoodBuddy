@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import icons from "@/constants/icons";
 import YoutubeIframe from "react-native-youtube-iframe";
 
-const { width } = Dimensions.get("window"); // Get screen width
+const { width } = Dimensions.get("window"); 
 
 const SleepTherapy: React.FC = () => {
   const router = useRouter();

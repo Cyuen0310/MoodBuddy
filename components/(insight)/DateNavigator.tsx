@@ -84,7 +84,7 @@ export const DateNavigator: React.FC<DateNavigatorProps> = ({
             : addYears(currentDate, 1); // Go forward one year
         break;
     }
-    // Only update if within allowed range
+
     if (newDate >= minDate && newDate <= new Date()) {
       setCurrentDate(newDate);
     }

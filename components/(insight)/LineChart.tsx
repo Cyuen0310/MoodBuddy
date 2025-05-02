@@ -4,13 +4,13 @@ import { LineChart } from "react-native-chart-kit";
 import { format } from "date-fns";
 import { skip } from "node:test";
 
-// Add this type definition
+
 type DataPoint = {
   sum: number;
   count: number;
 };
 
-// Reusable function to calculate averages from any map with the specified structure
+
 const calculateAverages = (data: Map<string, DataPoint>) => {
   return new Map(
     Array.from(data.entries()).map(([label, values]) => {
@@ -56,14 +56,14 @@ export default function MoodTrends({
     "Dec",
   ];
 
-  // Map {"Sun" => {"count": 0, "sum": 0}, "Mon" => {"count": 0, "sum": 0}, "Tue" => {"count": 0, "sum": 0}, "Wed" => {"count": 0, "sum": 0}, "Thu" => {"count": 0, "sum": 0}, "Fri" => {"count": 0, "sum": 0}, "Sat" => {"count": 0, "sum": 0}}
+  
   const weeklyData = new Map(
     weekdays.map((day) => [day, { sum: 0, count: 0 }])
   );
 
   const monthlyData = new Map<string, DataPoint>();
 
-  // Map {"Jan" => {"count": 0, "sum": 0}, "Feb" => {"count": 0, "sum": 0}, "Mar" => {"count": 0, "sum": 0}, "Apr" => {"count": 0, "sum": 0}, "May" => {"count": 0, "sum": 0}, "Jun" => {"count": 0, "sum": 0}, "Jul" => {"count": 0, "sum": 0}, "Aug" => {"count": 0, "sum": 0}, "Sep" => {"count": 0, "sum": 0}, "Oct" => {"count": 0, "sum": 0}, "Nov" => {"count": 0, "sum": 0}, "Dec" => {"count": 0, "sum": 0}}
+  
   const yearlyData = new Map(
     months.map((month) => [month, { sum: 0, count: 0 }])
   );
@@ -119,7 +119,7 @@ export default function MoodTrends({
     });
   });
 
-  // Calculate averages using the reusable function and filter out zeros
+
   const averages = Array.from(
     calculateAverages(
       timeframe === "week"

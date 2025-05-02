@@ -20,7 +20,6 @@ const VoiceChat = () => {
 
   const setupWebSocket = async () => {
     try {
-      // Get user from AsyncStorage
       const userJson = await AsyncStorage.getItem("user");
       let userId = null;
 
@@ -30,7 +29,6 @@ const VoiceChat = () => {
         console.log("User ID for WebSocket:", userId);
       }
 
-      // Close existing connection if any
       if (ws.current) {
         ws.current.close();
       }
@@ -41,7 +39,6 @@ const VoiceChat = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
 
-        // Send setup message with user ID
         const setupMessage = {
           setup: {
             config: {
@@ -52,7 +49,7 @@ const VoiceChat = () => {
               },
             },
           },
-          userId: userId, // Include the user's UID
+          userId: userId, 
         };
         console.log("Sending setup message:", setupMessage);
         ws.current?.send(JSON.stringify(setupMessage));
@@ -91,7 +88,6 @@ const VoiceChat = () => {
                 playsInSilentModeIOS: true,
               });
 
-              // Ensure WebSocket is connected before restarting recording
               if (ws.current && ws.current.readyState === WebSocket.OPEN) {
                 console.log("Playback finished. Restarting recording...");
                 recordingRef.current = true;
@@ -103,7 +99,7 @@ const VoiceChat = () => {
                   "WebSocket not connected, cannot restart recording"
                 );
                 setIsConnected(false);
-                // Attempt to reconnect WebSocket
+
                 setupWebSocket();
               }
             }

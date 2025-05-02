@@ -36,7 +36,6 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const setupWebSocket = async () => {
       try {
-        // Get user from AsyncStorage
         const userJson = await AsyncStorage.getItem('user');
         let userId = null;
         
@@ -46,7 +45,7 @@ const Chat: React.FC = () => {
           console.log('User ID for WebSocket:', userId);
         }
         
-        // Close existing connection if any
+
         if (ws.current) {
           ws.current.close();
         }
@@ -57,14 +56,13 @@ const Chat: React.FC = () => {
           console.log("WebSocket connected");
           setIsConnected(true);
           
-          // Send setup message with user ID
           const setupMessage = {
             setup: {
               config: {
                 response_modalities: ["TEXT"],
               },
             },
-            userId: userId  // Include the user's UID
+            userId: userId  
           };
           console.log('Sending setup message:', setupMessage);
           ws.current?.send(JSON.stringify(setupMessage));
@@ -72,7 +70,6 @@ const Chat: React.FC = () => {
         
         ws.current.onmessage = (event) => {
           try {
-            // First try to parse as JSON
             const data = JSON.parse(event.data);
             const botMessage = {
               text: data.response || data.text || data,
@@ -80,7 +77,6 @@ const Chat: React.FC = () => {
             };
             setMessages((prevMessages) => [...prevMessages, botMessage]);
           } catch (error) {
-            // If parsing fails, use the raw message
             const botMessage = { text: event.data, user: false };
             setMessages((prevMessages) => [...prevMessages, botMessage]);
           }
@@ -120,10 +116,8 @@ const Chat: React.FC = () => {
         setUserInput("");
       } catch (error) {
         console.error("Error sending message:", error);
-        // Optionally show an error message to the user
       }
     } else if (!isConnected) {
-      // Optionally show a message that the connection is not available
       console.log("Cannot send message: WebSocket not connected");
     }
   };

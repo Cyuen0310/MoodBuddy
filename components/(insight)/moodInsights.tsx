@@ -71,7 +71,7 @@ const MoodInsights = ({
       averageMoodScore: 0,
     };
 
-    // Process each journal entry
+
     data.forEach((journal: any) => {
       journal.entries.forEach((entry: any) => {
         stats.totalEntries++;
@@ -79,13 +79,13 @@ const MoodInsights = ({
       });
     });
 
-    // Calculate most frequent mood
+
     if (stats.totalEntries > 0) {
       stats.mostFrequentMood = Object.entries(stats.moodCounts).reduce((a, b) =>
         a[1] > b[1] ? a : b
       )[0];
 
-      // Calculate average mood score
+  
       const totalScore = Object.entries(stats.moodCounts).reduce(
         (sum, [mood, count]) =>
           sum + moodScores[mood as keyof typeof moodScores] * count,
@@ -120,7 +120,7 @@ const MoodInsights = ({
           new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
-      // Log raw journal entries
+
       setRawData(
         journals.map((journal: any) => ({
           date: journal.date,
@@ -152,7 +152,7 @@ const MoodInsights = ({
     fetchMoodData();
   }, [timeframe, dateRange]);
 
-  // Refresh data when screen comes into focus or when timeframe/dateRange changes
+
   useFocusEffect(
     React.useCallback(() => {
       fetchMoodData();
@@ -209,16 +209,9 @@ const MoodInsights = ({
             Mood Insights - {timeframe}
           </Text>
 
-          {/* Summary Stats 
-          <View className="bg-[#008888] rounded-lg p-4 mb-4 w-full">
-            <Text className="font-nunito-bold text-base mb-2">Summary</Text>
-            <Text>Total Entries: {moodData.totalEntries}</Text>
-            <Text>Most Frequent: {moodData.mostFrequentMood}</Text>
-            <Text>Average Score: {moodData.averageMoodScore.toFixed(1)}/5</Text>
-          </View>
-          */}
 
-          {/* Mood Distribution Pie Chart */}
+
+   
           <View className="bg-white rounded-lg p-4 mb-4 w-full">
             <Text className="font-nunito-bold text-xl mb-4 text-[#008888]">
               Mood Distribution - {timeframe}
@@ -261,7 +254,7 @@ const MoodInsights = ({
                   );
                 }}
               />
-              {/* Legend */}
+     
               <View className="flex-row flex-wrap justify-center mt-4 gap-4">
                 {["Joyful", "Happy", "Neutral", "Sad", "Angry"].map((mood) => (
                   <View key={mood} className="flex-row items-center">
@@ -300,7 +293,7 @@ const MoodInsights = ({
             </View>
           </View>
 
-          {/* Line Chart */}
+
           <View className="bg-white rounded-lg p-4 mb-4 w-full">
             <Text className="font-nunito-bold text-xl mb-4 text-[#008888]">
               Mood Trend - {timeframe}

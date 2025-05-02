@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/MB_logo.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": ["android.permission.RECORD_AUDIO"]
@@ -26,14 +26,14 @@
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/icon.png"
+      "favicon": "./assets/images/MB_logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon.png",
+          "image": "./assets/images/MB_logo.png",
           "resizeMode": "cover",
           "backgroundColor": "#ffffff",
           "enableFullScreenImage_legacy": true

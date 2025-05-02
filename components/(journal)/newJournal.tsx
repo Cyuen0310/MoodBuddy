@@ -265,12 +265,12 @@ const NewJournal = ({ selectedDate, onSave }: NewJournalProps) => {
             <Text className="text-white text-center font-nunito-extra-bold-italic text-xl">
               Save
             </Text>
-            {/* <Image source={icons.pencil} className="size-6 mx-1" /> */}
+
           </TouchableOpacity>
         </ScrollView>
       </View>
 
-      {/* Add Image Modal */}
+
       <Modal
         visible={addImageModal}
         transparent={true}

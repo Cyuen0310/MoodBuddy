@@ -8,7 +8,7 @@ const HEX_SIZE = width * 0.8; // Make it bigger
 
 interface MoodStat {
   label: string;
-  value: number; // 0 to 1
+  value: number; 
 }
 
 const HexStat = () => {
@@ -17,7 +17,7 @@ const HexStat = () => {
   const center = { x: size / 2, y: size / 2 };
   const radius = size * 0.35;
 
-  // Example mood stats (you should replace these with your actual data)
+
   const moodStats: MoodStat[] = [
     { label: "Joyful", value: 0.8 },
     { label: "Happy", value: 0.6 },
@@ -45,7 +45,7 @@ const HexStat = () => {
     return `${point.x},${point.y}`;
   }).join(" ");
 
-  // Generate points for 3 inner polygons (25%, 50%, 75%)
+
   const innerPolygons = [0.25, 0.5, 0.75].map((scale) =>
     Array.from({ length: 5 }, (_, i) => {
       const point = getPoint(i, scale);
@@ -56,7 +56,7 @@ const HexStat = () => {
   return (
     <View className="flex-1 items-center justify-center mt-8">
       <Svg width={size} height={size}>
-        {/* Background polygons */}
+
         {innerPolygons.map((points, i) => (
           <Polygon
             key={`inner-${i}`}
@@ -67,7 +67,7 @@ const HexStat = () => {
           />
         ))}
 
-        {/* Outer pentagon */}
+
         <Polygon
           points={outerPoints}
           fill="none"
@@ -75,7 +75,7 @@ const HexStat = () => {
           strokeWidth="1"
         />
 
-        {/* Stat lines */}
+
         {Array.from({ length: 5 }, (_, i) => (
           <Line
             key={`line-${i}`}
@@ -88,7 +88,6 @@ const HexStat = () => {
           />
         ))}
 
-        {/* Stat polygon */}
         <Polygon
           points={statPoints}
           fill="#008888"
@@ -97,7 +96,7 @@ const HexStat = () => {
           strokeWidth="2"
         />
 
-        {/* Labels */}
+
         {moodStats.map((stat, i) => {
           const point = getPoint(i, 1.2);
           return (

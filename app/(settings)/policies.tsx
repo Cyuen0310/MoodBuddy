@@ -15,7 +15,6 @@ const Policies = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header with back button */}
       <View className="flex-row items-center px-4 py-2">
         <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Image source={icons.backArrow} className="size-6" />
@@ -36,7 +35,6 @@ const Policies = () => {
           information when you use our mobile application and related services.
         </Text>
 
-        {/* Section 1 */}
         <Text className="text-lg font-nunito-bold mb-3">
           1. Information We Collect
         </Text>
@@ -71,7 +69,6 @@ const Policies = () => {
           app.{"\n"}• Interaction history with AI chat support.
         </Text>
 
-        {/* Section 2 */}
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           2. How We Use Your Information
         </Text>
@@ -82,7 +79,6 @@ const Policies = () => {
           fraud.{"\n"}• Comply with legal obligations.
         </Text>
 
-        {/* Section 3 */}
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           3. How We Share Your Information
         </Text>
@@ -97,7 +93,7 @@ const Policies = () => {
           Consent: If you choose to share mood insights with others.
         </Text>
 
-        {/* Section 4 */}
+
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           4. Data Security
         </Text>
@@ -107,7 +103,7 @@ const Policies = () => {
           Please use MoodBuddy responsibly.
         </Text>
 
-        {/* Section 5 */}
+
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           5. Your Rights and Choices
         </Text>
@@ -118,7 +114,6 @@ const Policies = () => {
           of your account and associated data by contacting support.
         </Text>
 
-        {/* Section 6 */}
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           6. Third-Party Links and Integrations
         </Text>
@@ -128,7 +123,6 @@ const Policies = () => {
           practices.
         </Text>
 
-        {/* Section 7 */}
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           7. Children's Privacy
         </Text>
@@ -137,7 +131,7 @@ const Policies = () => {
           knowingly collect data from children without parental consent.
         </Text>
 
-        {/* Section 8 */}
+
         <Text className="text-lg font-nunito-bold mb-3 mt-6">
           8. Changes to This Policy
         </Text>

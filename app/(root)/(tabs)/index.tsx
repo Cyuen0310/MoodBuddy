@@ -254,51 +254,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingBottom: 70, // Add padding to account for the bottom tab bar height
+    paddingBottom: 70, 
   },
   box: {
-    flex: 1, // Set flex to 1 to make each box take up an equal portion of the available space
+    flex: 1, 
     borderRadius: 10,
-    marginVertical: 10 / 2, // Divide by 2 to apply half margin on top and bottom
+    marginVertical: 10 / 2, 
     justifyContent: "center",
     alignItems: "center",
   },
   quoteBlockContainer: {
-    backgroundColor: "#ADD8E6", // Light blue background for quote block
+    backgroundColor: "#ADD8E6", 
     padding: 10,
-    position: "relative", // To position the background image
+    position: "relative", 
   },
   quoteBackground: {
     position: "absolute",
     borderRadius: 10,
-    opacity: 0.9, // Adjust opacity for better text visibility
+    opacity: 0.9,
   },
   quoteBlock: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.8)", // Semi-transparent background for the quote block
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     padding: 20,
     borderRadius: 10,
-    width: width - 40, // Ensure the block is slightly smaller than the screen width
+    width: width - 40, 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    elevation: 5, // For Android shadow
-    justifyContent: "space-between", // Space out the quote text and author text
+    elevation: 5, 
+    justifyContent: "space-between", 
   },
   quoteText: {
     fontSize: 20,
     fontFamily: "Nunito-Italic",
     color: "#333",
-    textAlign: "center", // Center the text
+    textAlign: "center", 
   },
   authorText: {
     fontSize: 16,
     fontFamily: "Nunito",
     color: "#333",
-    textAlign: "right", // Align the author text to the right
-    marginTop: 10, // Add some margin to separate from the quote text
-  },
+    textAlign: "right", 
+    marginTop: 10, 
   buttonBlockContainer: {
     flex: 1,
     backgroundColor: "#ffffff",
@@ -311,15 +310,15 @@ const styles = StyleSheet.create({
     width: 150,
     height: 200,
     borderRadius: 8,
-    marginRight: 10, // Reduced margin
-    justifyContent: "flex-start", // Align text to the top
-    padding: 10, // Padding inside the card
-    position: "relative", // To position the background image
+    marginRight: 10, 
+    justifyContent: "flex-start", 
+    padding: 10, 
+    position: "relative", 
   },
   cardBackground: {
     position: "absolute",
     borderRadius: 8,
-    opacity: 0.9, // Adjust opacity for better text visibility
+    opacity: 0.9,
     width: 150,
     height: 200,
   },
@@ -336,9 +335,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E7EB",
   },
   cardText: {
-    textAlign: "left", // Align text to the left
-    fontSize: 16, // Adjust font size if needed
-    zIndex: 1, // Ensure text is above the background image
+    textAlign: "left", 
+    fontSize: 16,
+    zIndex: 1, 
   },
   bottomButtonContainer: {
     flex: 0.2,
